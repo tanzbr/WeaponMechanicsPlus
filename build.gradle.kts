@@ -1,5 +1,5 @@
 group = "me.deecaad"
-version = "1.0.0"
+version = "0.1.0"
 
 plugins {
     `java-library`
@@ -9,6 +9,15 @@ plugins {
 
 configurations {
     compileClasspath.get().extendsFrom(create("shadeOnly"))
+}
+
+bukkit {
+    main = "me.deecaad.weaponmechanicsplus.WeaponMechanicsPlusLoader"
+    name = "WeaponMechanicsPlus"
+    apiVersion = "1.13"
+
+    authors = listOf("DeeCaaD", "CJCrafter")
+    softDepend = listOf("MechanicsCore", "WeaponMechanics")
 }
 
 repositories {
@@ -34,8 +43,17 @@ repositories {
         name = "GitHubPackages"
         url = uri("https://maven.pkg.github.com/WeaponMechanics/MechanicsMain")
         credentials {
-            username = "CJCrafter"
-            password = "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" // this is a public token created in CJCrafter's name which will never expire
+            username = findProperty("user").toString()
+            password = findProperty("pass").toString()
+        }
+    }
+
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/WeaponMechanics/MechanicsAutoDownload")
+        credentials {
+            username = findProperty("user").toString()
+            password = findProperty("pass").toString()
         }
     }
 }
@@ -43,11 +61,35 @@ repositories {
 dependencies {
     compileOnly("org.jetbrains:annotations:23.0.0")
 
-    api("org.spigotmc:spigot-api:1.18-R0.1-SNAPSHOT")
+    api("org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT")
     implementation("co.aikar:minecraft-timings:1.0.4")
 
-    compileOnly("me.deecaad:mechanicscore:+")
-    compileOnly("me.deecaad:weaponmechanics:+")
+    compileOnly("me.deecaad:mechanicscore:1.5.1")
+    compileOnly("me.deecaad:weaponmechanics:1.11.1")
+    implementation("org.bstats:bstats-bukkit:3.0.0")
+    implementation("me.cjcrafter:mechanicsautodownload:1.2.0")
+}
+
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    classifier = null
+    archiveFileName.set("WeaponMechanicsPlus-${project.version}.jar")
+    configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
+
+    dependencies {
+        relocate ("me.cjcrafter.auto", "me.deecaad.weaponmechanicsplus.lib.auto") {
+            include(dependency("me.cjcrafter:mechanicsautodownload"))
+        }
+        relocate ("co.aikar.timings.lib", "me.deecaad.weaponmechanicsplus.lib.timings") {
+            include(dependency("co.aikar:minecraft-timings"))
+        }
+        relocate ("org.bstats", "me.deecaad.weaponmechanicsplus.lib.bstats") {
+            include(dependency("org.bstats:"))
+        }
+    }
+}
+
+tasks.named("assemble").configure {
+    dependsOn("shadowJar")
 }
 
 java {
@@ -71,29 +113,4 @@ tasks {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
-    classifier = null
-    archiveFileName.set("WeaponMechanicsPlus-${project.version}.jar")
-    configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
-
-    dependencies {
-        relocate ("co.aikar.timings.lib", "me.deecaad.weaponmechanicscosmetics.libs.timings") {
-            include(dependency("co.aikar:minecraft-timings"))
-        }
-    }
-}
-
-tasks.named("assemble").configure {
-    dependsOn("shadowJar")
-}
-
-bukkit {
-    main = "me.deecaad.weaponmechanicsplus.WeaponMechanicsPlusLoader"
-    name = "WeaponMechanicsPlus"
-    apiVersion = "1.13"
-
-    authors = listOf("DeeCaaD", "CJCrafter")
-    softDepend = listOf("MechanicsCore", "WeaponMechanics")
 }
