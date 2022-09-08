@@ -1,0 +1,4 @@
+Fire_mode:
+  Trigger: <TriggerSerializer>
+  Next_Mode: <String>
+  Mechanics: <MechanicsSerializer>

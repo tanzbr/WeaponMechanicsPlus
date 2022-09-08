@@ -21,6 +21,7 @@ bukkit {
 }
 
 repositories {
+    mavenCentral()
     mavenLocal()
 
     maven {
@@ -65,7 +66,7 @@ dependencies {
     implementation("co.aikar:minecraft-timings:1.0.4")
 
     compileOnly("me.deecaad:mechanicscore:1.5.1")
-    compileOnly("me.deecaad:weaponmechanics:1.11.1")
+    compileOnly("me.deecaad:weaponmechanics:1.11.2")
     implementation("org.bstats:bstats-bukkit:3.0.0")
     implementation("me.cjcrafter:mechanicsautodownload:1.2.0")
 }

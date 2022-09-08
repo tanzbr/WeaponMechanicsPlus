@@ -8,6 +8,9 @@ import me.deecaad.core.file.TaskChain;
 import me.deecaad.core.utils.Debugger;
 import me.deecaad.core.utils.FileUtil;
 import me.deecaad.core.utils.LogLevel;
+import me.deecaad.weaponmechanics.WeaponMechanics;
+import me.deecaad.weaponmechanics.weapon.WeaponHandler;
+import me.deecaad.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,17 +28,17 @@ import java.util.logging.Logger;
 
 public class WeaponMechanicsPlus {
 
-    private static WeaponMechanicsPlus INSTANCE;
+    private static WeaponMechanicsPlus plugin;
 
-    private WeaponMechanicsPlusLoader plugin;
+    private WeaponMechanicsPlusLoader javaPlugin;
     private UpdateChecker update;
     private Metrics metrics;
     private Debugger debug;
 
-    WeaponMechanicsPlus(WeaponMechanicsPlusLoader plugin) {
-        this.plugin = plugin;
+    WeaponMechanicsPlus(WeaponMechanicsPlusLoader javaPlugin) {
+        this.javaPlugin = javaPlugin;
 
-        INSTANCE = this;
+        plugin = this;
     }
 
     public void onLoad() {
@@ -50,6 +54,7 @@ public class WeaponMechanicsPlus {
         //pm.registerEvents(new MuzzleFlashSpawner(), plugin);
 
         writeFiles();
+        registerTriggerListeners();
         registerDebugger();
         registerUpdateChecker();
         registerBStats();
@@ -60,27 +65,27 @@ public class WeaponMechanicsPlus {
     }
 
     public FileConfiguration getConfig() {
-        return plugin.getConfig();
+        return javaPlugin.getConfig();
     }
 
     public Logger getLogger() {
-        return plugin.getLogger();
+        return javaPlugin.getLogger();
     }
 
     public File getDataFolder() {
-        return plugin.getDataFolder();
+        return javaPlugin.getDataFolder();
     }
 
     public ClassLoader getClassLoader() {
-        return plugin.getClassLoader0();
+        return javaPlugin.getClassLoader0();
     }
 
     public File getFile() {
-        return plugin.getFile0();
+        return javaPlugin.getFile0();
     }
 
-    public Debugger getDebug() {
-        return debug;
+    public static Debugger getDebug() {
+        return plugin.debug;
     }
 
     private void writeFiles() {
@@ -91,10 +96,15 @@ public class WeaponMechanicsPlus {
         }
     }
 
+    public void registerTriggerListeners() {
+        WeaponHandler weaponHandler = WeaponMechanics.getWeaponHandler();
+        weaponHandler.addTriggerListener(new FireModeTriggerListener());
+    }
+
     private void registerDebugger() {
         debug.permission = "weaponmechanicsplus.errorlog";
         debug.msg = "WeaponMechanicsPlus had %s error(s) in console.";
-        debug.start(plugin);
+        debug.start(javaPlugin);
     }
 
     private void registerUpdateChecker() {
@@ -105,12 +115,12 @@ public class WeaponMechanicsPlus {
 
         if (!getConfig().getBoolean("Update_Checker.Enabled", true)) return;
 
-        update = new UpdateChecker(plugin, UpdateChecker.spigot(1, "WeaponMechanicsPlus"));
+        update = new UpdateChecker(javaPlugin, UpdateChecker.spigot(1, "WeaponMechanicsPlus"));
         Listener listener = new Listener() {
             @EventHandler
             public void onJoin(PlayerJoinEvent event) {
                 if (event.getPlayer().isOp()) {
-                    new TaskChain(plugin)
+                    new TaskChain(javaPlugin)
                             .thenRunAsync((callback) -> update.hasUpdate())
                             .thenRunSync((callback) -> {
                                 UpdateInfo update = (UpdateInfo) callback;
@@ -123,7 +133,7 @@ public class WeaponMechanicsPlus {
             }
         };
 
-        Bukkit.getPluginManager().registerEvents(listener, plugin);
+        Bukkit.getPluginManager().registerEvents(listener, javaPlugin);
     }
 
     private void registerBStats() {
@@ -135,7 +145,7 @@ public class WeaponMechanicsPlus {
         // the bStats plugin id used to track information.
         int id = 16382;
 
-        this.metrics = new Metrics(plugin, id);
+        this.metrics = new Metrics(javaPlugin, id);
     }
 
     private void registerSerializerQueue() {
@@ -152,14 +162,10 @@ public class WeaponMechanicsPlus {
             }
         };
 
-        Bukkit.getPluginManager().registerEvents(listener, plugin);
+        Bukkit.getPluginManager().registerEvents(listener, javaPlugin);
     }
 
-    public WeaponMechanicsPlusLoader getPlugin() {
-        return plugin;
-    }
-
-    public static WeaponMechanicsPlus getInstance() {
-        return INSTANCE;
+    public static Plugin getPlugin() {
+        return plugin.javaPlugin;
     }
 }
