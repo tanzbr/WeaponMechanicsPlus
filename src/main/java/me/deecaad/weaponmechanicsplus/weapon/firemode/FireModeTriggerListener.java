@@ -27,22 +27,11 @@ public class FireModeTriggerListener implements TriggerListener {
     @Override
     public boolean tryUse(EntityWrapper entityWrapper, String weaponTitle, ItemStack weaponStack, EquipmentSlot slot, TriggerType triggerType, boolean dualWield, @Nullable LivingEntity victim) {
 
-        System.out.println("1");
-
         Configuration config = getConfigurations();
         FireMode fireMode = config.getObject(weaponTitle + ".Info.Fire_Mode", FireMode.class);
-
-        System.out.println(weaponTitle + ".Info.Fire_Mode");
-        System.out.println(fireMode);
-
         if (fireMode == null || !fireMode.getTrigger().check(triggerType, slot, entityWrapper)) {
-
-            System.out.println("2");
-
             return false;
         }
-
-        System.out.println("3");
 
         entityWrapper.getMainHandData().cancelTasks();
         entityWrapper.getOffHandData().cancelTasks();
