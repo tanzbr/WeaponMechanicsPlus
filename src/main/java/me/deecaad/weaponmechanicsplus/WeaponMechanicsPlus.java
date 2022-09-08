@@ -16,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
@@ -54,7 +53,6 @@ public class WeaponMechanicsPlus {
         //pm.registerEvents(new MuzzleFlashSpawner(), plugin);
 
         writeFiles();
-        registerTriggerListeners();
         registerDebugger();
         registerUpdateChecker();
         registerBStats();
@@ -94,11 +92,6 @@ public class WeaponMechanicsPlus {
             debug.info("Copying files from jar (This process may take up to 30 seconds during the first load!)");
             FileUtil.copyResourcesTo(getClassLoader().getResource("WeaponMechanicsPlus"), getDataFolder().toPath());
         }
-    }
-
-    public void registerTriggerListeners() {
-        WeaponHandler weaponHandler = WeaponMechanics.getWeaponHandler();
-        weaponHandler.addTriggerListener(new FireModeTriggerListener());
     }
 
     private void registerDebugger() {
@@ -159,6 +152,9 @@ public class WeaponMechanicsPlus {
                 } catch (IOException e) {
                     debug.log(LogLevel.WARN, "Failed to add serializers...", e);
                 }
+
+                WeaponHandler weaponHandler = WeaponMechanics.getWeaponHandler();
+                weaponHandler.addTriggerListener(new FireModeTriggerListener());
             }
         };
 
