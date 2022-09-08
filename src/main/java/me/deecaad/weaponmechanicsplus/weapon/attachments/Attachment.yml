@@ -1,0 +1,20 @@
+Attachment:
+  Priority: <priority> # e.g. used with when there is set sounds used
+  Maximum_Stack_Amount: <amount>
+  Item: <ItemSerializer>
+  Denying_Attachments:
+    Whitelist: <true/false>
+    Attachments:
+      - <attachment>
+      - <etc.>
+  Unlockable:
+    Item: <ItemSerializer>
+    Permission: <permission>
+    Experience: <cost>
+    Stats:
+      - <WeaponStat>-<amount>
+      - <etc.>
+  Modifiers: <AttachmentModifier>
+  Per_Weapon_Modifiers: # any option used here will override the base modifiers attributes
+    <WeaponTitle>: <AttachmentModifier>
+    <etc>: <AttachmentModifier>
