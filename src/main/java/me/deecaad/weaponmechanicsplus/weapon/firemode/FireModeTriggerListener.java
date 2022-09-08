@@ -43,7 +43,7 @@ public class FireModeTriggerListener implements TriggerListener {
 
         CustomTag.WEAPON_TITLE.setString(weaponStack, nextWeapon);
 
-        WeaponInfoDisplay weaponInfoDisplay = config.getObject(weaponTitle + ".Info.Weapon_Info_Display", WeaponInfoDisplay.class);
+        WeaponInfoDisplay weaponInfoDisplay = config.getObject(nextWeapon + ".Info.Weapon_Info_Display", WeaponInfoDisplay.class);
         if (weaponInfoDisplay != null) weaponInfoDisplay.send((PlayerWrapper) entityWrapper, slot);
 
         getWeaponHandler().getSkinHandler().tryUse(triggerType, entityWrapper, nextWeapon, weaponStack, slot);
