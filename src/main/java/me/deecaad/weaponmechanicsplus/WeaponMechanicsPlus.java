@@ -41,12 +41,6 @@ public class WeaponMechanicsPlus {
         int level = getConfig().getInt("Debug_Level", 2);
         boolean printTraces = getConfig().getBoolean("Print_Traces", false);
         debug = new Debugger(getLogger(), level, printTraces);
-
-        // Write config from jar to datafolder
-        if (!getDataFolder().exists() || getDataFolder().listFiles() == null || getDataFolder().listFiles().length == 0) {
-            debug.info("Copying files from jar (This process may take up to 30 seconds during the first load!)");
-            FileUtil.copyResourcesTo(getClassLoader().getResource("WeaponMechanicsPlus"), getDataFolder().toPath());
-        }
     }
 
     public void onEnable() {
@@ -55,6 +49,7 @@ public class WeaponMechanicsPlus {
         //pm.registerEvents(new ExplosionEffectSpawner(), plugin);
         //pm.registerEvents(new MuzzleFlashSpawner(), plugin);
 
+        writeFiles();
         registerDebugger();
         registerUpdateChecker();
         registerBStats();
@@ -86,6 +81,14 @@ public class WeaponMechanicsPlus {
 
     public Debugger getDebug() {
         return debug;
+    }
+
+    private void writeFiles() {
+        // Create files
+        if (!getDataFolder().exists() || getDataFolder().listFiles() == null || getDataFolder().listFiles().length == 0) {
+            debug.info("Copying files from jar (This process may take up to 30 seconds during the first load!)");
+            FileUtil.copyResourcesTo(getClassLoader().getResource("WeaponMechanicsPlus"), getDataFolder().toPath());
+        }
     }
 
     private void registerDebugger() {
