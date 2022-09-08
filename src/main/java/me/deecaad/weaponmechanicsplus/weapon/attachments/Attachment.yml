@@ -7,9 +7,8 @@ Attachment:
     Attachments:
       - <attachment>
       - <etc.>
-  Unlockable:
+  Unlockable: # these are for permanent unlocks
     Item: <ItemSerializer>
-    Permission: <permission>
     Experience: <cost>
     Stats:
       - <WeaponStat>-<amount>

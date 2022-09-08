@@ -147,12 +147,14 @@ public class WeaponMechanicsPlus {
             public void onJoin(QueueSerializerEvent event) {
                 if (!event.getSourceName().equals("WeaponMechanics")) return;
 
+                // Register serializers
                 try {
                     event.addSerializers(new SerializerInstancer(new JarFile(getFile())).createAllInstances(getClassLoader()));
                 } catch (IOException e) {
                     debug.log(LogLevel.WARN, "Failed to add serializers...", e);
                 }
 
+                // Register trigger listeners
                 WeaponHandler weaponHandler = WeaponMechanics.getWeaponHandler();
                 weaponHandler.addTriggerListener(new FireModeTriggerListener());
             }

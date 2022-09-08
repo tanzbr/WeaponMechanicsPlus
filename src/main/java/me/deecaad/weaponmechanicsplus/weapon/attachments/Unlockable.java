@@ -8,7 +8,6 @@ import java.util.Map;
 public class Unlockable {
 
     private ItemStack itemStack;
-    private String permission;
     private int experience;
     private Map<WeaponStat, Number> stats;
 
