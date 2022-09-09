@@ -13,7 +13,7 @@ Attachment:
     Stats:
       - <WeaponStat>-<amount>
       - <etc.>
-  Modifiers: <AttachmentModifier>
+  Modifiers: <Modifier>
   Per_Weapon_Modifiers: # any option used here will override the base modifiers attributes
-    <WeaponTitle>: <AttachmentModifier>
-    <etc>: <AttachmentModifier>
+    <WeaponTitle>: <Modifier>
+    <etc>: <Modifier>

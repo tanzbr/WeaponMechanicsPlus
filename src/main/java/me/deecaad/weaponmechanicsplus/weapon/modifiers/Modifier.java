@@ -1,6 +1,6 @@
-package me.deecaad.weaponmechanicsplus.weapon.attachments;
+package me.deecaad.weaponmechanicsplus.weapon.modifiers;
 
-public class AttachmentModifier {
+public class Modifier {
 
     private DamageModifier damageModifier;
     private ExplosionModifier explosionModifier;

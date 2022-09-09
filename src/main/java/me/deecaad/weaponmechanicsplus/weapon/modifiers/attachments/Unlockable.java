@@ -1,4 +1,4 @@
-package me.deecaad.weaponmechanicsplus.weapon.attachments;
+package me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments;
 
 import me.deecaad.weaponmechanics.weapon.stats.WeaponStat;
 import org.bukkit.inventory.ItemStack;

@@ -1,0 +1,5 @@
+Ammo_Type_Modifier:
+  Modifiers: <Modifier>
+  Per_Weapon_Modifiers: # any option used here will override the base modifiers attributes
+    <WeaponTitle>: <Modifier>
+    <etc>: <Modifier>
