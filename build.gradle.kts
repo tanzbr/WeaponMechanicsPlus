@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 group = "me.deecaad"
 version = "0.1.0"
 
@@ -5,6 +7,7 @@ plugins {
     `java-library`
     id("com.github.johnrengelman.shadow") version "7.1.0"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
+    kotlin("jvm") version "1.7.20-RC"
 }
 
 configurations {
@@ -69,6 +72,7 @@ dependencies {
     compileOnly("me.deecaad:weaponmechanics:1.11.2")
     implementation("org.bstats:bstats-bukkit:3.0.0")
     implementation("me.cjcrafter:mechanicsautodownload:1.2.0")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
@@ -85,6 +89,9 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
         }
         relocate ("org.bstats", "me.deecaad.weaponmechanicsplus.lib.bstats") {
             include(dependency("org.bstats:"))
+        }
+        relocate ("kotlin", "me.deecaad.weaponmechanicsplus.lib.kotlin") {
+            include(dependency("org.jetbrains.kotlin:"))
         }
     }
 }
@@ -114,4 +121,14 @@ tasks {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }

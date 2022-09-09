@@ -1,53 +1,52 @@
-package me.deecaad.weaponmechanicsplus.weapon.firemode;
+package me.deecaad.weaponmechanicsplus.weapon.firemode
 
-import me.deecaad.core.file.Configuration;
-import me.deecaad.weaponmechanics.mechanics.CastData;
-import me.deecaad.weaponmechanics.mechanics.Mechanics;
-import me.deecaad.weaponmechanics.utils.CustomTag;
-import me.deecaad.weaponmechanics.weapon.info.WeaponInfoDisplay;
-import me.deecaad.weaponmechanics.weapon.trigger.TriggerListener;
-import me.deecaad.weaponmechanics.weapon.trigger.TriggerType;
-import me.deecaad.weaponmechanics.wrappers.EntityWrapper;
-import me.deecaad.weaponmechanics.wrappers.PlayerWrapper;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import me.deecaad.weaponmechanics.WeaponMechanics
+import me.deecaad.weaponmechanics.mechanics.CastData
+import me.deecaad.weaponmechanics.utils.CustomTag
+import me.deecaad.weaponmechanics.weapon.info.WeaponInfoDisplay
+import me.deecaad.weaponmechanics.weapon.trigger.TriggerListener
+import me.deecaad.weaponmechanics.weapon.trigger.TriggerType
+import me.deecaad.weaponmechanics.wrappers.EntityWrapper
+import me.deecaad.weaponmechanics.wrappers.PlayerWrapper
+import org.bukkit.entity.LivingEntity
+import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 
-import static me.deecaad.weaponmechanics.WeaponMechanics.getConfigurations;
-import static me.deecaad.weaponmechanics.WeaponMechanics.getWeaponHandler;
+class FireModeTriggerListener : TriggerListener {
 
-public class FireModeTriggerListener implements TriggerListener {
-
-    @Override
-    public boolean allowOtherTriggers() {
-        return false;
+    override fun allowOtherTriggers(): Boolean {
+        return false
     }
 
-    @Override
-    public boolean tryUse(EntityWrapper entityWrapper, String weaponTitle, ItemStack weaponStack, EquipmentSlot slot, TriggerType triggerType, boolean dualWield, @Nullable LivingEntity victim) {
-
-        Configuration config = getConfigurations();
-        FireMode fireMode = config.getObject(weaponTitle + ".Info.Fire_Mode", FireMode.class);
-        if (fireMode == null || !fireMode.getTrigger().check(triggerType, slot, entityWrapper)) {
-            return false;
+    override fun tryUse(
+        entityWrapper: EntityWrapper,
+        weaponTitle: String,
+        weaponStack: ItemStack,
+        slot: EquipmentSlot,
+        triggerType: TriggerType,
+        dualWield: Boolean,
+        victim: LivingEntity?
+    ): Boolean {
+        val config = WeaponMechanics.getConfigurations()
+        val fireMode = config.getObject("$weaponTitle.Info.Fire_Mode", FireMode::class.java)
+        if (fireMode == null || !fireMode.trigger!!.check(triggerType, slot, entityWrapper)) {
+            return false
         }
 
-        entityWrapper.getMainHandData().cancelTasks();
-        entityWrapper.getOffHandData().cancelTasks();
+        entityWrapper.mainHandData.cancelTasks()
+        entityWrapper.offHandData.cancelTasks()
 
-        Mechanics switchMechanics = fireMode.getSwitchMechanics();
-        if (switchMechanics != null) switchMechanics.use(new CastData(entityWrapper, weaponTitle, weaponStack));
+        val switchMechanics = fireMode.switchMechanics
+        switchMechanics?.use(CastData(entityWrapper, weaponTitle, weaponStack))
 
-        String nextWeapon = fireMode.getNextMode();
+        val nextWeapon = fireMode.nextMode
+        CustomTag.WEAPON_TITLE.setString(weaponStack, nextWeapon)
 
-        CustomTag.WEAPON_TITLE.setString(weaponStack, nextWeapon);
+        val weaponInfoDisplay = config.getObject("$nextWeapon.Info.Weapon_Info_Display", WeaponInfoDisplay::class.java)
+        weaponInfoDisplay?.send(entityWrapper as PlayerWrapper, slot)
 
-        WeaponInfoDisplay weaponInfoDisplay = config.getObject(nextWeapon + ".Info.Weapon_Info_Display", WeaponInfoDisplay.class);
-        if (weaponInfoDisplay != null) weaponInfoDisplay.send((PlayerWrapper) entityWrapper, slot);
+        WeaponMechanics.getWeaponHandler().skinHandler.tryUse(triggerType, entityWrapper, nextWeapon, weaponStack, slot)
 
-        getWeaponHandler().getSkinHandler().tryUse(triggerType, entityWrapper, nextWeapon, weaponStack, slot);
-
-        return true;
+        return true
     }
 }

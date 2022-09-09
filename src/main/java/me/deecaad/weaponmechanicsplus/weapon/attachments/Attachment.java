@@ -32,6 +32,7 @@ public class Attachment implements Serializer<Attachment> {
     @NotNull
     @Override
     public Attachment serialize(SerializeData data) throws SerializerException {
+
         return null;
     }
 }
