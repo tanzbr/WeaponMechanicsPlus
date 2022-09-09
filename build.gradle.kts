@@ -51,27 +51,15 @@ repositories {
             password = findProperty("pass").toString()
         }
     }
-
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/WeaponMechanics/MechanicsAutoDownload")
-        credentials {
-            username = findProperty("user").toString()
-            password = findProperty("pass").toString()
-        }
-    }
 }
 
 dependencies {
     compileOnly("org.jetbrains:annotations:23.0.0")
 
     api("org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT")
-    implementation("co.aikar:minecraft-timings:1.0.4")
 
     compileOnly("me.deecaad:mechanicscore:1.5.1")
     compileOnly("me.deecaad:weaponmechanics:1.11.2")
-    implementation("org.bstats:bstats-bukkit:3.0.0")
-    implementation("me.cjcrafter:mechanicsautodownload:1.2.0")
     implementation(kotlin("stdlib-jdk8"))
 }
 
@@ -81,15 +69,6 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
 
     dependencies {
-        relocate ("me.cjcrafter.auto", "me.deecaad.weaponmechanicsplus.lib.auto") {
-            include(dependency("me.cjcrafter:mechanicsautodownload"))
-        }
-        relocate ("co.aikar.timings.lib", "me.deecaad.weaponmechanicsplus.lib.timings") {
-            include(dependency("co.aikar:minecraft-timings"))
-        }
-        relocate ("org.bstats", "me.deecaad.weaponmechanicsplus.lib.bstats") {
-            include(dependency("org.bstats:"))
-        }
         relocate ("kotlin", "me.deecaad.weaponmechanicsplus.lib.kotlin") {
             include(dependency("org.jetbrains.kotlin:"))
         }

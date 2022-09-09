@@ -1,7 +1,5 @@
 package me.deecaad.weaponmechanicsplus;
 
-import me.cjcrafter.auto.UpdateChecker;
-import me.cjcrafter.auto.UpdateInfo;
 import me.deecaad.core.events.QueueSerializerEvent;
 import me.deecaad.core.file.SerializerInstancer;
 import me.deecaad.core.file.TaskChain;
@@ -9,9 +7,11 @@ import me.deecaad.core.utils.Debugger;
 import me.deecaad.core.utils.FileUtil;
 import me.deecaad.core.utils.LogLevel;
 import me.deecaad.weaponmechanics.WeaponMechanics;
+import me.deecaad.weaponmechanics.lib.auto.UpdateChecker;
+import me.deecaad.weaponmechanics.lib.auto.UpdateInfo;
+import me.deecaad.weaponmechanics.lib.bstats.bukkit.Metrics;
 import me.deecaad.weaponmechanics.weapon.WeaponHandler;
 import me.deecaad.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;

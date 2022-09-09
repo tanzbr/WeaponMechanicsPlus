@@ -1,6 +1,6 @@
 package me.deecaad.weaponmechanicsplus;
 
-import me.cjcrafter.auto.AutoMechanicsDownload;
+import me.deecaad.weaponmechanics.lib.auto.AutoMechanicsDownload;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
