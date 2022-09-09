@@ -1,0 +1,29 @@
+Guided_Projectile:
+  Curve:
+    # This can also be used in a way that projectile simply does 180° turn after "Start_After"
+    # -> Returns the same path it went (Maximum_Total_Curve: 1, Maximum_Curve_Per_Tick: 1)
+    Maximum_Total_Curve: <amount> # how much this projectile can curve in TOTAL
+    Maximum_Curve_Per_Tick: <-1 - 1> # abs(value) when manual or seeking is used
+  Deny_Upwards: <true/false>
+  Start_After: <ticks>
+  Lose_Control:
+    Distance: <amount>
+    Time: <ticks>
+    Mechanics: <Mechanics>
+  Manual: <true/false> # if hand guided projectile, seeking is ignored
+  Seeking:
+    Seek_Back_To_Shooter: # e.g. easier to use boomerang.
+      Enabled: <true/false>
+      After:
+        Delay: <ticks> # forces the projectile to guide itself back after this delay
+        Entity_Hits: <amount> # e.g. guiding itself from entity to entity until amount is reached, then seeking back to shooter
+    Targets:
+      Crosshair_To_Lock:
+        Enable: <true/false>
+        Ray_Size: <amount>
+      Whitelist: <true/false>
+      List:
+        - <EntityType>
+        - <etc.>
+      Target_Mechanics: <Mechanics> # used to notify target that seeking projectile is coming
+  Mechanics: <Mechanics> # used when guiding starts
