@@ -69,7 +69,7 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
 
     dependencies {
-        relocate ("kotlin", "me.deecaad.weaponmechanicsplus.lib.kotlin") {
+        relocate ("kotlin.", "me.deecaad.weaponmechanicsplus.lib.kotlin.") {
             include(dependency("org.jetbrains.kotlin:"))
         }
     }
