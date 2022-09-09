@@ -26,5 +26,5 @@ Guided_Projectile:
       List:
         - <EntityType>
         - <etc.>
-      Target_Mechanics: <Mechanics> # used to notify target that seeking projectile is coming
+    Target_Mechanics: <Mechanics> # used to notify target that seeking projectile is coming
   Mechanics: <Mechanics> # used when guiding starts
