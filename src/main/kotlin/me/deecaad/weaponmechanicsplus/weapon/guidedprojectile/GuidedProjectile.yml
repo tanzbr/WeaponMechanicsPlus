@@ -21,6 +21,7 @@ Guided_Projectile:
     Targets:
       Crosshair_To_Lock:
         Enable: <true/false>
+        Require_Lock_To_Shoot: <true/false>
         Ray_Size: <amount>
       Whitelist: <true/false>
       List:
