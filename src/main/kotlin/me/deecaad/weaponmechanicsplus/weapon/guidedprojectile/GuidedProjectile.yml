@@ -6,6 +6,7 @@ Guided_Projectile:
     Maximum_Curve_Per_Tick: <-1 - 1> # abs(value) when manual or seeking is used
   Deny_Upwards: <true/false>
   Start_After: <ticks>
+  Allow_Shooter_To_Pick_Back_Projectile: <true/false> # e.g. when using boomerang
   Lose_Control:
     Distance: <amount>
     Time: <ticks>
