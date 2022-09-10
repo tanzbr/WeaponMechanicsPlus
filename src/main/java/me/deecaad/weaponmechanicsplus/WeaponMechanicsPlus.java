@@ -11,6 +11,7 @@ import me.deecaad.weaponmechanics.lib.auto.UpdateChecker;
 import me.deecaad.weaponmechanics.lib.auto.UpdateInfo;
 import me.deecaad.weaponmechanics.lib.bstats.bukkit.Metrics;
 import me.deecaad.weaponmechanics.weapon.WeaponHandler;
+import me.deecaad.weaponmechanics.weapon.projectile.ProjectilesRunnable;
 import me.deecaad.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -47,11 +48,6 @@ public class WeaponMechanicsPlus {
     }
 
     public void onEnable() {
-
-        //PluginManager pm = plugin.getServer().getPluginManager();
-        //pm.registerEvents(new ExplosionEffectSpawner(), plugin);
-        //pm.registerEvents(new MuzzleFlashSpawner(), plugin);
-
         writeFiles();
         registerDebugger();
         registerUpdateChecker();
@@ -145,6 +141,7 @@ public class WeaponMechanicsPlus {
         Listener listener = new Listener() {
             @EventHandler
             public void onJoin(QueueSerializerEvent event) {
+                // Perfect place to register all things to WM ;D
                 if (!event.getSourceName().equals("WeaponMechanics")) return;
 
                 // Register serializers
@@ -157,6 +154,10 @@ public class WeaponMechanicsPlus {
                 // Register trigger listeners
                 WeaponHandler weaponHandler = WeaponMechanics.getWeaponHandler();
                 weaponHandler.addTriggerListener(new FireModeTriggerListener());
+
+                // Register projectile script manager
+                ProjectilesRunnable projectilesRunnable = WeaponMechanics.getProjectilesRunnable();
+                projectilesRunnable.addScriptManager(new PlusScriptManager(javaPlugin));
             }
         };
 
