@@ -36,6 +36,17 @@ class GuidedProjectile : Serializer<GuidedProjectile> {
             .normalize()
     }
 
+    fun rotateVectorAxis(motionVector: Vector, currentDirection: Vector, otherDirection: Vector): Vector {
+        // Alternative way, gotta test which is better
+
+        // At least rotateAroundAxis in Vector class requires compatibility
+
+        val axis = currentDirection.getCrossProduct(otherDirection)
+
+        // With this motion vector should be modified to new one without affecting the length
+        return motionVector.rotateAroundNonUnitAxis(axis, maximumCurvePerTick.toDouble())
+    }
+
     override fun getKeyword(): String {
         return "Guided_Projectile"
     }
