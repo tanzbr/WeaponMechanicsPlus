@@ -3,6 +3,7 @@ package me.deecaad.weaponmechanicsplus;
 import me.deecaad.weaponmechanics.weapon.projectile.AProjectile;
 import me.deecaad.weaponmechanics.weapon.projectile.ProjectileScriptManager;
 import me.deecaad.weaponmechanics.weapon.projectile.weaponprojectile.WeaponProjectile;
+import me.deecaad.weaponmechanicsplus.weapon.guidedprojectile.GuidedProjectile;
 import me.deecaad.weaponmechanicsplus.weapon.guidedprojectile.GuidedProjectileScript;
 import org.bukkit.plugin.Plugin;
 
@@ -22,8 +23,8 @@ public class PlusScriptManager extends ProjectileScriptManager {
 
         WeaponProjectile projectile = (WeaponProjectile) aProjectile;
 
-        if (getConfigurations().containsKey(projectile.getWeaponTitle() + ".Projectile.Guided_Projectile")) {
-            projectile.addProjectileScript(new GuidedProjectileScript(getPlugin(), projectile));
-        }
+        //if (getConfigurations().containsKey(projectile.getWeaponTitle() + ".Projectile.Guided_Projectile")) {
+        projectile.addProjectileScript(new GuidedProjectileScript(getPlugin(), projectile));
+        //}
     }
 }

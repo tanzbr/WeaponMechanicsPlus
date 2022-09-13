@@ -1,8 +1,6 @@
 package me.deecaad.weaponmechanicsplus.weapon.guidedprojectile
 
-import me.deecaad.weaponmechanics.WeaponMechanics
 import me.deecaad.weaponmechanics.weapon.projectile.ProjectileScript
-import me.deecaad.weaponmechanics.weapon.projectile.weaponprojectile.RayTraceResult
 import me.deecaad.weaponmechanics.weapon.projectile.weaponprojectile.WeaponProjectile
 import org.bukkit.entity.LivingEntity
 import org.bukkit.plugin.Plugin
@@ -14,27 +12,20 @@ class GuidedProjectileScript(owner: Plugin, projectile: WeaponProjectile) :
 
     private var currentTarget : LivingEntity? = null
 
-    init {
-        guidedProjectile = WeaponMechanics.getConfigurations().getObject(projectile.weaponTitle + ".Projectile.Guided_Projectile", GuidedProjectile::class.java)!!
-    }
 
-    override fun onStart() {
-        super.onStart()
+    init {
+        guidedProjectile = GuidedProjectile()//.getConfigurations().getObject(projectile.weaponTitle + ".Projectile.Guided_Projectile", GuidedProjectile::class.java)!!
     }
 
     override fun onTickStart() {
-        super.onTickStart()
-    }
+        if (currentTarget == null) {
+            currentTarget = projectile.world.getNearbyEntities(projectile.location.toLocation(projectile.world), 32.0, 32.0, 32.0) { a -> a.type.isAlive && a.entityId != projectile.shooter?.entityId }
+                .first() as LivingEntity?
+        }
 
-    override fun onTickEnd() {
-        super.onTickEnd()
-    }
-
-    override fun onEnd() {
-        super.onEnd()
-    }
-
-    override fun onCollide(hit: RayTraceResult) {
-        super.onCollide(hit)
+        if (currentTarget != null) {
+            val oldLength = projectile.motionLength
+            projectile.motion = guidedProjectile.rotateVector(projectile.normalizedMotion, projectile.location, currentTarget!!.eyeLocation.toVector()).multiply(oldLength)
+        }
     }
 }

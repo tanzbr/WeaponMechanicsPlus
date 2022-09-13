@@ -24,11 +24,9 @@ public class WeaponMechanicsPlusLoader extends JavaPlugin {
 
         // Don't enable the plugin if either dependencies are absent
         if (Bukkit.getPluginManager().getPlugin("MechanicsCore") == null) {
-            System.out.println("CORE");
             return;
         }
         if (Bukkit.getPluginManager().getPlugin("WeaponMechanics") == null) {
-            System.out.println("WEAPON");
             return;
         }
 

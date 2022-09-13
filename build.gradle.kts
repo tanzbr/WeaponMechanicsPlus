@@ -58,8 +58,8 @@ dependencies {
 
     api("org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT")
 
-    compileOnly("me.deecaad:mechanicscore:1.5.1")
-    compileOnly("me.deecaad:weaponmechanics:1.11.2")
+    compileOnly("me.deecaad:mechanicscore:1.5.6")
+    compileOnly("me.deecaad:weaponmechanics:1.11.7")
     implementation(kotlin("stdlib-jdk8"))
 }
 
