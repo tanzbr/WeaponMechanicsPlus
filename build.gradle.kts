@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 group = "me.deecaad"
 version = "0.1.0"
@@ -58,12 +59,12 @@ dependencies {
 
     api("org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT")
 
-    compileOnly("me.deecaad:mechanicscore:1.5.6")
-    compileOnly("me.deecaad:weaponmechanics:1.11.7")
+    compileOnly("me.deecaad:mechanicscore:1.8.8")
+    compileOnly("me.deecaad:weaponmechanics:1.14.13")
     implementation(kotlin("stdlib-jdk8"))
 }
 
-tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+tasks.named<ShadowJar>("shadowJar") {
     classifier = null
     archiveFileName.set("WeaponMechanicsPlus-${project.version}.jar")
     configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
@@ -88,7 +89,7 @@ java {
 tasks {
     compileJava {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
-        options.release.set(8)
+        options.release.set(16)
     }
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
