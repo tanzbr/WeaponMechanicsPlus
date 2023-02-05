@@ -1,7 +1,7 @@
 package me.deecaad.weaponmechanicsplus.weapon.firemode
 
+import me.deecaad.core.mechanics.CastData
 import me.deecaad.weaponmechanics.WeaponMechanics
-import me.deecaad.weaponmechanics.mechanics.CastData
 import me.deecaad.weaponmechanics.utils.CustomTag
 import me.deecaad.weaponmechanics.weapon.info.WeaponInfoDisplay
 import me.deecaad.weaponmechanics.weapon.trigger.TriggerListener
@@ -37,7 +37,7 @@ class FireModeTriggerListener : TriggerListener {
         entityWrapper.offHandData.cancelTasks()
 
         val switchMechanics = fireMode.switchMechanics
-        switchMechanics?.use(CastData(entityWrapper, weaponTitle, weaponStack))
+        switchMechanics?.use(CastData(entityWrapper.entity, weaponTitle, weaponStack))
 
         val nextWeapon = fireMode.nextMode
         CustomTag.WEAPON_TITLE.setString(weaponStack, nextWeapon)

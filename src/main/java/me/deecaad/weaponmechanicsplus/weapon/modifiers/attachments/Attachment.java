@@ -3,17 +3,13 @@ package me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments;
 import me.deecaad.core.file.SerializeData;
 import me.deecaad.core.file.SerializerException;
 import me.deecaad.core.file.serializers.ItemSerializer;
-import me.deecaad.weaponmechanics.mechanics.Mechanics;
-import me.deecaad.weaponmechanicsplus.weapon.modifiers.Modifier;
+import me.deecaad.core.mechanics.Mechanics;
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.ModifierBase;
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.Whitelist;
 import org.bukkit.inventory.ItemStack;
-import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class Attachment extends ModifierBase implements Comparable<Attachment> {
 

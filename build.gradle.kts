@@ -57,10 +57,10 @@ repositories {
 dependencies {
     compileOnly("org.jetbrains:annotations:23.1.0")
 
-    api("org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT")
+    api("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
 
-    compileOnly("me.deecaad:mechanicscore:1.8.8")
-    compileOnly("me.deecaad:weaponmechanics:1.14.13")
+    compileOnly("me.deecaad:mechanicscore:2.0.1")
+    compileOnly("me.deecaad:weaponmechanics:2.0.1")
     implementation(kotlin("stdlib-jdk8"))
 }
 

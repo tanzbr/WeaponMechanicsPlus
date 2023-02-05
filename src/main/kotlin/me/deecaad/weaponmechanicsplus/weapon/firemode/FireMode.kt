@@ -3,8 +3,8 @@ package me.deecaad.weaponmechanicsplus.weapon.firemode
 import me.deecaad.core.file.SerializeData
 import me.deecaad.core.file.Serializer
 import me.deecaad.core.file.SerializerException
+import me.deecaad.core.mechanics.Mechanics
 import me.deecaad.weaponmechanics.WeaponMechanics
-import me.deecaad.weaponmechanics.mechanics.Mechanics
 import me.deecaad.weaponmechanics.weapon.trigger.Trigger
 import me.deecaad.weaponmechanicsplus.WeaponMechanicsPlus
 import org.bukkit.scheduler.BukkitRunnable
