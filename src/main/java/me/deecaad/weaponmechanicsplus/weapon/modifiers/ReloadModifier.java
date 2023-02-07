@@ -26,6 +26,22 @@ public class ReloadModifier implements Serializer<ReloadModifier> {
         this.shootDelayAfterReload = shootDelayAfterReload;
     }
 
+    public IntegerModifier getMagazineSize() {
+        return magazineSize;
+    }
+
+    public IntegerModifier getAmmoPerReload() {
+        return ammoPerReload;
+    }
+
+    public IntegerModifier getReloadDuration() {
+        return reloadDuration;
+    }
+
+    public IntegerModifier getShootDelayAfterReload() {
+        return shootDelayAfterReload;
+    }
+
     @NotNull
     @Override
     public ReloadModifier serialize(SerializeData data) throws SerializerException {

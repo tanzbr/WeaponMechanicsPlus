@@ -17,9 +17,18 @@ public class ShootModifier implements Serializer<ShootModifier>, ModifierHelper 
     public ShootModifier() {
     }
 
+    public ShootModifier(Projectile overrideProjectile) {
+        this.overrideProjectile = overrideProjectile;
+    }
+
+    public Projectile getOverrideProjectile() {
+        return overrideProjectile;
+    }
+
     @NotNull
     @Override
-    public ShootModifier serialize(SerializeData serializeData) throws SerializerException {
-        return null;
+    public ShootModifier serialize(SerializeData data) throws SerializerException {
+        Projectile overrideProjectile = data.of("Override_Projectile").serialize(Projectile.class);
+        return new ShootModifier(overrideProjectile);
     }
 }

@@ -13,7 +13,6 @@ import java.util.List;
 
 public class Attachment extends ModifierBase implements Comparable<Attachment> {
 
-    private int priority;
     private int maximumStackAmount;
     private ItemStack item;
     private Whitelist<String> attachmentWhitelist;
@@ -29,9 +28,8 @@ public class Attachment extends ModifierBase implements Comparable<Attachment> {
     public Attachment() {
     }
 
-    public Attachment(int priority, int maximumStackAmount, ItemStack item, Whitelist<String> attachmentWhitelist,
+    public Attachment(int maximumStackAmount, ItemStack item, Whitelist<String> attachmentWhitelist,
                       Whitelist<String> weaponWhitelist, Unlockable unlockable, Mechanics equipMechanics, Mechanics dequipMechanics) {
-        this.priority = priority;
         this.maximumStackAmount = maximumStackAmount;
         this.item = item;
         this.attachmentWhitelist = attachmentWhitelist;
@@ -50,7 +48,6 @@ public class Attachment extends ModifierBase implements Comparable<Attachment> {
     @Override
     public Attachment serialize(SerializeData data) throws SerializerException {
 
-        int priority = data.of("Priority").getInt(0); // negative numbers may be used
         int maximumStackAmount = data.of("Maximum_Stack_Amount").assertRange(1, 200).getInt(1);
         ItemStack item = data.of("Item").assertExists().serialize(new ItemSerializer());
 
@@ -72,7 +69,8 @@ public class Attachment extends ModifierBase implements Comparable<Attachment> {
         Mechanics dequipMechanics = data.of("Dequip_Mechanics").serialize(Mechanics.class);
 
         ModifierBase base = super.serialize(data);
-        Attachment returnValue = new Attachment(priority, maximumStackAmount, item, attachmentWhitelist, weaponWhitelist, unlockable, equipMechanics, dequipMechanics);
+        Attachment returnValue = new Attachment(maximumStackAmount, item, attachmentWhitelist, weaponWhitelist, unlockable, equipMechanics, dequipMechanics);
+        returnValue.priority = base.getPriority();
         returnValue.modifier = base.getModifier();
         returnValue.perWeaponModifiers = base.getPerWeaponModifiers();
         return returnValue;

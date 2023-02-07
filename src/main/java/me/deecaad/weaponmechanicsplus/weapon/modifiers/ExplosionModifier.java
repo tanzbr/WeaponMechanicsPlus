@@ -21,6 +21,10 @@ public class ExplosionModifier implements Serializer<ExplosionModifier>, Modifie
         this.overrideExplosion = overrideExplosion;
     }
 
+    public Explosion getOverrideExplosion() {
+        return overrideExplosion;
+    }
+
     @NotNull
     @Override
     public ExplosionModifier serialize(SerializeData data) throws SerializerException {

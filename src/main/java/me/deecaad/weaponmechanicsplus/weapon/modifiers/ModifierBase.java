@@ -14,6 +14,7 @@ import java.util.Map;
 
 public abstract class ModifierBase implements Serializer<ModifierBase> {
 
+    protected int priority;
     protected Modifier modifier;
     protected Map<String, Modifier> perWeaponModifiers;
 
@@ -23,9 +24,14 @@ public abstract class ModifierBase implements Serializer<ModifierBase> {
     public ModifierBase() {
     }
 
-    public ModifierBase(Modifier modifier, Map<String, Modifier> perWeaponModifiers) {
+    public ModifierBase(int priority, Modifier modifier, Map<String, Modifier> perWeaponModifiers) {
+        this.priority = priority;
         this.modifier = modifier;
         this.perWeaponModifiers = perWeaponModifiers;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 
     public Modifier getModifier() {
@@ -43,6 +49,7 @@ public abstract class ModifierBase implements Serializer<ModifierBase> {
     @NotNull
     @Override
     public ModifierBase serialize(SerializeData data) throws SerializerException {
+        int priority = data.of("Priority").getInt(0); // can be negative
         Modifier modifier = data.of("Modifiers").assertExists().serialize(Modifier.class);
 
         Map<String, Modifier> perWeaponModifiers = new HashMap<>();
@@ -59,6 +66,6 @@ public abstract class ModifierBase implements Serializer<ModifierBase> {
             }
         }
 
-        return new ModifierBase(modifier, perWeaponModifiers) {};
+        return new ModifierBase(priority, modifier, perWeaponModifiers) {};
     }
 }
