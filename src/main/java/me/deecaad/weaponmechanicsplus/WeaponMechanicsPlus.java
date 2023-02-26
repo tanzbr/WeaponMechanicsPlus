@@ -13,6 +13,7 @@ import me.deecaad.weaponmechanics.lib.bstats.bukkit.Metrics;
 import me.deecaad.weaponmechanics.weapon.WeaponHandler;
 import me.deecaad.weaponmechanics.weapon.projectile.ProjectilesRunnable;
 import me.deecaad.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener;
+import me.deecaad.weaponmechanicsplus.weapon.listeners.AttachmentListeners;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -162,6 +163,7 @@ public class WeaponMechanicsPlus {
         };
 
         Bukkit.getPluginManager().registerEvents(listener, javaPlugin);
+        Bukkit.getPluginManager().registerEvents(new AttachmentListeners(), javaPlugin);
     }
 
     public static Plugin getPlugin() {

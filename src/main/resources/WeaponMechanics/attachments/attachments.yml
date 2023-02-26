@@ -1,0 +1,18 @@
+AK-47_More_Damage:
+  Item:
+    Type: IRON_NUGGET
+    Name: "<red>DO MORE DAMAGE"
+    Lore:
+      - "<yellow>My name is jeff"
+  Denying:
+    Weapons_Whitelist: true
+    Weapons:
+      - AK-47
+    Attachments:
+      - REQUIRE <attachment>
+      - DENY <attachment>
+    Mechanics: <Mechanics>
+
+  Modifiers:
+    Damage_Modifier:
+      Damage: ADD 10.0 # ouch

@@ -26,7 +26,28 @@ public class AttachmentRegistry {
         this.byId = new ArrayList<>();
     }
 
+    public boolean has(Attachment attachment) {
+        return byTitle.containsKey(attachment.getAttachmentTitle());
+    }
+
+    public void add(Attachment attachment) {
+        byId.add(attachment);
+        byTitle.put(attachment.getAttachmentTitle(), attachment);
+    }
+
+    public int getId(Attachment attachment) {
+        int temp = byId.indexOf(attachment);
+        if (temp == -1)
+            throw new IllegalArgumentException("Unknown attachment " + attachment + "... Was it added?");
+
+        return temp;
+    }
+
     public Attachment get(int id) {
         return byId.get(id);
+    }
+
+    public Attachment get(String title) {
+        return byTitle.get(title);
     }
 }
