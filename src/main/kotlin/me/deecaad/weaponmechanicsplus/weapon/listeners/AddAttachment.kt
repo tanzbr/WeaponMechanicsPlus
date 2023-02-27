@@ -49,11 +49,6 @@ class AddAttachment : Listener {
                     val stream = Files.newInputStream(file)
                     val config: YamlConfiguration
 
-                    // Let DEVS at a readme file without breaking this.
-                    if (file.endsWith("readme.txt")) {
-                        WeaponMechanics.debug.debug("Found readme.txt at '$file', skipping.")
-                        return FileVisitResult.CONTINUE
-                    }
                     try {
                         config = YamlConfiguration()
                         config.load(InputStreamReader(stream))
@@ -109,7 +104,7 @@ class AddAttachment : Listener {
 
         // need to drag and drop an attachment onto a weapon
         val weaponTitle = CustomTag.WEAPON_TITLE.getString(weaponItem)
-        val attachmentTitle = ""
+        val attachmentTitle = CustomTag.ATTACHMENT_TITLE.getString(weaponItem)
         if (weaponTitle == null || attachmentTitle == null)
             return
 
