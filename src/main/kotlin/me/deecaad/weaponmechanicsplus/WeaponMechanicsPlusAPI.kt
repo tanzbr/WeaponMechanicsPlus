@@ -5,6 +5,7 @@ import me.deecaad.weaponmechanicsplus.weapon.modifiers.*
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.ammotype.AmmoTypeModifier
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
+import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.collections.ArrayList
@@ -30,7 +31,6 @@ object WeaponMechanicsPlusAPI {
      * that if you are looking to use the [Modifier] from the attachment,
      * you should use [.getModifiers] instead. You should
      * check [ItemStack.hasItemMeta] before calling this method.
-     *
      *
      * The order of the array is in increasing attachment priority.
      *
@@ -62,9 +62,10 @@ object WeaponMechanicsPlusAPI {
      * [AmmoTypeModifier].
      *
      * @param weapon The non-null weapon to get modifiers from.
+     * @param entity The nullable entity using the weapon.
      * @return The array of modifiers, or null.
      */
-    fun getModifiers(weapon: ItemStack): List<Modifier> {
+    fun getModifiers(weapon: ItemStack, entity: LivingEntity? = null): List<Modifier> {
         val weaponTitle = CustomTag.WEAPON_TITLE.getString(weapon)
         val attachmentIds = CustomTag.ATTACHMENTS.getArray(weapon)
         val ammo = CustomTag.AMMO_NAME.getString(weapon)
@@ -77,7 +78,7 @@ object WeaponMechanicsPlusAPI {
             val size = attachmentIds.size
             val temp = ArrayList<Modifier>(size)
             for (i in 0 until size)
-                temp[i] = AttachmentRegistry.INSTANCE[attachmentIds[i]].getModifier(weaponTitle)!!
+                temp[i] = AttachmentRegistry.INSTANCE[attachmentIds[i]]?.getModifier(weaponTitle)!!
 
             CACHE[triple] = temp
             modifiers = temp
