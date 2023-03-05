@@ -7,6 +7,7 @@ import me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
 import org.bukkit.inventory.ItemStack
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * This utility class contains static methods to facilitate getting a weapon's
@@ -36,16 +37,23 @@ object WeaponMechanicsPlusAPI {
      * @param weapon The non-null weapon to get attachments from.
      * @return The array of attachments, or null.
      */
-    fun getAttachments(weapon: ItemStack?): Array<Attachment?>? {
+    fun getAttachments(weapon: ItemStack?): Array<Attachment>? {
         val attachmentIds = CustomTag.ATTACHMENTS.getArray(weapon)
         if (attachmentIds.isEmpty()) return null
 
         // Get the attachment config information from each attachment id
         val size = attachmentIds.size
-        val attachments = arrayOfNulls<Attachment>(size)
-        for (i in 0 until size)
-            attachments[i] = AttachmentRegistry.INSTANCE[attachmentIds[i]]
-        return attachments
+        val attachments = ArrayList<Attachment>(size)
+        for (i in 0 until size) {
+            val temp = AttachmentRegistry.INSTANCE[attachmentIds[i]]
+            if (temp == null) {
+                WeaponMechanicsPlus.getDebug().warn("Found deleted attachment $")
+                continue
+            }
+            attachments[i] = temp
+        }
+
+        return attachments.toTypedArray()
     }
 
     /**
@@ -56,7 +64,7 @@ object WeaponMechanicsPlusAPI {
      * @param weapon The non-null weapon to get modifiers from.
      * @return The array of modifiers, or null.
      */
-    fun getModifiers(weapon: ItemStack?): List<Modifier> {
+    fun getModifiers(weapon: ItemStack): List<Modifier> {
         val weaponTitle = CustomTag.WEAPON_TITLE.getString(weapon)
         val attachmentIds = CustomTag.ATTACHMENTS.getArray(weapon)
         val ammo = CustomTag.AMMO_NAME.getString(weapon)

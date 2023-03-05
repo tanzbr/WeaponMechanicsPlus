@@ -110,7 +110,7 @@ class AddAttachment : Listener {
 
         // This happens when the admin deleted attachment from config, but
         // players still have the attachment items in their inventory.
-        val attachment = AttachmentRegistry.INSTANCE.get(attachmentTitle)
+        val attachment = AttachmentRegistry.INSTANCE[attachmentTitle]
         if (attachment == null) {
             WeaponMechanicsPlus.getDebug().warn("Attachment '$attachmentTitle' no longer exists in config.")
             return

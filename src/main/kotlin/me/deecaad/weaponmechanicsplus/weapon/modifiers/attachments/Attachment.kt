@@ -10,17 +10,17 @@ import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.Whitelist
 import org.bukkit.inventory.ItemStack
 
 class Attachment : ModifierBase, Comparable<Attachment> {
-    var attachmentTitle: String? = null
+    lateinit var attachmentTitle: String
         private set
-    var maximumStackAmount = 0
+    var maximumStackAmount = 1
         private set
-    var item: ItemStack? = null
+    lateinit var item: ItemStack
         private set
-    var attachmentRequireList: Set<String?>? = null
+    var attachmentRequireList: Set<String> = setOf()
         private set
-    var attachmentDenyList: Set<String?>? = null
+    var attachmentDenyList: Set<String> = setOf()
         private set
-    var weaponWhitelist: Whitelist<String>? = null
+    lateinit var weaponWhitelist: Whitelist<String>
         private set
     var equipMechanics: Mechanics? = null
         private set
@@ -34,17 +34,8 @@ class Attachment : ModifierBase, Comparable<Attachment> {
      */
     constructor()
 
-    constructor(
-        attachmentTitle: String?,
-        maximumStackAmount: Int,
-        item: ItemStack?,
-        attachmentRequireList: Set<String?>?,
-        attachmentDenyList: Set<String?>?,
-        weaponWhitelist: Whitelist<String>?,
-        unlockable: Unlockable?,
-        equipMechanics: Mechanics?,
-        dequipMechanics: Mechanics?
-    ) {
+    constructor(attachmentTitle: String, maximumStackAmount: Int, item: ItemStack, attachmentRequireList: Set<String>,
+                attachmentDenyList: Set<String>, weaponWhitelist: Whitelist<String>, unlockable: Unlockable?, equipMechanics: Mechanics?, dequipMechanics: Mechanics?) {
         this.attachmentTitle = attachmentTitle
         this.maximumStackAmount = maximumStackAmount
         this.item = item
@@ -65,7 +56,7 @@ class Attachment : ModifierBase, Comparable<Attachment> {
      */
     fun canAttach(weapon: ItemStack?): Boolean {
         val weaponTitle = CustomTag.WEAPON_TITLE.getString(weapon) ?: throw IllegalArgumentException()
-        if (!weaponWhitelist!!.isWhitelisted(weaponTitle)) return false
+        if (!weaponWhitelist.isWhitelisted(weaponTitle)) return false
 
         // If there are no attachments currently on the weapon, then we can attach
         val attached = WeaponMechanicsPlusAPI.getAttachments(weapon) ?: return true
@@ -77,8 +68,8 @@ class Attachment : ModifierBase, Comparable<Attachment> {
             }
 
             // Some attachments are not compatible with each other
-            if (!attachmentRequireList!!.isEmpty() && !attachmentRequireList!!.contains(attachment!!.attachmentTitle)) return false
-            if (attachmentDenyList!!.contains(attachment!!.attachmentTitle)) return false
+            if (attachmentRequireList.isNotEmpty() && !attachmentRequireList.contains(attachment.attachmentTitle)) return false
+            if (attachmentDenyList.contains(attachment!!.attachmentTitle)) return false
         }
 
         // Cannot attach the same attachment multiple times
@@ -103,8 +94,8 @@ class Attachment : ModifierBase, Comparable<Attachment> {
         CustomTag.ATTACHMENTS.setArray(weapon, newArray)
     }
 
-    override fun compareTo(o: Attachment): Int {
-        return priority.compareTo(o.priority)
+    override fun compareTo(other: Attachment): Int {
+        return priority.compareTo(other.priority)
     }
 
     @Throws(SerializerException::class)
@@ -118,8 +109,8 @@ class Attachment : ModifierBase, Comparable<Attachment> {
                 .stream().map { arr: Array<String> -> arr[0] }.toList()
         val weaponWhitelist = Whitelist(isWeaponWhitelist, weapons)
 
-        val attachmentRequireList: MutableSet<String?> = HashSet()
-        val attachmentDenyList: MutableSet<String?> = HashSet()
+        val attachmentRequireList: MutableSet<String> = HashSet()
+        val attachmentDenyList: MutableSet<String> = HashSet()
         for (split in data.ofList("Denying.Attachments")
             .addArgument(State::class.java, true)
             .addArgument(String::class.java, true)

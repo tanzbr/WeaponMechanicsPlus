@@ -87,7 +87,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
             fun onJoin(event: PlayerJoinEvent) {
                 if (event.player.isOp) {
                     TaskChain(javaPlugin)
-                        .thenRunAsync { callback: Any? -> update!!.hasUpdate() }
+                        .thenRunAsync { callback: Any? -> update.hasUpdate() }
                         .thenRunSync { callback: Any? ->
                             val update = callback as UpdateInfo?
                             if (callback != null) event.player.sendMessage(ChatColor.RED.toString() + "WeaponMechanicsPlus is out of date! " + update!!.current + " -> " + update.newest)
@@ -101,7 +101,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
 
     private fun registerBStats() {
         if (metrics != null) return
-        debug!!.debug("Registering bStats")
+        debug.debug("Registering bStats")
 
         // See https://bstats.org/plugin/bukkit/WeaponMechanicsPlus/16382. This is
         // the bStats plugin id used to track information.
@@ -120,7 +120,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 try {
                     event.addSerializers(SerializerInstancer(JarFile(file)).createAllInstances(classLoader))
                 } catch (e: IOException) {
-                    debug!!.log(LogLevel.WARN, "Failed to add serializers...", e)
+                    debug.log(LogLevel.WARN, "Failed to add serializers...", e)
                 }
 
                 // Register trigger listeners
@@ -138,7 +138,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
 
     companion object {
         private lateinit var plugin: WeaponMechanicsPlus
-        fun getDebug(): Debugger? {
+        fun getDebug(): Debugger {
             return plugin.debug
         }
 
