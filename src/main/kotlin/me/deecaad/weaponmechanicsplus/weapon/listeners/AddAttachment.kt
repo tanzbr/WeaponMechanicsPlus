@@ -99,12 +99,12 @@ class AddAttachment : Listener {
         // Require a drag and drop action
         val weaponItem = inventory.getItem(event.slot)
         val attachmentItem = event.cursor
-        if (weaponItem == null || attachmentItem == null)
+        if (weaponItem == null || attachmentItem == null || !weaponItem.hasItemMeta() || !attachmentItem.hasItemMeta())
             return
 
         // need to drag and drop an attachment onto a weapon
         val weaponTitle = CustomTag.WEAPON_TITLE.getString(weaponItem)
-        val attachmentTitle = CustomTag.ATTACHMENT_TITLE.getString(weaponItem)
+        val attachmentTitle = CustomTag.ATTACHMENT_TITLE.getString(attachmentItem)
         if (weaponTitle == null || attachmentTitle == null)
             return
 
@@ -112,7 +112,7 @@ class AddAttachment : Listener {
         // players still have the attachment items in their inventory.
         val attachment = AttachmentRegistry.INSTANCE[attachmentTitle]
         if (attachment == null) {
-            WeaponMechanicsPlus.getDebug().warn("Attachment '$attachmentTitle' no longer exists in config.")
+            WeaponMechanicsPlus.getDebug().warn("Attachment '$attachmentTitle' no longer exists in config. (tried adding)")
             return
         }
 

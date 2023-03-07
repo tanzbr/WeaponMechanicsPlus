@@ -42,6 +42,7 @@ class Modifier : Serializer<Modifier> {
         val reloadModifier = data.of("Reload_Modifier").serialize(ReloadModifier::class.java)
         val scopeModifier = data.of("Scope_Modifier").serialize(ScopeModifier::class.java)
         val shootModifier = data.of("Shoot_Modifier").serialize(ShootModifier::class.java)
+
         return Modifier(damageModifier, explosionModifier, infoModifier, meleeModifier, reloadModifier, scopeModifier, shootModifier)
     }
 }

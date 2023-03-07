@@ -6,11 +6,13 @@ import me.deecaad.core.file.TaskChain
 import me.deecaad.core.utils.Debugger
 import me.deecaad.core.utils.FileUtil
 import me.deecaad.core.utils.LogLevel
+import me.deecaad.core.utils.ReflectionUtil
 import me.deecaad.weaponmechanics.WeaponMechanics
 import me.deecaad.weaponmechanics.lib.auto.UpdateChecker
 import me.deecaad.weaponmechanics.lib.auto.UpdateInfo
 import me.deecaad.weaponmechanics.lib.bstats.bukkit.Metrics
 import me.deecaad.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
+import me.deecaad.weaponmechanicsplus.weapon.listeners.AddAttachment
 import me.deecaad.weaponmechanicsplus.weapon.listeners.AttachmentListeners
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -26,9 +28,9 @@ import java.util.logging.Logger
 
 class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMechanicsPlusLoader) {
 
-    private lateinit var update: UpdateChecker
-    private lateinit var metrics: Metrics
     private lateinit var debug: Debugger
+    private var update: UpdateChecker? = null
+    private var metrics: Metrics? = null
 
     val config: FileConfiguration
         get() = javaPlugin.config
@@ -57,9 +59,13 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
         registerUpdateChecker()
         registerBStats()
         registerSerializerQueue()
+
+        if (ReflectionUtil.getMCVersion() >= 13)
+            Command.register()
     }
 
-    fun onDisable() {}
+    fun onDisable() {
+    }
 
     private fun writeFiles() {
         // Create files
@@ -87,8 +93,8 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
             fun onJoin(event: PlayerJoinEvent) {
                 if (event.player.isOp) {
                     TaskChain(javaPlugin)
-                        .thenRunAsync { callback: Any? -> update.hasUpdate() }
-                        .thenRunSync { callback: Any? ->
+                        .thenRunAsync { callback -> update?.hasUpdate() }
+                        .thenRunSync { callback ->
                             val update = callback as UpdateInfo?
                             if (callback != null) event.player.sendMessage(ChatColor.RED.toString() + "WeaponMechanicsPlus is out of date! " + update!!.current + " -> " + update.newest)
                             null
@@ -129,10 +135,12 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
 
                 // Register projectile script manager
                 val projectilesRunnable = WeaponMechanics.getProjectilesRunnable()
-                projectilesRunnable.addScriptManager(PlusScriptManager(javaPlugin))
+                projectilesRunnable.addScriptManager(ProjectileScriptManager(javaPlugin))
             }
         }
+
         Bukkit.getPluginManager().registerEvents(listener, javaPlugin)
+        Bukkit.getPluginManager().registerEvents(AddAttachment(), javaPlugin)
         Bukkit.getPluginManager().registerEvents(AttachmentListeners(), javaPlugin)
     }
 

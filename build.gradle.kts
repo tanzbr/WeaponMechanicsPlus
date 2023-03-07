@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 group = "me.deecaad"
-version = "0.2.0"
+version = "0.3.0"
 
 plugins {
     `java-library`
@@ -59,8 +59,8 @@ dependencies {
 
     api("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
 
-    compileOnly("me.deecaad:mechanicscore:2.1.4")
-    compileOnly("me.deecaad:weaponmechanics:2.1.6")
+    compileOnly("me.deecaad:mechanicscore:2.1.6")
+    compileOnly("me.deecaad:weaponmechanics:2.1.8")
     implementation(kotlin("stdlib-jdk8"))
 }
 
@@ -105,10 +105,10 @@ tasks.test {
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "16"
 }
 
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "16"
 }

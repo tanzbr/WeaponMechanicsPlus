@@ -8,7 +8,7 @@ import java.util.logging.Level
 
 class WeaponMechanicsPlusLoader : JavaPlugin() {
 
-    private var plugin: WeaponMechanicsPlus? = null
+    private lateinit var plugin: WeaponMechanicsPlus
     private var success = false
 
     val classLoader0: ClassLoader
@@ -19,21 +19,20 @@ class WeaponMechanicsPlusLoader : JavaPlugin() {
     override fun onLoad() {
 
         // Attempt to automatically download MechanicsCore and WeaponMechanics.
-        if (config.getBoolean("Auto_Download.Enabled", true)) {
+        if (false && config.getBoolean("Auto_Download.Enabled", true)) {
             val auto = AutoMechanicsDownload(config)
             auto.MECHANICS_CORE.install()
             auto.WEAPON_MECHANICS.install()
         }
 
         // Don't enable the plugin if either dependencies are absent
-        if (Bukkit.getPluginManager().getPlugin("MechanicsCore") == null) {
+        if (Bukkit.getPluginManager().getPlugin("MechanicsCore") == null)
             return
-        }
-        if (Bukkit.getPluginManager().getPlugin("WeaponMechanics") == null) {
+        if (Bukkit.getPluginManager().getPlugin("WeaponMechanics") == null)
             return
-        }
+
         plugin = WeaponMechanicsPlus(this)
-        plugin!!.onLoad()
+        plugin.onLoad()
         success = true
     }
 
@@ -45,12 +44,15 @@ class WeaponMechanicsPlusLoader : JavaPlugin() {
             logger.log(Level.SEVERE, "")
             return
         }
-        plugin!!.onEnable()
+
+        plugin.onEnable()
     }
 
     override fun onDisable() {
-        if (!success) return
-        plugin!!.onDisable()
+        if (!success)
+            return
+
+        plugin.onDisable()
         success = false
     }
 }

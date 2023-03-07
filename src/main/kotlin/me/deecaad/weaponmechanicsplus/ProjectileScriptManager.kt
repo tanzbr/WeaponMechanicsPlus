@@ -7,7 +7,7 @@ import me.deecaad.weaponmechanics.weapon.projectile.weaponprojectile.WeaponProje
 import me.deecaad.weaponmechanicsplus.weapon.guidedprojectile.GuidedProjectileScript
 import org.bukkit.plugin.Plugin
 
-class PlusScriptManager(plugin: Plugin?) : ProjectileScriptManager(plugin) {
+class ProjectileScriptManager(plugin: Plugin?) : ProjectileScriptManager(plugin) {
 
     override fun attach(aProjectile: AProjectile) {
         if (aProjectile !is WeaponProjectile)

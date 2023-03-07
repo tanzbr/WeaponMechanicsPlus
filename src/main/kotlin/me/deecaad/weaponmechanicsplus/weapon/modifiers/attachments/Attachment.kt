@@ -69,7 +69,7 @@ class Attachment : ModifierBase, Comparable<Attachment> {
 
             // Some attachments are not compatible with each other
             if (attachmentRequireList.isNotEmpty() && !attachmentRequireList.contains(attachment.attachmentTitle)) return false
-            if (attachmentDenyList.contains(attachment!!.attachmentTitle)) return false
+            if (attachmentDenyList.contains(attachment.attachmentTitle)) return false
         }
 
         // Cannot attach the same attachment multiple times
@@ -77,21 +77,24 @@ class Attachment : ModifierBase, Comparable<Attachment> {
     }
 
     fun attach(weapon: ItemStack?) {
-        var array = CustomTag.ATTACHMENTS.getArray(weapon)
-        if (array == null) array = IntArray(0)
+        var array = CustomTag.ATTACHMENTS.getStringArray(weapon)
+        if (array == null)
+            array = emptyArray()
+
         val attachments: MutableList<Attachment> = ArrayList(array.size + 1)
         for (id in array) {
-            attachments.add(AttachmentRegistry.Companion.INSTANCE.get(id))
+            val attachment = AttachmentRegistry.INSTANCE[id]
+
+            // attachment is null when the admin deletes an attachment from
+            // config after it is attached to a weapon.
+            if (attachment != null)
+                attachments.add(attachment)
         }
 
         // Add the new attachment and sort
         attachments.add(this)
         attachments.sort()
-        val newArray = IntArray(array.size + 1)
-        for (i in attachments.indices) {
-            newArray[i] = AttachmentRegistry.Companion.INSTANCE.getId(attachments[i])
-        }
-        CustomTag.ATTACHMENTS.setArray(weapon, newArray)
+        CustomTag.ATTACHMENTS.setStringArray(weapon, attachments.map { it.attachmentTitle }.toTypedArray())
     }
 
     override fun compareTo(other: Attachment): Int {
@@ -103,6 +106,7 @@ class Attachment : ModifierBase, Comparable<Attachment> {
         val attachmentTitle = data.key
         val maximumStackAmount = data.of("Maximum_Stack_Amount").assertRange(1, 200).getInt(1)
         val item = data.of("Item").assertExists().serialize(ItemSerializer())
+        CustomTag.ATTACHMENT_TITLE.setString(item, attachmentTitle)
 
         val isWeaponWhitelist = data.of("Denying.Weapon_Whitelist").getBool(false)
         val weapons = data.ofList("Denying.Weapons").addArgument(String::class.java, true).assertExists().assertList().get()
