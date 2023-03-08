@@ -6,7 +6,7 @@ import me.deecaad.weaponmechanicsplus.WeaponMechanicsPlusAPI
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 
-class AttachmentListeners : Listener {
+class ModifierListeners : Listener {
 
     @EventHandler
     fun onDamage(event: WeaponDamageEntityEvent) {

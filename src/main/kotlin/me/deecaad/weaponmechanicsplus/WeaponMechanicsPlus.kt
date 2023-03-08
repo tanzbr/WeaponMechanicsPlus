@@ -13,7 +13,7 @@ import me.deecaad.weaponmechanics.lib.auto.UpdateInfo
 import me.deecaad.weaponmechanics.lib.bstats.bukkit.Metrics
 import me.deecaad.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
 import me.deecaad.weaponmechanicsplus.weapon.listeners.AddAttachment
-import me.deecaad.weaponmechanicsplus.weapon.listeners.AttachmentListeners
+import me.deecaad.weaponmechanicsplus.weapon.listeners.ModifierListeners
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.FileConfiguration
@@ -141,7 +141,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
 
         Bukkit.getPluginManager().registerEvents(listener, javaPlugin)
         Bukkit.getPluginManager().registerEvents(AddAttachment(), javaPlugin)
-        Bukkit.getPluginManager().registerEvents(AttachmentListeners(), javaPlugin)
+        Bukkit.getPluginManager().registerEvents(ModifierListeners(), javaPlugin)
     }
 
     companion object {

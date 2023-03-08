@@ -29,15 +29,14 @@ class FireModeTriggerListener : TriggerListener {
     ): Boolean {
         val config = WeaponMechanics.getConfigurations()
         val fireMode = config.getObject("$weaponTitle.Info.Fire_Mode", FireMode::class.java)
-        if (fireMode == null || !fireMode.trigger!!.check(triggerType, slot, entityWrapper)) {
+        if (fireMode == null || !fireMode.trigger.check(triggerType, slot, entityWrapper)) {
             return false
         }
 
         entityWrapper.mainHandData.cancelTasks()
         entityWrapper.offHandData.cancelTasks()
 
-        val switchMechanics = fireMode.switchMechanics
-        switchMechanics?.use(CastData(entityWrapper.entity, weaponTitle, weaponStack))
+        fireMode.switchMechanics?.use(CastData(entityWrapper.entity, weaponTitle, weaponStack))
 
         val nextWeapon = fireMode.nextMode
         CustomTag.WEAPON_TITLE.setString(weaponStack, nextWeapon)
@@ -46,7 +45,6 @@ class FireModeTriggerListener : TriggerListener {
         weaponInfoDisplay?.send(entityWrapper as PlayerWrapper, slot)
 
         WeaponMechanics.getWeaponHandler().skinHandler.tryUse(triggerType, entityWrapper, nextWeapon, weaponStack, slot)
-
         return true
     }
 }

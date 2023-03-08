@@ -11,12 +11,10 @@ import org.bukkit.scheduler.BukkitRunnable
 
 class FireMode : Serializer<FireMode> {
 
-    var trigger: Trigger? = null
+    lateinit var trigger: Trigger
         private set
-
-    var nextMode: String? = null
+    lateinit var nextMode: String
         private set
-
     var switchMechanics: Mechanics? = null
         private set
 

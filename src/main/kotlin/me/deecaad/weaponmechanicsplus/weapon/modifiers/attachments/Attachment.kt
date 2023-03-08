@@ -130,9 +130,9 @@ class Attachment : ModifierBase, Comparable<Attachment> {
         val equipMechanics = data.of("Equip_Mechanics").serialize(Mechanics::class.java)
         val dequipMechanics = data.of("Dequip_Mechanics").serialize(Mechanics::class.java)
 
-        val base = super.serialize(data)
         val returnValue = Attachment(attachmentTitle, maximumStackAmount, item, attachmentRequireList, attachmentDenyList, weaponWhitelist, unlockable, equipMechanics, dequipMechanics)
 
+        val base = super.serialize(data)
         returnValue.priority = base.priority
         returnValue.modifier = base.modifier
         returnValue.perWeaponModifiers = base.perWeaponModifiers
