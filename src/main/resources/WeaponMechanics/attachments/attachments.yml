@@ -15,4 +15,4 @@ AK_47_More_Damage:
 
   Modifiers:
     Damage_Modifier:
-      Damage: ADD 10.0 # ouch
+      Base_Damage: ADD 10.0 # ouch

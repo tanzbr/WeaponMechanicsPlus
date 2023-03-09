@@ -14,9 +14,9 @@ class ModifierListeners : Listener {
         for (modifier in modifiers) {
             val damage = modifier.damageModifier ?: continue
 
-            event.armorDamage = damage.armorDamage?.apply(event.armorDamage) ?: event.armorDamage
-            event.baseDamage = damage.damage?.apply(event.baseDamage) ?: event.baseDamage
-            event.fireTicks = damage.fireTicks?.apply(event.fireTicks) ?: event.fireTicks
+            damage.armorDamage?.let { event.armorDamage = it.apply(event.armorDamage) }
+            damage.baseDamage?.let { event.baseDamage = it.apply(event.baseDamage) }
+            damage.fireTicks?.let { event.fireTicks = it.apply(event.fireTicks) }
 
             // todo damage dropoff, explosion
         }
@@ -28,7 +28,7 @@ class ModifierListeners : Listener {
         for (modifier in modifiers) {
             val explosion = modifier.explosionModifier ?: continue
 
-            event.explosion = explosion.overrideExplosion ?: event.explosion
+            explosion.overrideExplosion?.let { event.explosion = explosion.overrideExplosion }
         }
     }
 
@@ -38,9 +38,9 @@ class ModifierListeners : Listener {
         for (modifier in modifiers) {
             val reload = modifier.reloadModifier ?: continue
 
-            event.reloadTime = reload.reloadDuration?.apply(event.reloadTime) ?: event.reloadTime
-            event.reloadAmount = reload.ammoPerReload?.apply(event.reloadAmount) ?: event.reloadAmount
-            event.magazineSize = reload.magazineSize?.apply(event.magazineSize) ?: event.magazineSize
+            reload.reloadDuration?.let { event.reloadTime = it.apply(event.reloadAmount) }
+            reload.ammoPerReload?.let { event.reloadAmount = it.apply(event.reloadAmount) }
+            reload.magazineSize?.let { event.magazineSize = it.apply(event.magazineSize) }
 
             // TODO reload.getShootDelayAfterReload()
         }
@@ -53,10 +53,10 @@ class ModifierListeners : Listener {
             val scope = modifier.scopeModifier ?: continue
 
             if (event.scopeType == ScopeType.IN) {
-                event.zoomAmount = scope.zoomAmount?.apply(event.zoomAmount) ?: event.zoomAmount
+                scope.zoomAmount?.let { event.zoomAmount = it.apply(event.zoomAmount) }
             } else if (event.scopeType == ScopeType.STACK) {
                 if (scope.zoomStacking.size > event.zoomStack)
-                    event.zoomAmount = scope.zoomStacking[event.zoomStack]?.apply(event.zoomAmount) ?: event.zoomAmount
+                    scope.zoomStacking[event.zoomStack]?.let { event.zoomAmount = it.apply(event.zoomAmount) }
             }
 
             // TODO night vision

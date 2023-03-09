@@ -6,7 +6,8 @@ import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.DoubleModifier
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.IntegerModifier
 
 class DamageModifier : Serializer<DamageModifier> {
-    var damage: DoubleModifier? = null
+
+    var baseDamage: DoubleModifier? = null
         private set
     var explosionDamage: DoubleModifier? = null
         private set
@@ -23,7 +24,7 @@ class DamageModifier : Serializer<DamageModifier> {
     constructor()
 
     constructor(damage: DoubleModifier?, explosionDamage: DoubleModifier?, fireTicks: IntegerModifier?, armorDamage: IntegerModifier?, dropoffOverride: DamageDropoff?) {
-        this.damage = damage
+        this.baseDamage = damage
         this.explosionDamage = explosionDamage
         this.fireTicks = fireTicks
         this.armorDamage = armorDamage
