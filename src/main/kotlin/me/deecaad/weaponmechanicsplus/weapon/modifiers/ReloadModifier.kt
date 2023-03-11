@@ -19,7 +19,7 @@ class ReloadModifier : Serializer<ReloadModifier> {
      */
     constructor()
 
-    constructor(magazineSize: IntegerModifier, ammoPerReload: IntegerModifier, reloadDuration: IntegerModifier, shootDelayAfterReload: IntegerModifier) {
+    constructor(magazineSize: IntegerModifier?, ammoPerReload: IntegerModifier?, reloadDuration: IntegerModifier?, shootDelayAfterReload: IntegerModifier?) {
         this.magazineSize = magazineSize
         this.ammoPerReload = ammoPerReload
         this.reloadDuration = reloadDuration
