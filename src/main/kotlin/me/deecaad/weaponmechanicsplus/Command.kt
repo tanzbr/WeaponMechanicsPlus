@@ -18,7 +18,7 @@ import java.util.function.Function
 object Command {
 
     private var ATTACHMENT_SUGGESTIONS =
-        Function { _ignore: CommandData ->
+        Function { _: CommandData ->
             return@Function AttachmentRegistry.INSTANCE.asSequence()
                 .map { it.attachmentTitle }
                 .map { Tooltip.of(it) }
@@ -27,30 +27,47 @@ object Command {
 
 
     fun register() {
-        val cmd = CommandBuilder("wmp")
-            .withAliases("weaponmechanicsplus")
-            .withPermission("weaponmechanicsplus.admin")
-            .withDescription("WeaponMechanicsPlus main command")
+        val cmd = command("wmp") {
+            aliases("weaponmechanicsplus")
+            permission("weaponmechanicsplus.admin")
+            description("WeaponMechanicsPlus main command")
 
-            .withSubcommand(CommandBuilder("give")
-                .withPermission("weaponmechanicsplus.commands.give")
-                .withDescription("Give attachments to players")
-                .withArgument(Argument("target", EntityListArgumentType()).withDesc("Who to give the attachment to"))
-                .withArgument(Argument("attachment", StringArgumentType()).withDesc("Which attachment to give").append(ATTACHMENT_SUGGESTIONS))
-                .withArgument(Argument("amount", IntegerArgumentType(1, 64), 1).withDesc("How many of the attachment to give").append(IntegerArgumentType.ITEM_COUNT))
-                .executes(CommandExecutor.any { sender: CommandSender, args: Array<Any> ->
+            subcommand("give") {
+                permission("weaponmechanicsplus.commands.give")
+                description("Give attachments to players")
+                argument("target", EntityListArgumentType()) {
+                    description = "Who to give the attachments to"
+                }
+                argument("attachment", StringArgumentType()) {
+                    description = "Which attachment to give"
+                    append(ATTACHMENT_SUGGESTIONS)
+                }
+                argument("amount", IntegerArgumentType(1, 64)) {
+                    description = "How many of the attachment to give"
+                    append(IntegerArgumentType.ITEM_COUNT)
+                }
+                executeAny { sender: CommandSender, args: Array<Any> ->
                     give(sender, args[0] as List<Entity>, args[1] as String, args[2] as Int)
-                }))
+                }
+            }
 
-            .withSubcommand(CommandBuilder("get")
-                .withPermission("weaponmechanicsplus.commands.get")
-                .withDescription("Give attachments to yourself")
-                .withArgument(Argument("attachment", StringArgumentType()).withDesc("Which attachment to give").append(ATTACHMENT_SUGGESTIONS))
-                .withArgument(Argument("amount", IntegerArgumentType(1, 64), 1).withDesc("How many of the attachment to give").append(IntegerArgumentType.ITEM_COUNT))
-                .executes(CommandExecutor.player { sender: Player, args: Array<Any> ->
+            subcommand("get") {
+                permission("weaponmechanicsplus.commands.get")
+                description("Give attachments to yourself")
+
+                argument("attachment", StringArgumentType()) {
+                    description = "Which attachment to give"
+                    append(ATTACHMENT_SUGGESTIONS)
+                }
+                argument("amount", IntegerArgumentType(1, 64)) {
+                    description = "How many of the attachment to give"
+                    append(IntegerArgumentType.ITEM_COUNT)
+                }
+                executePlayer { sender: Player, args: Array<Any> ->
                     give(sender, listOf(sender), args[0] as String, args[1] as Int)
-                })
-            )
+                }
+            }
+        }
 
         cmd.registerHelp(HelpCommandBuilder.HelpColor.from(ChatColor.GOLD, ChatColor.GRAY, '\u27A2'))
         cmd.register()

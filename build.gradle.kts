@@ -59,9 +59,8 @@ dependencies {
 
     api("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
 
-    compileOnly("me.deecaad:mechanicscore:2.1.6")
+    compileOnly("me.deecaad:mechanicscore:2.2.2")
     compileOnly("me.deecaad:weaponmechanics:2.1.8")
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.named<ShadowJar>("shadowJar") {
@@ -70,7 +69,11 @@ tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
 
     dependencies {
-        relocate ("kotlin.", "me.deecaad.weaponmechanicsplus.lib.kotlin.") {
+
+        // Since MechanicsCore shades kotlin, we do not need to shade kotlin here
+        exclude(dependency("org.jetbrains.kotlin:"))
+
+        relocate ("kotlin.", "me.deecaad.core.lib.kotlin.") {
             include(dependency("org.jetbrains.kotlin:"))
         }
     }
