@@ -1,26 +1,30 @@
 package me.deecaad.weaponmechanicsplus.weapon.modifiers
 
 import me.deecaad.core.file.*
-import me.deecaad.weaponmechanics.weapon.projectile.weaponprojectile.Projectile
+import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.DoubleModifier
+import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.IntegerModifier
 
 class ShootModifier : Serializer<ShootModifier> {
-    var overrideProjectile: Projectile? = null
-        private set
+
+    var projectileAmount: IntegerModifier? = null
+    var projectileSpeed: DoubleModifier? = null
 
     /**
      * Default constructor for serializer.
      */
     constructor()
 
-    constructor(overrideProjectile: Projectile?) {
-        this.overrideProjectile = overrideProjectile
+    constructor(projectileAmount: IntegerModifier?, projectileSpeed: DoubleModifier?) {
+        this.projectileAmount = projectileAmount
+        this.projectileSpeed = projectileSpeed
     }
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): ShootModifier {
-        val overrideProjectile = data.of("Override_Projectile").serialize(
-            Projectile::class.java
-        )
-        return ShootModifier(overrideProjectile)
+
+        val projectileAmount = data.of("Projectile_Amount").serialize(IntegerModifier::class.java)
+        val projectileSpeed = data.of("Projectile_Speed").serialize(DoubleModifier::class.java)
+
+        return ShootModifier(projectileAmount, projectileSpeed)
     }
 }

@@ -84,8 +84,8 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
     private fun registerUpdateChecker() {
 
         // TODO WHEN APPROVED CHANGE ID
-        val todoWaiting = true
-        if (todoWaiting) return
+        if (true) return
+
         if (!config.getBoolean("Update_Checker.Enabled", true)) return
         update = UpdateChecker(javaPlugin, UpdateChecker.spigot(1, "WeaponMechanicsPlus"))
         val listener: Listener = object : Listener {

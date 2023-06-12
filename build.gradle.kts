@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 group = "me.deecaad"
-version = "0.3.1"
+version = "0.3.2"
 
 plugins {
     `java-library`
@@ -57,10 +57,10 @@ repositories {
 dependencies {
     compileOnly("org.jetbrains:annotations:23.1.0")
 
-    api("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
+    api("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
 
-    compileOnly("me.deecaad:mechanicscore:2.2.2")
-    compileOnly("me.deecaad:weaponmechanics:2.1.8")
+    compileOnly("me.deecaad:mechanicscore:2.4.0")
+    compileOnly("me.deecaad:weaponmechanics:2.4.1")
 }
 
 tasks.named<ShadowJar>("shadowJar") {

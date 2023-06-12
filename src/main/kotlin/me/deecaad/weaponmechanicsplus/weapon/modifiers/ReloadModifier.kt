@@ -6,13 +6,9 @@ import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.IntegerModifier
 class ReloadModifier : Serializer<ReloadModifier> {
 
     var magazineSize: IntegerModifier? = null
-        private set
     var ammoPerReload: IntegerModifier? = null
-        private set
     var reloadDuration: IntegerModifier? = null
-        private set
     var shootDelayAfterReload: IntegerModifier? = null
-        private set
 
     /**
      * Default constructor for serializer

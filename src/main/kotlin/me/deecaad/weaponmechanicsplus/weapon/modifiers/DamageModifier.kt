@@ -8,15 +8,10 @@ import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.IntegerModifier
 class DamageModifier : Serializer<DamageModifier> {
 
     var baseDamage: DoubleModifier? = null
-        private set
     var explosionDamage: DoubleModifier? = null
-        private set
     var fireTicks: IntegerModifier? = null
-        private set
     var armorDamage: IntegerModifier? = null
-        private set
     var dropoffOverride: DamageDropoff? = null
-        private set
 
     /**
      * Default constructor for serializer

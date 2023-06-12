@@ -6,7 +6,6 @@ import me.deecaad.weaponmechanics.weapon.explode.Explosion
 class ExplosionModifier : Serializer<ExplosionModifier> {
 
     var overrideExplosion: Explosion? = null
-        private set
 
     /**
      * Default constructor for serializer

@@ -8,11 +8,8 @@ import java.util.*
 class ScopeModifier : Serializer<ScopeModifier> {
 
     var zoomAmount: DoubleModifier? = null
-        private set
     var isNightVision: Boolean? = null
-        private set
     var zoomStacking: List<DoubleModifier?> = listOf()
-        private set
 
     /**
      * Default constructor for serializer

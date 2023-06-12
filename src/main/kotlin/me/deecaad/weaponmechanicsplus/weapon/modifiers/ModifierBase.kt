@@ -5,12 +5,10 @@ import me.deecaad.weaponmechanics.WeaponMechanics
 import org.bukkit.configuration.ConfigurationSection
 
 abstract class ModifierBase : Serializer<ModifierBase> {
+
     var priority = 0
-        protected set
     var modifier: Modifier = Modifier()
-        protected set
     var perWeaponModifiers: Map<String, Modifier> = mapOf()
-        protected set
 
     /**
      * Default constructor for serializer.

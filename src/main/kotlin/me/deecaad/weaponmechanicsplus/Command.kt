@@ -11,6 +11,7 @@ import me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentReg
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import java.util.function.Function
 
@@ -46,7 +47,7 @@ object Command {
                     description = "How many of the attachment to give"
                     append(IntegerArgumentType.ITEM_COUNT)
                 }
-                executeAny { sender: CommandSender, args: Array<Any> ->
+                executeAny { sender: CommandSender, args: Array<Any?> ->
                     give(sender, args[0] as List<Entity>, args[1] as String, args[2] as Int)
                 }
             }
@@ -63,8 +64,27 @@ object Command {
                     description = "How many of the attachment to give"
                     append(IntegerArgumentType.ITEM_COUNT)
                 }
-                executePlayer { sender: Player, args: Array<Any> ->
+                executePlayer { sender: Player, args: Array<Any?> ->
                     give(sender, listOf(sender), args[0] as String, args[1] as Int)
+                }
+            }
+
+            subcommand("detach") {
+                permission("weaponmechanicsplus.commands.detach")
+                description("Detach attachments from the weapon")
+
+                argument("target", EntityListArgumentType()) {
+                    description = ""
+                    default = null
+                }
+
+                argument("attachment", StringArgumentType().withLiteral("*")) {
+                    description
+                    default = "*"
+                }
+
+                executeAny { sender: CommandSender, args: Array<Any?> ->
+                    detach(sender, (args[0] ?: sender) as LivingEntity, args[1] as String)
                 }
             }
         }
@@ -96,5 +116,9 @@ object Command {
         }
 
         sender.sendMessage("Gave $count players $amount $attachmentStr(s)")
+    }
+
+    fun detach(sender: CommandSender, target: LivingEntity, attachment: String?) {
+
     }
 }
