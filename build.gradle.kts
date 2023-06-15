@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 group = "me.deecaad"
-version = "0.3.2"
+version = "0.3.3"
 
 plugins {
     `java-library`
@@ -71,7 +71,7 @@ tasks.named<ShadowJar>("shadowJar") {
     dependencies {
 
         // Since MechanicsCore shades kotlin, we do not need to shade kotlin here
-        exclude(dependency("org.jetbrains.kotlin:"))
+        // exclude(dependency("org.jetbrains.kotlin:"))
 
         relocate ("kotlin.", "me.deecaad.core.lib.kotlin.") {
             include(dependency("org.jetbrains.kotlin:"))

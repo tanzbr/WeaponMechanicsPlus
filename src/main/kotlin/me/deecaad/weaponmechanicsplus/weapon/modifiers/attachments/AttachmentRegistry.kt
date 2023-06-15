@@ -37,6 +37,10 @@ class AttachmentRegistry private constructor() : Iterable<Attachment> {
         byTitle[attachment.attachmentTitle] = attachment
     }
 
+    fun clear() {
+        byTitle.clear()
+    }
+
     operator fun get(title: String): Attachment? {
         return byTitle[title]
     }

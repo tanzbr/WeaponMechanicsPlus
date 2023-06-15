@@ -14,10 +14,12 @@ import me.deecaad.weaponmechanics.lib.bstats.bukkit.Metrics
 import me.deecaad.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
 import me.deecaad.weaponmechanicsplus.weapon.listeners.AddAttachment
 import me.deecaad.weaponmechanicsplus.weapon.listeners.ModifierListeners
+import me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.event.EventHandler
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.Plugin
@@ -122,6 +124,10 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 // Perfect place to register all things to WM ;D
                 if (event.sourceName != "WeaponMechanics") return
 
+                debug.info("Reloading plugin")
+                HandlerList.unregisterAll(javaPlugin)
+                AttachmentRegistry.INSTANCE.clear()
+
                 // Register serializers
                 try {
                     event.addSerializers(SerializerInstancer(JarFile(file)).createAllInstances(classLoader))
@@ -136,12 +142,14 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 // Register projectile script manager
                 val projectilesRunnable = WeaponMechanics.getProjectilesRunnable()
                 projectilesRunnable.addScriptManager(ProjectileScriptManager(javaPlugin))
+
+                // Other listeners
+                Bukkit.getPluginManager().registerEvents(AddAttachment(), javaPlugin)
+                Bukkit.getPluginManager().registerEvents(ModifierListeners(), javaPlugin)
             }
         }
 
         Bukkit.getPluginManager().registerEvents(listener, javaPlugin)
-        Bukkit.getPluginManager().registerEvents(AddAttachment(), javaPlugin)
-        Bukkit.getPluginManager().registerEvents(ModifierListeners(), javaPlugin)
     }
 
     companion object {

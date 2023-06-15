@@ -48,7 +48,7 @@ object WeaponMechanicsPlusAPI {
                 WeaponMechanicsPlus.getDebug().warn("Found deleted attachment $")
                 continue
             }
-            attachments[i] = temp
+            attachments.add(temp)
         }
 
         return attachments.toTypedArray()

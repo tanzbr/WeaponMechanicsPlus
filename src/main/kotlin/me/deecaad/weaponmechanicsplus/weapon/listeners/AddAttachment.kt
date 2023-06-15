@@ -32,17 +32,17 @@ import java.nio.file.attribute.BasicFileAttributes
 class AddAttachment : Listener {
 
     init {
-        val repairKitFolder = File(WeaponMechanics.getPlugin().dataFolder, "attachments")
+        val attachmentsFolder = File(WeaponMechanics.getPlugin().dataFolder, "attachments")
         try {
 
             // Ensure the folder exists
-            if (!repairKitFolder.exists()) FileUtil.copyResourcesTo(
+            if (!attachmentsFolder.exists()) FileUtil.copyResourcesTo(
                 javaClass.classLoader.getResource("WeaponMechanics/attachments"),
-                repairKitFolder.toPath()
+                attachmentsFolder.toPath()
             )
 
             // Read in all files within the folder
-            val pathReference = PathReference.of(repairKitFolder.toURI())
+            val pathReference = PathReference.of(attachmentsFolder.toURI())
             Files.walkFileTree(pathReference.path(), object : SimpleFileVisitor<Path>() {
                 @Throws(IOException::class)
                 override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {

@@ -10,24 +10,16 @@ import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.Whitelist
 import org.bukkit.inventory.ItemStack
 
 class Attachment : ModifierBase, Comparable<Attachment> {
+
     lateinit var attachmentTitle: String
-        private set
     var maximumStackAmount = 1
-        private set
     lateinit var item: ItemStack
-        private set
     var attachmentRequireList: Set<String> = setOf()
-        private set
     var attachmentDenyList: Set<String> = setOf()
-        private set
     lateinit var weaponWhitelist: Whitelist<String>
-        private set
     var equipMechanics: Mechanics? = null
-        private set
     var dequipMechanics: Mechanics? = null
-        private set
     var unlockable: Unlockable? = null
-        private set
 
     /**
      * Default constructor for serializer
@@ -35,7 +27,8 @@ class Attachment : ModifierBase, Comparable<Attachment> {
     constructor()
 
     constructor(attachmentTitle: String, maximumStackAmount: Int, item: ItemStack, attachmentRequireList: Set<String>,
-                attachmentDenyList: Set<String>, weaponWhitelist: Whitelist<String>, unlockable: Unlockable?, equipMechanics: Mechanics?, dequipMechanics: Mechanics?) {
+                attachmentDenyList: Set<String>, weaponWhitelist: Whitelist<String>, unlockable: Unlockable?, equipMechanics: Mechanics?,
+                dequipMechanics: Mechanics?) {
         this.attachmentTitle = attachmentTitle
         this.maximumStackAmount = maximumStackAmount
         this.item = item
