@@ -12,16 +12,13 @@ import org.bukkit.scheduler.BukkitRunnable
 class FireMode : Serializer<FireMode> {
 
     lateinit var trigger: Trigger
-        private set
     lateinit var nextMode: String
-        private set
     var switchMechanics: Mechanics? = null
-        private set
 
     /**
      * Default constructor for serializer
      */
-    constructor() {}
+    constructor()
 
     constructor(trigger: Trigger, nextMode: String, switchMechanics: Mechanics?) {
         this.trigger = trigger
@@ -29,9 +26,10 @@ class FireMode : Serializer<FireMode> {
         this.switchMechanics = switchMechanics
     }
 
-    override fun getKeyword(): String {
-        return "Fire_Mode"
-    }
+    /**
+     * Path is `WeaponTitle.Info.Fire_Mode`
+     */
+    override fun getKeyword() = "Fire_Mode"
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): FireMode {
@@ -39,7 +37,9 @@ class FireMode : Serializer<FireMode> {
         val nextMode = data.of("Next_Mode").assertExists().assertType(String::class.java).get<String>()
         val switchMechanics = data.of("Mechanics").serialize(Mechanics::class.java)
 
-        // Late check on weapon name
+        // This is just to check to make sure the weapons exist. Weapon titles
+        // have not yet been added to the info handler on this tick, so we have
+        // to wait for the next tick.
         object : BukkitRunnable() {
             override fun run() {
                 if (!WeaponMechanics.getWeaponHandler().infoHandler.hasWeapon(nextMode)) {

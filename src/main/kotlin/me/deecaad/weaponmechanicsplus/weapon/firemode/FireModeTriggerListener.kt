@@ -14,9 +14,7 @@ import org.bukkit.inventory.ItemStack
 
 class FireModeTriggerListener : TriggerListener {
 
-    override fun allowOtherTriggers(): Boolean {
-        return false
-    }
+    override fun allowOtherTriggers() = false
 
     override fun tryUse(
         entityWrapper: EntityWrapper,
