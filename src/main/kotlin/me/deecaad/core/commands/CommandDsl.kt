@@ -28,7 +28,7 @@ class KotlinCommand(val label: String) {
     var permission: Permission? = null
     var requirements: Predicate<CommandSender>? = null
     var aliases: List<String> = emptyList()
-    var arguments: MutableList<Argument<Any>> = ArrayList()
+    var arguments: MutableList<Argument<*>> = ArrayList()
     var subcommands: MutableList<CommandBuilder> = ArrayList()
     var executor: CommandExecutor<out CommandSender>? = null
     var description: String = "No description provided"
@@ -53,11 +53,14 @@ class KotlinCommand(val label: String) {
         // be executed. So now we can copy the values into the command argument.
         val temp = if (argument.isRequired) Argument(label, type) else Argument(label, type, argument.default)
         temp.withPermission(argument.permission)
-        temp.description = argument.description
-        temp.isReplaceSuggestions = argument.isReplaceSuggestions
-        temp.suggestions = argument.suggestions
-        temp.requirements = argument.requirements
-        arguments.add(temp as Argument<Any>)
+        temp.withDesc(argument.description)
+        if (argument.isReplaceSuggestions)
+            temp.replace(argument.suggestions)
+        else
+            temp.append(argument.suggestions)
+
+        temp.withRequirements(argument.requirements)
+        arguments.add(temp as Argument<*>)
     }
 
     fun subcommand(label: String, init: KotlinCommand.() -> Unit) {
@@ -122,11 +125,13 @@ fun command(label: String, init: KotlinCommand.() -> Unit): CommandBuilder {
     // be executed. So now we can copy the values into the command argument.
     val temp = CommandBuilder(label)
     temp.withPermission(builder.permission)
-    temp.requirements = builder.requirements
-    temp.aliases = builder.aliases
-    temp.args = builder.arguments
-    temp.subcommands = builder.subcommands
-    temp.executor = builder.executor
-    temp.description = builder.description
+    temp.withRequirements(builder.requirements)
+    temp.withAliases(*builder.aliases.toTypedArray())
+    temp.withArguments(builder.arguments)
+    temp.withDescription(builder.description)
+    temp.executes(builder.executor)
+
+    builder.subcommands.forEach { temp.withSubcommand(it) }
+
     return temp
 }
