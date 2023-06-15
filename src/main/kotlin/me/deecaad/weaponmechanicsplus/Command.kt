@@ -28,6 +28,7 @@ object Command {
 
 
     fun register() {
+
         val cmd = command("wmp") {
             aliases("weaponmechanicsplus")
             permission("weaponmechanicsplus.admin")
@@ -45,6 +46,7 @@ object Command {
                 }
                 argument("amount", IntegerArgumentType(1, 64)) {
                     description = "How many of the attachment to give"
+                    default = 1
                     append(IntegerArgumentType.ITEM_COUNT)
                 }
                 executeAny { sender: CommandSender, args: Array<Any?> ->
@@ -62,6 +64,7 @@ object Command {
                 }
                 argument("amount", IntegerArgumentType(1, 64)) {
                     description = "How many of the attachment to give"
+                    default = 1
                     append(IntegerArgumentType.ITEM_COUNT)
                 }
                 executePlayer { sender: Player, args: Array<Any?> ->
@@ -73,13 +76,8 @@ object Command {
                 permission("weaponmechanicsplus.commands.detach")
                 description("Detach attachments from the weapon")
 
-                argument("target", EntityListArgumentType()) {
-                    description = ""
-                    default = null
-                }
-
                 argument("attachment", StringArgumentType().withLiteral("*")) {
-                    description
+                    description = "Which attachment to remove"
                     default = "*"
                 }
 
