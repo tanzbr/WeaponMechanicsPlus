@@ -14,10 +14,10 @@ data class MechanicsModifier(val isReplace: Boolean, val mechanics: Mechanics) {
 
     companion object {
 
-        fun SerializeData.serializeMechanicsModifier(key: String = "Mechanics"): MechanicsModifier? {
+        fun SerializeData.serializeMechanicsModifier(key: String = "Mechanics", section: String = ""): MechanicsModifier? {
 
-            val replaceMechanics: Mechanics? = of("Replace_$key").serialize(Mechanics::class.java)
-            val addMechanics: Mechanics? = of("Add_$key").serialize(Mechanics::class.java)
+            val replaceMechanics: Mechanics? = of("${section}Replace_$key").serialize(Mechanics::class.java)
+            val addMechanics: Mechanics? = of("${section}Add_$key").serialize(Mechanics::class.java)
 
             val isReplace = replaceMechanics != null
             val mechanics = if (isReplace) replaceMechanics else addMechanics

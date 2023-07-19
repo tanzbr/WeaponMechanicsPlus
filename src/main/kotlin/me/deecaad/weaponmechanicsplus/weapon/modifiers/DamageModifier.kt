@@ -94,13 +94,13 @@ class DamageModifier : Serializer<DamageModifier> {
 
         val damageMechanicsModifier = data.serializeMechanicsModifier("Mechanics")
         val killMechanicsModifier = data.serializeMechanicsModifier("Kill_Mechanics")
-        val backstabMechanicsModifier = data.serializeMechanicsModifier("Backstab.Mechanics")
-        val criticalHitMechanicsModifier = data.serializeMechanicsModifier("Critical_Hit.Mechanics")
-        val headMechanicsModifier = data.serializeMechanicsModifier("Head.Mechanics")
-        val bodyMechanicsModifier = data.serializeMechanicsModifier("Body.Mechanics")
-        val armsMechanicsModifier = data.serializeMechanicsModifier("Arms.Mechanics")
-        val legsMechanicsModifier = data.serializeMechanicsModifier("Legs.Mechanics")
-        val feetMechanicsModifier = data.serializeMechanicsModifier("Feet.Mechanics")
+        val backstabMechanicsModifier = data.serializeMechanicsModifier(section="Backstab")
+        val criticalHitMechanicsModifier = data.serializeMechanicsModifier(section="Critical_Hit")
+        val headMechanicsModifier = data.serializeMechanicsModifier(section="Head")
+        val bodyMechanicsModifier = data.serializeMechanicsModifier(section="Body")
+        val armsMechanicsModifier = data.serializeMechanicsModifier(section="Arms")
+        val legsMechanicsModifier = data.serializeMechanicsModifier(section="Legs")
+        val feetMechanicsModifier = data.serializeMechanicsModifier(section="Feet")
 
         return DamageModifier(damage, explosionDamage, fireTicks, armorDamage, dropoffOverride, isReplace, damageModifier,
             damageMechanicsModifier, killMechanicsModifier, backstabMechanicsModifier, criticalHitMechanicsModifier,
