@@ -3,6 +3,7 @@ package me.deecaad.weaponmechanicsplus.weapon.modifiers
 import me.deecaad.core.file.*
 import me.deecaad.core.utils.EnumUtil
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.*
+import me.deecaad.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier.Companion.serializeMechanicsModifier
 import java.util.*
 
 class ScopeModifier : Serializer<ScopeModifier> {
@@ -10,16 +11,19 @@ class ScopeModifier : Serializer<ScopeModifier> {
     var zoomAmount: DoubleModifier? = null
     var isNightVision: Boolean? = null
     var zoomStacking: List<DoubleModifier?> = listOf()
+    var mechanicsModifier: MechanicsModifier? = null
 
     /**
      * Default constructor for serializer
      */
     constructor()
 
-    constructor(zoomAmount: DoubleModifier?, isNightVision: Boolean?, zoomStacking: List<DoubleModifier?>) {
+    constructor(zoomAmount: DoubleModifier?, isNightVision: Boolean?, zoomStacking: List<DoubleModifier?>,
+                mechanicsModifier: MechanicsModifier?) {
         this.zoomAmount = zoomAmount
         this.isNightVision = isNightVision
         this.zoomStacking = zoomStacking
+        this.mechanicsModifier = mechanicsModifier
     }
 
     @Throws(SerializerException::class)
@@ -38,6 +42,8 @@ class ScopeModifier : Serializer<ScopeModifier> {
             zoomStacking.add(DoubleModifier(math, split[1].toDouble()))
         }
 
-        return ScopeModifier(zoomAmount, isNightVision, zoomStacking)
+        val mechanicsModifier = data.serializeMechanicsModifier()
+
+        return ScopeModifier(zoomAmount, isNightVision, zoomStacking, mechanicsModifier)
     }
 }

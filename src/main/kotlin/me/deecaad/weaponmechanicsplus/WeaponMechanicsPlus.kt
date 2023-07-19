@@ -146,6 +146,9 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 // Other listeners
                 Bukkit.getPluginManager().registerEvents(AddAttachment(), javaPlugin)
                 Bukkit.getPluginManager().registerEvents(ModifierListeners(), javaPlugin)
+
+                // Reregister WMP since we removed it earlier in HandlerList.unregisterAll
+                registerSerializerQueue()
             }
         }
 
