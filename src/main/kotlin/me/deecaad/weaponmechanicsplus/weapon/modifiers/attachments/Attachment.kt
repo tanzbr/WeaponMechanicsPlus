@@ -66,7 +66,7 @@ class Attachment : ModifierBase, Comparable<Attachment> {
         }
 
         // Cannot attach the same attachment multiple times
-        return duplicateCount >= maximumStackAmount
+        return duplicateCount < maximumStackAmount
     }
 
     fun attach(weapon: ItemStack?) {
@@ -102,7 +102,7 @@ class Attachment : ModifierBase, Comparable<Attachment> {
         CustomTag.ATTACHMENT_TITLE.setString(item, attachmentTitle)
 
         val isWeaponWhitelist = data.of("Denying.Weapon_Whitelist").getBool(false)
-        val weapons = data.ofList("Denying.Weapons").addArgument(String::class.java, true).assertExists().assertList().get()
+        val weapons = data.ofList("Denying.Weapons").addArgument(String::class.java, true).assertList().get()
                 .stream().map { arr: Array<String> -> arr[0] }.toList()
         val weaponWhitelist = Whitelist(isWeaponWhitelist, weapons)
 

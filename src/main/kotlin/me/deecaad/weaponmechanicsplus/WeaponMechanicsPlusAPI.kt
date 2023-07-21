@@ -45,7 +45,7 @@ object WeaponMechanicsPlusAPI {
         for (i in 0 until size) {
             val temp = AttachmentRegistry.INSTANCE[attachmentIds[i]]
             if (temp == null) {
-                WeaponMechanicsPlus.getDebug().warn("Found deleted attachment $")
+                WeaponMechanicsPlus.getDebug().warn("Found deleted attachment ${attachmentIds[i]} on $weapon")
                 continue
             }
             attachments.add(temp)
