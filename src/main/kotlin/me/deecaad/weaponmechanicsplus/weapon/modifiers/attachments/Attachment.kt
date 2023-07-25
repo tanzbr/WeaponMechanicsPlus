@@ -41,6 +41,11 @@ class Attachment : ModifierBase, Comparable<Attachment> {
     }
 
     /**
+     * Returns a copy of the attachment item.
+     */
+    fun generateItem() = item.clone()
+
+    /**
      * Returns `true` if at least 1 more of this attachment can be
      * added to the given weapon.
      *

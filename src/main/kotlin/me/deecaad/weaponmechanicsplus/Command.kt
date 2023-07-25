@@ -7,12 +7,15 @@ import me.deecaad.core.commands.arguments.EntityListArgumentType
 import me.deecaad.core.commands.arguments.IntegerArgumentType
 import me.deecaad.core.commands.arguments.StringArgumentType
 import me.deecaad.core.utils.StringUtil
+import me.deecaad.weaponmechanics.utils.CustomTag
+import me.deecaad.weaponmechanicsplus.weapon.listeners.AddAttachment
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import java.util.function.Function
 
 
@@ -76,13 +79,18 @@ object Command {
                 permission("weaponmechanicsplus.commands.detach")
                 description("Detach attachments from the weapon")
 
-                argument("attachment", StringArgumentType().withLiteral("*")) {
+                argument("target", EntityListArgumentType()) {
+                    description = "Who to remove the attachment from"
+                    default = null
+                }
+
+                argument("attachment", StringArgumentType()) {
                     description = "Which attachment to remove"
-                    default = "*"
+                    default = null
                 }
 
                 executeAny { sender: CommandSender, args: Array<Any?> ->
-                    detach(sender, (args[0] ?: sender) as LivingEntity, args[1] as String)
+                    detach(sender, (args[0] ?: listOf(sender)) as List<LivingEntity>, args[1] as String?)
                 }
             }
         }
@@ -116,7 +124,42 @@ object Command {
         sender.sendMessage("Gave $count players $amount $attachmentStr(s)")
     }
 
-    fun detach(sender: CommandSender, target: LivingEntity, attachment: String?) {
+    fun detach(sender: CommandSender, targets: List<LivingEntity>, removeAttachment: String?) {
+        var removedFrom = 0
 
+        for (target in targets) {
+            if (target !is Player)
+                continue
+
+            val weapon = target.equipment?.itemInMainHand ?: target.equipment?.itemInOffHand ?: continue
+            val attachments = CustomTag.ATTACHMENTS.getStringArray(weapon).toMutableList()
+
+            // Remove all attachments that match, and generate an item
+            val removed = attachments.removeIf { attachment ->
+                if (removeAttachment == null || removeAttachment == attachment) {
+
+                    // This may be null if the attachment no longer exists in config
+                    val removedAttachment = AttachmentRegistry.INSTANCE[attachment]
+                    if (removedAttachment != null) {
+                        val overflow = target.inventory.addItem(removedAttachment.generateItem())
+                        overflow.values.forEach { item -> target.world.dropItem(target.eyeLocation, item) }
+                    }
+
+                    return@removeIf true
+                }
+
+                return@removeIf false
+            }
+
+
+            // Remove the NBT of the removed weapons
+            CustomTag.ATTACHMENTS.setStringArray(weapon, attachments.toTypedArray())
+
+            // Increment the counter so the command executor knows who they effected
+            if (removed)
+                removedFrom++
+        }
+
+        sender.sendMessage("${ChatColor.GREEN}Detached attachments from $removedFrom players")
     }
 }

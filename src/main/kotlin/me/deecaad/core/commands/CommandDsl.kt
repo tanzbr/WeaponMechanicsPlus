@@ -95,13 +95,20 @@ class KotlinCommand(val label: String) {
 @CommandDsl
 class KotlinArgument<T>(val label: String, type: CommandArgumentType<T>) {
 
-    var isRequired: Boolean = false
-    var default: T? = null
+    var isRequired: Boolean = true
+    private var defaultInternal: T? = null
     var permission: Permission? = null
     var description: String = "No description provided"
     internal var isReplaceSuggestions: Boolean = false
     internal var suggestions: Function<CommandData, Array<Tooltip>>? = null
     internal var requirements: Predicate<CommandSender>? = null
+
+    var default: T?
+        set(value) {
+            isRequired = false
+            defaultInternal = value
+        }
+        get() = defaultInternal
 
     fun append(suggestions: Function<CommandData, Array<Tooltip>>) {
         this.suggestions = suggestions
