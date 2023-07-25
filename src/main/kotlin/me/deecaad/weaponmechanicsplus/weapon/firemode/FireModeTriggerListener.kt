@@ -26,7 +26,7 @@ class FireModeTriggerListener : TriggerListener {
         victim: LivingEntity?
     ): Boolean {
         val config = WeaponMechanics.getConfigurations()
-        val fireMode = config.getObject("$weaponTitle.Info.Fire_Mode", FireMode::class.java)
+        val fireMode = config.getObject("$weaponTitle.Fire_Mode", FireMode::class.java)
         if (fireMode == null || !fireMode.trigger.check(triggerType, slot, entityWrapper)) {
             return false
         }
