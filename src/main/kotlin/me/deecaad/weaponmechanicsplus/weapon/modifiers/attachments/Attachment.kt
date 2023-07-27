@@ -17,6 +17,7 @@ class Attachment : ModifierBase, Comparable<Attachment> {
     var attachmentRequireList: Set<String> = setOf()
     var attachmentDenyList: Set<String> = setOf()
     lateinit var weaponWhitelist: Whitelist<String>
+    var denyMechanics: Mechanics? = null
     var equipMechanics: Mechanics? = null
     var dequipMechanics: Mechanics? = null
     var unlockable: Unlockable? = null
@@ -27,8 +28,8 @@ class Attachment : ModifierBase, Comparable<Attachment> {
     constructor()
 
     constructor(attachmentTitle: String, maximumStackAmount: Int, item: ItemStack, attachmentRequireList: Set<String>,
-                attachmentDenyList: Set<String>, weaponWhitelist: Whitelist<String>, unlockable: Unlockable?, equipMechanics: Mechanics?,
-                dequipMechanics: Mechanics?) {
+                attachmentDenyList: Set<String>, weaponWhitelist: Whitelist<String>, unlockable: Unlockable?,
+                denyMechanics: Mechanics?, equipMechanics: Mechanics?, dequipMechanics: Mechanics?) {
         this.attachmentTitle = attachmentTitle
         this.maximumStackAmount = maximumStackAmount
         this.item = item
@@ -36,6 +37,7 @@ class Attachment : ModifierBase, Comparable<Attachment> {
         this.attachmentDenyList = attachmentDenyList
         this.weaponWhitelist = weaponWhitelist
         this.unlockable = unlockable
+        this.denyMechanics = denyMechanics
         this.equipMechanics = equipMechanics
         this.dequipMechanics = dequipMechanics
     }
@@ -102,9 +104,12 @@ class Attachment : ModifierBase, Comparable<Attachment> {
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): Attachment {
         val attachmentTitle = data.key
-        val maximumStackAmount = data.of("Maximum_Stack_Amount").assertRange(1, 200).getInt(1)
-        val item = data.of("Item").assertExists().serialize(ItemSerializer())
-        CustomTag.ATTACHMENT_TITLE.setString(item, attachmentTitle)
+        val maximumStackAmount = data.of("Maximum_Stack_Amount").assertRange(1, 100).getInt(1)
+
+        // Make sure to use CustomTag during serialization so recipe works
+        data.of("Item").assertExists()
+        val tags = mapOf(Pair(CustomTag.ATTACHMENT_TITLE.key, attachmentTitle))
+        val item = ItemSerializer().serializeWithTags(data.move("Item"), tags)
 
         val isWeaponWhitelist = data.of("Denying.Weapon_Whitelist").getBool(false)
         val weapons = data.ofList("Denying.Weapons").addArgument(String::class.java, true).assertList().get()
@@ -125,10 +130,11 @@ class Attachment : ModifierBase, Comparable<Attachment> {
         }
 
         val unlockable = data.of("Unlockable").serialize(Unlockable::class.java)
-        val equipMechanics = data.of("Equip_Mechanics").serialize(Mechanics::class.java)
-        val dequipMechanics = data.of("Dequip_Mechanics").serialize(Mechanics::class.java)
+        val denyMechanics = data.of("Denying.Mechanics").serialize(Mechanics::class.java)
+        val equipMechanics = data.of("Attach_Mechanics").serialize(Mechanics::class.java)
+        val dequipMechanics = data.of("Detach_Mechanics").serialize(Mechanics::class.java)
 
-        val returnValue = Attachment(attachmentTitle, maximumStackAmount, item, attachmentRequireList, attachmentDenyList, weaponWhitelist, unlockable, equipMechanics, dequipMechanics)
+        val returnValue = Attachment(attachmentTitle, maximumStackAmount, item, attachmentRequireList, attachmentDenyList, weaponWhitelist, unlockable, denyMechanics, equipMechanics, dequipMechanics)
 
         val base = super.serialize(data)
         returnValue.priority = base.priority

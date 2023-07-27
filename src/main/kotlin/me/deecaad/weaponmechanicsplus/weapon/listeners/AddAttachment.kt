@@ -13,6 +13,7 @@ import me.deecaad.weaponmechanics.utils.CustomTag
 import me.deecaad.weaponmechanicsplus.WeaponMechanicsPlus
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
+import org.bukkit.ChatColor
 import org.bukkit.configuration.InvalidConfigurationException
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.EventHandler
@@ -85,10 +86,6 @@ class AddAttachment : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onInventoryClick(event: InventoryClickEvent) {
-        if (event is InventoryCreativeEvent) {
-            WeaponMechanicsPlus.getDebug().debug("Cannot use InventoryCreativeEvent for attachments")
-            return
-        }
 
         // Let's only allow attachments in the player's inventory... Hopefully
         // this will avoid most duplication issues with other plugins (like in gui)
@@ -108,6 +105,14 @@ class AddAttachment : Listener {
         if (weaponTitle == null || attachmentTitle == null)
             return
 
+        // Users in creative mode get "item creation privilege" which means that
+        // items get duplicated.
+        if (event is InventoryCreativeEvent) {
+            event.whoClicked.sendMessage("${ChatColor.RED}Cannot use attachments while in Creative mode")
+            WeaponMechanicsPlus.getDebug().debug("Cannot use InventoryCreativeEvent for attachments")
+            return
+        }
+
         // This happens when the admin deleted attachment from config, but
         // players still have the attachment items in their inventory.
         val attachment = AttachmentRegistry.INSTANCE[attachmentTitle]
@@ -116,12 +121,17 @@ class AddAttachment : Listener {
             return
         }
 
-        if (!attachment.canAttach(weaponItem))
+        if (!attachment.canAttach(weaponItem)) {
+            attachment.denyMechanics?.use(CastData(event.whoClicked, weaponTitle, weaponItem))
             return
+        }
 
         // Now we handle the actual attachment part
         attachmentItem.amount -= 1
         attachment.attach(weaponItem)
         attachment.equipMechanics?.use(CastData(event.whoClicked, weaponTitle, weaponItem))
+
+        // Cancel the event, so we don't pick up the weapon
+        event.isCancelled = true
     }
 }
