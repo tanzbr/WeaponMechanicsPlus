@@ -6,6 +6,7 @@ import me.deecaad.core.commands.*
 import me.deecaad.core.commands.arguments.EntityListArgumentType
 import me.deecaad.core.commands.arguments.IntegerArgumentType
 import me.deecaad.core.commands.arguments.StringArgumentType
+import me.deecaad.core.mechanics.CastData
 import me.deecaad.core.utils.StringUtil
 import me.deecaad.weaponmechanics.utils.CustomTag
 import me.deecaad.weaponmechanicsplus.weapon.listeners.AddAttachment
@@ -141,6 +142,7 @@ object Command {
                     // This may be null if the attachment no longer exists in config
                     val removedAttachment = AttachmentRegistry.INSTANCE[attachment]
                     if (removedAttachment != null) {
+                        removedAttachment.dequipMechanics?.use(CastData(target, CustomTag.WEAPON_TITLE.getString(weapon), weapon))
                         val overflow = target.inventory.addItem(removedAttachment.generateItem())
                         overflow.values.forEach { item -> target.world.dropItem(target.eyeLocation, item) }
                     }
