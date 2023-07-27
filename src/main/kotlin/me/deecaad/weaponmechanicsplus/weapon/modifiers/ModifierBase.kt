@@ -35,9 +35,10 @@ abstract class ModifierBase : Serializer<ModifierBase> {
             val config = data.of("Per_Weapon_Modifiers").assertExists().assertType(ConfigurationSection::class.java).get<ConfigurationSection>()
 
             for (key in config.getKeys(false)) {
-                val options = WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList
-                if (!options.contains(key))
-                    throw SerializerOptionsException(data.serializer, "Weapon Title", options, key, data.of(key).location)
+                // TODO late pass check
+                //val options = WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList
+                //if (!options.contains(key))
+                //    throw SerializerOptionsException(data.serializer, "Weapon Title", options, key, data.of(key).location)
 
                 val temp = data.of("Per_Weapon_Modifiers.$key").serialize(Modifier::class.java)
                 perWeaponModifiers[key] = temp
