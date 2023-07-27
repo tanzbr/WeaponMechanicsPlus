@@ -1,0 +1,113 @@
+
+#
+# These "magical themed" attachments are more for demonstration or example then
+# for use on your server. Look here for cool examples
+#
+
+Slow_Falling_Bullets:
+  Item:
+    Type: PHANTOM_MEMBRANE
+    Name: "<yellow>Slow-Falling Bullets"
+    Lore:
+      - "<gray>Bullets shot from this weapon fall slower"
+      - ""
+      - "<gray>Attaches to:"
+      - "<blue> All Guns"
+      - ""
+      - "<dark_gray>Drag and click on a weapon to attach"
+  Attach_Mechanics:
+    - "Sound{sound=BLOCK_ENCHANTMENT_TABLE_USE, pitch=1.8, noise=0.05}"
+  Detach_Mechanics:
+    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+  Denying:
+    Weapon_Whitelist: false
+    Weapons:
+      - Combat_Knife
+    Mechanics:
+      - "Sound{sound=ENTITY_WARDEN_LISTENING_ANGRY, pitch=1.9, listeners=Source{}}"
+  Modifiers:
+    Projectile_Modifier:
+      Gravity: MULTIPLY 0.60  # 60% gravity
+
+Fiery_Bullets:
+  Item:
+    Type: BLAZE_POWDER
+    Name: "<yellow>Fiery Bullets"
+    Lore:
+      - "<gray>Bullets shot from this weapon light entities on fire"
+      - ""
+      - "<gray>Attaches to:"
+      - "<blue> All Guns"
+      - ""
+      - "<dark_gray>Drag and click on a weapon to attach"
+  Attach_Mechanics:
+    - "Sound{sound=BLOCK_ENCHANTMENT_TABLE_USE, pitch=1.8, noise=0.05}"
+  Detach_Mechanics:
+    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+  Denying:
+    Weapon_Whitelist: false
+    Weapons:
+      - Combat_Knife
+    Mechanics:
+      - "Sound{sound=ENTITY_WARDEN_LISTENING_ANGRY, pitch=1.9, listeners=Source{}}"
+  Modifiers:
+    Damage_Modifier:
+      Fire_Ticks: ADD 60  # 20 ticks for 1 second, so this is 3 seconds of fire
+
+Fin_Bullets:
+  Item:
+    Type: PRISMARINE_SHARD
+    Name: "<yellow>Finned Bullets"
+    Lore:
+      - "<gray>Bullets shot from this weapon pass through water"
+      - "<gray>quickly, but are less aerodynamic"
+      - ""
+      - "<gray>Attaches to:"
+      - "<blue> All Guns"
+      - ""
+      - "<dark_gray>Drag and click on a weapon to attach"
+  Attach_Mechanics:
+    - "Sound{sound=BLOCK_ENCHANTMENT_TABLE_USE, pitch=1.8, noise=0.05}"
+  Detach_Mechanics:
+    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+  Denying:
+    Weapon_Whitelist: false
+    Weapons:
+      - Combat_Knife
+    Mechanics:
+      - "Sound{sound=ENTITY_WARDEN_LISTENING_ANGRY, pitch=1.9, listeners=Source{}}"
+  Modifiers:
+    Projectile_Modifier:
+      Drag:
+        Base: SET 0.97
+        When_Raining_Or_Snowing: SET 0.96
+        In_Water: SET 0.99
+
+Frostbite_Bullets:
+  Item:
+    Type: BLUE_ICE
+    Name: "<aqua>Frostbite Bullets"
+    Lore:
+      - "<gray>Bullets shot from this weapon chill the target,"
+      - "<gray>slowing them and making them shiver."
+      - ""
+      - "<gray>Attaches to:"
+      - "<blue> All Guns"
+      - ""
+      - "<dark_gray>Drag and click on a weapon to attach"
+  Attach_Mechanics:
+    - "Sound{sound=BLOCK_ENCHANTMENT_TABLE_USE, pitch=1.8, noise=0.05}"
+  Detach_Mechanics:
+    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+  Denying:
+    Weapon_Whitelist: false
+    Weapons:
+      - Combat_Knife
+    Mechanics:
+      - "Sound{sound=ENTITY_WARDEN_LISTENING_ANGRY, pitch=1.9, listeners=Source{}}"
+  Modifiers:
+    Damage_Modifier:
+      Add_Mechanics:
+        - "Potion{potion=SLOWNESS, time=200} @Target{}"
+        #- "Flinch{repeatInterval=20, repeatAmount=10} @Target{}"  # requires WeaponMechanicsCosmetics
+        #- "Particle{particle=SNOWFLAKE, noise=1 1 1, count=10} @Target{}"  # requires WeaponMechanicsCosmetics

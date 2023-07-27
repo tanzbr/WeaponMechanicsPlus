@@ -1,0 +1,55 @@
+Suppressor:
+  Item:
+    Type: FEATHER
+    Custom_Model_Data: -1002
+    Name: "<yellow>Suppressor"
+    Lore:
+      - "<gray>Adds a noise suppressor to the end of the barrel"
+      - ""
+      - "<gray>Attaches to:"
+      - "<blue> M4A4"
+      - ""
+      - "<dark_gray>Drag and click on a weapon to attach"
+  Attach_Mechanics:
+    - "Sound{sound=BLOCK_ANVIL_USE, volume=0.8, pitch=1.28, noise=0.05}"
+  Detach_Mechanics:
+    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+  Denying:
+    Weapon_Whitelist: true
+    Weapons:
+      - M4A1
+    Mechanics:
+      - "Sound{sound=ENTITY_WARDEN_LISTENING_ANGRY, pitch=1.9, listeners=Source{}}"
+      - "Title{title=<red>Denied, subtitle=<gray>Only 1 can be attached to M4A1}"
+  Modifiers:
+    Shoot_Modifier:
+      Replace_Mechanics:
+        - "CustomSound{sound=shoot.m4a1.silenced.loud, volume=2, noise=0.1}"
+
+Reflex_Sight:
+  Item:
+    Type: FEATHER
+    Custom_Model_Data: -1001
+    Name: "<yellow>Reflex Sights"
+    Lore:
+      - "<gray>Adds a (dot) reflex sight to the gun"
+      - ""
+      - "<gray>Attaches to:"
+      - "<blue> M4A4"
+      - "<blue> STG44"
+      - ""
+      - "<dark_gray>Drag and click on a weapon to attach"
+  Attach_Mechanics:
+    - "Sound{sound=BLOCK_ANVIL_USE, volume=0.8, pitch=1.28, noise=0.05}"
+  Detach_Mechanics:
+    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+  Denying:
+    Weapon_Whitelist: true
+    Weapons:
+      - M4A1
+      - STG44
+    Mechanics:
+      - "Sound{sound=ENTITY_WARDEN_LISTENING_ANGRY, pitch=1.9, listeners=Source{}}"
+      - "Title{title=<red>Denied, subtitle=<gray>Only 1 can be attached to M4A1 or STG-44}"
+  Modifiers: {}  # Empty modifiers since this attachment is only visual
+
