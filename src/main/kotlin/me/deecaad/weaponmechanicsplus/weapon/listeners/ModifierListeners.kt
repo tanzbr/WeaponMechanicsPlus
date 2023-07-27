@@ -70,7 +70,7 @@ class ModifierListeners : Listener {
 
             event.mechanics = updateMechanics(event.mechanics, reload.mechanicsModifier)
 
-            reload.reloadDuration?.let { event.reloadTime = it.apply(event.reloadAmount) }
+            reload.reloadDuration?.let { event.reloadTime = it.apply(event.reloadTime) }
             reload.ammoPerReload?.let { event.reloadAmount = it.apply(event.reloadAmount) }
             reload.magazineSize?.let { event.magazineSize = it.apply(event.magazineSize) }
 
