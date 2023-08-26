@@ -17,6 +17,8 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import java.util.function.Function
 
 
@@ -95,6 +97,20 @@ object Command {
                 }
             }
         }
+
+        command("detach") {
+            permission = Permission("weaponmechanicsplus.detach", PermissionDefault.TRUE)
+            description("Detach attachments from the weapon")
+
+            argument("attachment", StringArgumentType()) {
+                description = "Which attachment to remove"
+                default = null
+            }
+
+            executePlayer { sender: Player, args: Array<Any?> ->
+                detach(sender, listOf(sender), args[0] as String?)
+            }
+        }.register()
 
         cmd.registerHelp(HelpCommandBuilder.HelpColor.from(ChatColor.GOLD, ChatColor.GRAY, '\u27A2'))
         cmd.register()

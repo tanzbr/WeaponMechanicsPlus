@@ -28,6 +28,13 @@ Slow_Falling_Bullets:
   Modifiers:
     Projectile_Modifier:
       Gravity: MULTIPLY 0.60  # 60% gravity
+  Per_Weapon_Modifiers:
+    Fatman:
+      Projectile_Modifier:
+        Gravity: MULTIPLY 0.30  # 30% gravity for Fatman
+    Fatman_Rock:
+      Projectile_Modifier:
+        Gravity: MULTIPLY 0.30  # 30% gravity for Fatman
 
 Fiery_Bullets:
   Item:

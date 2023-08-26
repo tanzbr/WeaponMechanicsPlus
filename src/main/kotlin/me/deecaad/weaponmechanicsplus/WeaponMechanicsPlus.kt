@@ -11,6 +11,7 @@ import me.deecaad.weaponmechanics.WeaponMechanics
 import me.deecaad.weaponmechanics.lib.auto.UpdateChecker
 import me.deecaad.weaponmechanics.lib.auto.UpdateInfo
 import me.deecaad.weaponmechanics.lib.bstats.bukkit.Metrics
+import me.deecaad.weaponmechanics.lib.bstats.charts.SimpleBarChart
 import me.deecaad.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
 import me.deecaad.weaponmechanicsplus.weapon.listeners.AddAttachment
 import me.deecaad.weaponmechanicsplus.weapon.listeners.ModifierListeners

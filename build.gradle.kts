@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 group = "me.deecaad"
-version = "0.5.1"
+version = "1.0.0"
 
 plugins {
     `java-library`
