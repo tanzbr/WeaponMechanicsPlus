@@ -1,4 +1,4 @@
-package me.deecaad.weaponmechanicsplus.weapon.listeners
+package me.deecaad.weaponmechanicsplus.listeners
 
 import me.deecaad.core.file.BukkitConfig
 import me.deecaad.core.file.SerializeData
@@ -94,15 +94,15 @@ class AddAttachment : Listener {
             return
 
         // Require a drag and drop action
-        val weaponItem = inventory.getItem(event.slot)
+        val item = inventory.getItem(event.slot)
         val attachmentItem = event.cursor
-        if (weaponItem == null || attachmentItem == null || !weaponItem.hasItemMeta() || !attachmentItem.hasItemMeta())
+        if (item == null || attachmentItem == null || !item.hasItemMeta() || !attachmentItem.hasItemMeta())
             return
 
         // need to drag and drop an attachment onto a weapon
-        val weaponTitle = CustomTag.WEAPON_TITLE.getString(weaponItem)
+        val itemTitle = CustomTag.WEAPON_TITLE.getString(item) ?: CustomTag.ARMOR_TITLE.getString(item)
         val attachmentTitle = CustomTag.ATTACHMENT_TITLE.getString(attachmentItem)
-        if (weaponTitle == null || attachmentTitle == null)
+        if (itemTitle == null || attachmentTitle == null)
             return
 
         // Users in creative mode get "item creation privilege" which means that
@@ -121,15 +121,15 @@ class AddAttachment : Listener {
             return
         }
 
-        if (!attachment.canAttach(weaponItem)) {
-            attachment.denyMechanics?.use(CastData(event.whoClicked, weaponTitle, weaponItem))
+        if (!attachment.canAttach(item)) {
+            attachment.denyMechanics?.use(CastData(event.whoClicked, itemTitle, item))
             return
         }
 
         // Now we handle the actual attachment part
         attachmentItem.amount -= 1
-        attachment.attach(weaponItem)
-        attachment.equipMechanics?.use(CastData(event.whoClicked, weaponTitle, weaponItem))
+        attachment.attach(item)
+        attachment.equipMechanics?.use(CastData(event.whoClicked, itemTitle, item))
 
         // Cancel the event, so we don't pick up the weapon
         event.isCancelled = true

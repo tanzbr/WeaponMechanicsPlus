@@ -1,4 +1,4 @@
-package me.deecaad.weaponmechanicsplus.weapon.listeners
+package me.deecaad.weaponmechanicsplus.listeners
 
 import me.deecaad.core.mechanics.Mechanics
 import me.deecaad.weaponmechanics.weapon.weaponevents.*

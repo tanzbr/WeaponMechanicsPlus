@@ -16,15 +16,6 @@ import java.util.*
 object WeaponMechanicsPlusAPI {
 
     /**
-     * "What problem does this solve?" you may ask. Well, we want the result
-     * of [.getModifiers] to be sorted by
-     * [ModifierBase.priority]. Sorting methods are slow, so instead
-     * of sorting a list multiple times every tick, we store the result. This
-     * way, the only expense is in the triplet instantiation instead of sorting.
-     */
-    private val CACHE: MutableMap<Triple<List<String>, String, String>, List<Modifier>> = HashMap()
-
-    /**
      * Returns an array of all attachments currently attached to the gun. Note
      * that if you are looking to use the [Modifier] from the attachment,
      * you should use [WeaponMechanicsPlusAPI.getModifiers] instead. You should
@@ -63,7 +54,7 @@ object WeaponMechanicsPlusAPI {
      * @return The array of modifiers, or null.
      */
     fun getModifiers(weapon: ItemStack, entity: LivingEntity? = null): List<Modifier> {
-        val weaponTitle = CustomTag.WEAPON_TITLE.getString(weapon)
+        val itemTitle = CustomTag.WEAPON_TITLE.getString(weapon) ?: CustomTag.ARMOR_TITLE.getString(weapon) // simple ArmorMechanics support
         val attachmentIds = CustomTag.ATTACHMENTS.getStringArray(weapon)
         val ammo: String? = null
         // todo account for ammo modifiers
@@ -81,7 +72,7 @@ object WeaponMechanicsPlusAPI {
                 continue
             }
 
-            modifiers.add(attachment.getModifier(weaponTitle))
+            modifiers.add(attachment.getModifier(itemTitle))
         }
         return modifiers
     }

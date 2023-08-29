@@ -9,14 +9,12 @@ import me.deecaad.core.commands.arguments.StringArgumentType
 import me.deecaad.core.mechanics.CastData
 import me.deecaad.core.utils.StringUtil
 import me.deecaad.weaponmechanics.utils.CustomTag
-import me.deecaad.weaponmechanicsplus.weapon.listeners.AddAttachment
 import me.deecaad.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import java.util.function.Function
