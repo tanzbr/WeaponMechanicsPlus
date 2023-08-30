@@ -1,21 +1,15 @@
 package com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util
 
-import me.deecaad.core.compatibility.CompatibilityAPI
 import me.deecaad.core.compatibility.nbt.NBTCompatibility.AttributeSlot
 import me.deecaad.core.file.SerializeData
 import me.deecaad.core.utils.AttributeType
 import me.deecaad.core.utils.EnumUtil
-import org.bukkit.inventory.ItemStack
 
 class AttributeModifier(
     val attribute: AttributeType,
     val slot: AttributeSlot? = null,
     var amount: Double = 0.0,
 ): Cloneable {
-
-    fun set(item: ItemStack) {
-        CompatibilityAPI.getNBTCompatibility().setAttribute(item, attribute, slot, amount);
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -41,15 +35,18 @@ class AttributeModifier(
 
     companion object {
 
-        fun flatten(modifiers: List<AttributeModifier>): MutableSet<AttributeModifier> {
+        fun flatten(lists: List<List<AttributeModifier>>): MutableSet<AttributeModifier> {
             val flattened = HashMap<AttributeModifier, AttributeModifier>()
-            for (modifier in modifiers) {
-                if (flattened.containsKey(modifier)) {
-                    flattened[modifier]!!.amount += modifier.amount
-                    continue
-                }
 
-                flattened[modifier] = modifier.clone()
+            for (list in lists) {
+                for (modifier in list) {
+                    if (flattened.containsKey(modifier)) {
+                        flattened[modifier]!!.amount += modifier.amount
+                        continue
+                    }
+
+                    flattened[modifier] = modifier.clone()
+                }
             }
 
             return flattened.keys

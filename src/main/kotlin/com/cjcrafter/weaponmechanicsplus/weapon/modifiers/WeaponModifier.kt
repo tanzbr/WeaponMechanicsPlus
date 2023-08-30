@@ -2,9 +2,8 @@ package com.cjcrafter.weaponmechanicsplus.weapon.modifiers
 
 import me.deecaad.core.file.*
 
-class Modifier : Serializer<Modifier> {
+class WeaponModifier : Serializer<WeaponModifier> {
 
-    var armor: ArmorModifier? = null
     var damage: DamageModifier? = null
     var explosion: ExplosionModifier? = null
     var info: InfoModifier? = null
@@ -20,7 +19,6 @@ class Modifier : Serializer<Modifier> {
     constructor()
 
     constructor(
-        armorModifier: ArmorModifier?,
         damageModifier: DamageModifier?,
         explosionModifier: ExplosionModifier?,
         infoModifier: InfoModifier?,
@@ -30,7 +28,6 @@ class Modifier : Serializer<Modifier> {
         scopeModifier: ScopeModifier?,
         shootModifier: ShootModifier?
     ) {
-        this.armor = armorModifier
         this.damage = damageModifier
         this.explosion = explosionModifier
         this.info = infoModifier
@@ -42,8 +39,7 @@ class Modifier : Serializer<Modifier> {
     }
 
     @Throws(SerializerException::class)
-    override fun serialize(data: SerializeData): Modifier {
-        val armorModifier = data.of("Armor_Modifier").serialize(ArmorModifier::class.java)
+    override fun serialize(data: SerializeData): WeaponModifier {
         val damageModifier = data.of("Damage_Modifier").serialize(DamageModifier::class.java)
         val explosionModifier = data.of("Explosion_Modifier").serialize(ExplosionModifier::class.java)
         val infoModifier = data.of("Info_Modifier").serialize(InfoModifier::class.java)
@@ -53,8 +49,7 @@ class Modifier : Serializer<Modifier> {
         val scopeModifier = data.of("Scope_Modifier").serialize(ScopeModifier::class.java)
         val shootModifier = data.of("Shoot_Modifier").serialize(ShootModifier::class.java)
 
-        return Modifier(
-            armorModifier,
+        return WeaponModifier(
             damageModifier,
             explosionModifier,
             infoModifier,

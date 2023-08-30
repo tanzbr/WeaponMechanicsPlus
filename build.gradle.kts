@@ -59,8 +59,8 @@ dependencies {
 
     api("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
 
-    compileOnly("me.deecaad:mechanicscore:2.5.0-SNAPSHOT2")
-    compileOnly("me.deecaad:weaponmechanics:2.7.0-SNAPSHOT2")
+    compileOnly("me.deecaad:mechanicscore:2.5.0-SNAPSHOT3")
+    compileOnly("me.deecaad:weaponmechanics:2.7.0-SNAPSHOT3")
     compileOnly(files(file("lib/ArmorMechanics-3.0.0.jar")))
 }
 

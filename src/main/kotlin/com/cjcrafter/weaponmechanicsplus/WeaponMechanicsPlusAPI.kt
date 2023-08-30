@@ -7,6 +7,7 @@ import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * This utility class contains static methods to facilitate getting a weapon's
@@ -15,18 +16,7 @@ import java.util.*
  */
 object WeaponMechanicsPlusAPI {
 
-    /**
-     * Returns an array of all attachments currently attached to the gun. Note
-     * that if you are looking to use the [Modifier] from the attachment,
-     * you should use [WeaponMechanicsPlusAPI.getModifiers] instead. You should
-     * check [ItemStack.hasItemMeta] before calling this method.
-     *
-     * The order of the array is in increasing attachment priority.
-     *
-     * @param weapon The non-null weapon to get attachments from.
-     * @return The array of attachments, or null.
-     */
-    fun getAttachments(weapon: ItemStack?): Array<Attachment>? {
+    fun getAttachments(weapon: ItemStack?): List<Attachment>? {
         val attachmentIds = CustomTag.ATTACHMENTS.getStringArray(weapon)
         if (attachmentIds.isEmpty()) return null
 
@@ -42,38 +32,73 @@ object WeaponMechanicsPlusAPI {
             attachments.add(temp)
         }
 
-        return attachments.toTypedArray()
+        return attachments
     }
 
-    /**
-     * Returns an immutable list of all modifiers currently attached to the gun.
-     * This includes modifiers from any [Attachment] and any [AmmoTypeModifier].
-     *
-     * @param weapon The non-null weapon to get modifiers from.
-     * @param entity The nullable entity using the weapon.
-     * @return The array of modifiers, or null.
-     */
-    fun getModifiers(weapon: ItemStack, entity: LivingEntity? = null): List<Modifier> {
-        val itemTitle = CustomTag.WEAPON_TITLE.getString(weapon) ?: CustomTag.ARMOR_TITLE.getString(weapon) // simple ArmorMechanics support
-        val attachmentIds = CustomTag.ATTACHMENTS.getStringArray(weapon)
-        val ammo: String? = null
-        // todo account for ammo modifiers
+    fun forEachAttachment(item: ItemStack, action: (Attachment) -> Unit) {
+        val attachmentIds = CustomTag.ATTACHMENTS.getStringArray(item)
+        if (attachmentIds.isEmpty()) return
 
-        val size = attachmentIds.size
-        val modifiers = ArrayList<Modifier>(size)
-
-        for (i in 0 until size) {
-            val attachment = AttachmentRegistry.INSTANCE[attachmentIds[i]]
-
-            // Happens when the server admin deletes/changes the name of an
-            // attachment in config, but some players still have it.
-            if (attachment == null) {
-                WeaponMechanicsPlus.getDebug().warn("Attachment '${attachmentIds[i]}' no longer exists in config. (getModifiers)")
+        // Get the attachment config information from each attachment id
+        for (i in attachmentIds.indices) {
+            val temp = AttachmentRegistry.INSTANCE[attachmentIds[i]]
+            if (temp == null) {
+                WeaponMechanicsPlus.getDebug().warn("Found deleted attachment ${attachmentIds[i]} on $item")
                 continue
             }
 
-            modifiers.add(attachment.getModifier(itemTitle))
+            action(temp)
         }
-        return modifiers
+    }
+
+    fun forEachModifier(entity: LivingEntity, weapon: ItemStack? = null, action: (ModifierBase) -> Unit) {
+        // Where can modifiers exist?
+        // 1. the attachments on an item the player is holding (weapon)
+        // 2. the ammo loaded in the gun a player is holding
+        // 3. helmet/chestplate/leggings/boots attachments
+
+        val lists = ArrayList<List<ModifierBase>>()
+
+        // 1. weapon attachments, & 2. weapon ammo
+        if (weapon != null) {
+            getAttachments(weapon)?.let { lists.add(it) }
+            // TODO weapon ammo
+        }
+
+        // 3. armor attachments
+        val equipment = entity.equipment
+        if (equipment != null) {
+            equipment.helmet?.let { armor -> getAttachments(armor)?.let { attachments -> lists.add(attachments) } }
+            equipment.chestplate?.let { armor -> getAttachments(armor)?.let { attachments -> lists.add(attachments) } }
+            equipment.leggings?.let { armor -> getAttachments(armor)?.let { attachments -> lists.add(attachments) } }
+            equipment.boots?.let { armor -> getAttachments(armor)?.let { attachments -> lists.add(attachments) } }
+        }
+
+        kWayMerge(action, lists)
+    }
+
+    private data class Element<T : Comparable<T>>(val value: T, val index: Int, val listIndex: Int) : Comparable<Element<T>> {
+        override fun compareTo(other: Element<T>): Int {
+            return this.value.compareTo(other.value)
+        }
+    }
+
+    private fun <T : Comparable<T>> kWayMerge(action: (T) -> Unit, lists: List<List<T>>) {
+        val pq = PriorityQueue<Element<T>>()
+        for ((listIndex, list) in lists.withIndex()) {
+            if (list.isNotEmpty()) {
+                pq.offer(Element(list[0], 0, listIndex))
+            }
+        }
+
+        while (pq.isNotEmpty()) {
+            val smallest = pq.poll()
+            action(smallest.value)
+
+            val nextIndex = smallest.index + 1
+            if (nextIndex < lists[smallest.listIndex].size) {
+                pq.offer(Element(lists[smallest.listIndex][nextIndex], nextIndex, smallest.listIndex))
+            }
+        }
     }
 }

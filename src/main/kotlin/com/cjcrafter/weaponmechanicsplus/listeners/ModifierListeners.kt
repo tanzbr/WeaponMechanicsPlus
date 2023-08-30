@@ -11,10 +11,9 @@ import org.bukkit.event.Listener
 class ModifierListeners : Listener {
 
     @EventHandler
-    fun onDamage(event: WeaponDamageEntityEvent) {
-        val modifiers = WeaponMechanicsPlusAPI.getModifiers(event.weaponStack)
-        for (modifier in modifiers) {
-            val damage = modifier.damage ?: continue
+    fun onDealDamage(event: WeaponDamageEntityEvent) {
+        WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
+            val damage = modifier.getWeaponModifier(event.weaponTitle)?.damage ?: return@forEachModifier
 
             damage.armorDamage?.let { event.armorDamage = it.apply(event.armorDamage) }
             damage.fireTicks?.let { event.fireTicks = it.apply(event.fireTicks) }
@@ -44,9 +43,8 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onExplode(event: ProjectilePreExplodeEvent) {
-        val modifiers = WeaponMechanicsPlusAPI.getModifiers(event.weaponStack ?: return)
-        for (modifier in modifiers) {
-            val explosion = modifier.explosion ?: continue
+        WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
+            val explosion = modifier.getWeaponModifier(event.weaponTitle)?.explosion ?: return@forEachModifier
 
             explosion.overrideExplosion?.let { event.explosion = explosion.overrideExplosion }
         }
@@ -54,9 +52,8 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onExplode(event: ProjectileExplodeEvent) {
-        val modifiers = WeaponMechanicsPlusAPI.getModifiers(event.weaponStack ?: return)
-        for (modifier in modifiers) {
-            val explosion = modifier.explosion ?: continue
+        WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
+            val explosion = modifier.getWeaponModifier(event.weaponTitle)?.explosion ?: return@forEachModifier
 
             event.mechanics = updateMechanics(event.mechanics, explosion.mechanicsModifier)
         }
@@ -64,9 +61,8 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onReload(event: WeaponReloadEvent) {
-        val modifiers = WeaponMechanicsPlusAPI.getModifiers(event.weaponStack)
-        for (modifier in modifiers) {
-            val reload = modifier.reload ?: continue
+        WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
+            val reload = modifier.getWeaponModifier(event.weaponTitle)?.reload ?: return@forEachModifier
 
             event.mechanics = updateMechanics(event.mechanics, reload.mechanicsModifier)
 
@@ -80,9 +76,8 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onScope(event: WeaponScopeEvent) {
-        val modifiers = WeaponMechanicsPlusAPI.getModifiers(event.weaponStack)
-        for (modifier in modifiers) {
-            val scope = modifier.scope ?: continue
+        WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
+            val scope = modifier.getWeaponModifier(event.weaponTitle)?.scope ?: return@forEachModifier
 
             event.mechanics = updateMechanics(event.mechanics, scope.mechanicsModifier)
 
@@ -99,9 +94,8 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onPrepareShoot(event: PrepareWeaponShootEvent) {
-        val modifiers = WeaponMechanicsPlusAPI.getModifiers(event.weaponStack)
-        for (modifier in modifiers) {
-            val shoot = modifier.shoot ?: continue
+        WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
+            val shoot = modifier.getWeaponModifier(event.weaponTitle)?.shoot ?: return@forEachModifier
 
             event.shootMechanics = updateMechanics(event.shootMechanics, shoot.mechanicsModifier)
 
@@ -112,9 +106,8 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onShoot(event: WeaponShootEvent) {
-        val modifiers = WeaponMechanicsPlusAPI.getModifiers(event.weaponStack)
-        for (modifier in modifiers) {
-            val projectile = modifier.projectile ?: continue
+        WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
+            val projectile = modifier.getWeaponModifier(event.weaponTitle)?.projectile ?: return@forEachModifier
 
             // ProjectileSettings
             if (projectile.overrideProjectileSettings != null) {

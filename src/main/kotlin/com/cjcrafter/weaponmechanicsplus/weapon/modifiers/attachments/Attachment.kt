@@ -9,7 +9,7 @@ import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.ModifierBase
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.Whitelist
 import org.bukkit.inventory.ItemStack
 
-class Attachment : ModifierBase, Comparable<Attachment> {
+class Attachment : ModifierBase {
 
     lateinit var attachmentTitle: String
     var maximumStackAmount = 1
@@ -97,10 +97,6 @@ class Attachment : ModifierBase, Comparable<Attachment> {
         CustomTag.ATTACHMENTS.setStringArray(weapon, attachments.map { it.attachmentTitle }.toTypedArray())
     }
 
-    override fun compareTo(other: Attachment): Int {
-        return priority.compareTo(other.priority)
-    }
-
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): Attachment {
         val attachmentTitle = data.key
@@ -138,8 +134,9 @@ class Attachment : ModifierBase, Comparable<Attachment> {
 
         val base = super.serialize(data)
         returnValue.priority = base.priority
-        returnValue.modifier = base.modifier
+        returnValue.weaponModifier = base.weaponModifier
         returnValue.perWeaponModifiers = base.perWeaponModifiers
+        returnValue.armorModifier = base.armorModifier
         return returnValue
     }
 
