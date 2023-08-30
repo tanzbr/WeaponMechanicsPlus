@@ -40,8 +40,8 @@ class PlaceholderListeners : Listener {
             if (placeholder == null) {
                 WeaponMechanicsPlus.getDebug().error("Could not find placeholder associated with $file")
                 continue
-            } else if (!serializer::class.java.isAssignableFrom(placeholder::class.java)) {
-                WeaponMechanicsPlus.getDebug().error("Placeholder $placeholderName is a ${placeholderName::class.java} but expected a ${serializer::class.java}")
+            } else if (!serializer.clazz.isAssignableFrom(placeholder::class.java)) {
+                WeaponMechanicsPlus.getDebug().error("Placeholder $placeholderName is a ${placeholder::class.java} but expected a ${serializer::class.java}")
                 continue
             }
 

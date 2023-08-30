@@ -56,7 +56,8 @@ class WeaponMechanicsPlaceholderListener : Listener {
     fun onEquip(event: EntityEquipmentEvent) {
         val player = event.entity as? Player ?: return
 
-        if (CustomTag.WEAPON_TITLE.getString(event.equipped) == null)
+        val item = event.equipped ?: event.dequipped
+        if (item == null || !item.hasItemMeta() || CustomTag.WEAPON_TITLE.getString(item) == null)
             return
 
         // We want to update the weapon, but unfortunately we cannot modify the
@@ -74,7 +75,7 @@ class WeaponMechanicsPlaceholderListener : Listener {
                 // Dupe protection, it is theoretically possible for a client
                 // to swap out the item with a different weapon. Not a very useful
                 // dupe since it replaces the old weapon, but still a potential bug
-                if (event.equipped != weaponStack) return
+                if (item != weaponStack) return
 
                 val display = weaponMechanicsDisplays[weaponTitle]
                 val lore = weaponMechanicsLores[weaponTitle]

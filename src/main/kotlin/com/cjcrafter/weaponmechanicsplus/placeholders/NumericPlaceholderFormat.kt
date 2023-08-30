@@ -1,7 +1,6 @@
 package com.cjcrafter.weaponmechanicsplus.placeholders
 
 import me.deecaad.core.file.SerializeData
-import me.deecaad.core.file.Serializer
 import me.deecaad.core.placeholder.NumericPlaceholderHandler
 import me.deecaad.core.placeholder.PlaceholderData
 import me.deecaad.core.utils.NumberUtil
@@ -29,7 +28,7 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
     /**
      * Default constructor for serializer
      */
-    constructor()
+    constructor() : super(NumericPlaceholderHandler::class.java)
     constructor(
         defaultMode: Mode,
         prefix: String,
@@ -40,7 +39,7 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
         max: Double,
         bar: StringBar,
         emojis: TreeMap<Double, String>
-    ) {
+    ) : super(NumericPlaceholderHandler::class.java) {
         this.defaultMode = defaultMode
         this.prefix = prefix
         this.suffix = suffix
@@ -71,9 +70,9 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
 
     fun appendEmoji(value: Double, builder: StringBuilder) {
 
-        val unit = emojis.floorKey(value).toDouble()
+        val unit = emojis.floorKey(value)?.toDouble() ?: return
         val amount = (value / unit).toInt()
-        if (amount != 0 && value % unit < 0.1){
+        if (amount != 0 && value % unit < 0.1) {
             builder.append(amount).append(emojis[unit]).append(" ");
             appendEmoji(value - amount * unit, builder)
         }
@@ -86,30 +85,38 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
         val nullFormat = data.of("Null_Format").assertExists().adventure
 
         val colors = TreeMap<Double, String>()
-        for ((index, colorLine) in data.of("Colors").assertType(List::class.java).get<List<String>>().withIndex()) {
+        for ((index, colorLine) in data.of("Colors").assertExists().assertType(List::class.java).get<List<String>>().withIndex()) {
             val splitIndex = colorLine.indexOf(' ')
             val numberString = colorLine.substring(0, splitIndex)
             val colorString = colorLine.substring(splitIndex + 1)
-            val double = numberString.toDoubleOrNull() ?: throw data.listException("Colors", index, "Expected a number before the color, but got '$numberString'")
+            val double = numberString.toDoubleOrNull() ?: throw data.listException(
+                "Colors",
+                index,
+                "Expected a number before the color, but got '$numberString'"
+            )
             colors[double] = colorString
         }
 
         val min = data.of("Min").assertExists().double
         val max = data.of("Max").assertExists().double
 
-        val leftColor = data.of("Left_Color").assertExists().adventure
-        val rightColor = data.of("Right_Color").assertExists().adventure
-        val leftSymbol = data.of("Left_Symbol").assertExists().adventure
-        val rightSymbol = data.of("Right_Symbol").getAdventure(leftSymbol)
-        val symbolAmount = data.of("Symbol_Amount").assertExists().assertPositive().int
+        val leftColor = data.of("Bar.Left_Color").assertExists().adventure
+        val rightColor = data.of("Bar.Right_Color").assertExists().adventure
+        val leftSymbol = data.of("Bar.Left_Symbol").assertExists().adventure
+        val rightSymbol = data.of("Bar.Right_Symbol").getAdventure(leftSymbol)
+        val symbolAmount = data.of("Bar.Symbol_Amount").assertExists().assertPositive().int
         val bar = StringBar(leftColor, rightColor, leftSymbol, rightSymbol, symbolAmount)
 
         val emojis = TreeMap<Double, String>()
-        for ((index, colorLine) in data.of("Emojis").assertType(List::class.java).get<List<String>>().withIndex()) {
+        for ((index, colorLine) in data.of("Emojis").assertExists().assertType(List::class.java).get<List<String>>().withIndex()) {
             val splitIndex = colorLine.indexOf(' ')
             val numberString = colorLine.substring(0, splitIndex)
             val emojiString = colorLine.substring(splitIndex + 1)
-            val double = numberString.toDoubleOrNull() ?: throw data.listException("Emojis", index, "Expected a number before the emoji, but got '$numberString'")
+            val double = numberString.toDoubleOrNull() ?: throw data.listException(
+                "Emojis",
+                index,
+                "Expected a number before the emoji, but got '$numberString'"
+            )
             colors[double] = emojiString
         }
 

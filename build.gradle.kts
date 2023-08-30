@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-group = "me.deecaad"
-version = "1.0.0"
+group = "com.deecaad"
+version = "1.1.0"
 
 plugins {
     `java-library`
@@ -16,7 +16,7 @@ configurations {
 }
 
 bukkit {
-    main = "me.deecaad.weaponmechanicsplus.WeaponMechanicsPlusLoader"
+    main = "com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusLoader"
     name = "WeaponMechanicsPlus"
     apiVersion = "1.13"
 
