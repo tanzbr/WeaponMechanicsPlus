@@ -13,7 +13,11 @@ import me.deecaad.weaponmechanics.lib.auto.UpdateInfo
 import me.deecaad.weaponmechanics.lib.bstats.bukkit.Metrics
 import com.cjcrafter.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
 import com.cjcrafter.weaponmechanicsplus.listeners.AddAttachment
+import com.cjcrafter.weaponmechanicsplus.listeners.ArmorModifierListeners
 import com.cjcrafter.weaponmechanicsplus.listeners.ModifierListeners
+import com.cjcrafter.weaponmechanicsplus.listeners.PlaceholderListeners
+import com.cjcrafter.weaponmechanicsplus.placeholders.ArmorMechanicsPlaceholderListener
+import com.cjcrafter.weaponmechanicsplus.placeholders.WeaponMechanicsPlaceholderListener
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -23,6 +27,7 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitRunnable
 import java.io.File
 import java.io.IOException
 import java.util.jar.JarFile
@@ -144,8 +149,20 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 projectilesRunnable.addScriptManager(ProjectileScriptManager(javaPlugin))
 
                 // Other listeners
-                Bukkit.getPluginManager().registerEvents(AddAttachment(), javaPlugin)
-                Bukkit.getPluginManager().registerEvents(ModifierListeners(), javaPlugin)
+                val manager = Bukkit.getPluginManager();
+                manager.registerEvents(AddAttachment(), javaPlugin)
+                manager.registerEvents(ModifierListeners(), javaPlugin)
+                manager.registerEvents(ArmorModifierListeners(), javaPlugin)
+                manager.registerEvents(PlaceholderListeners(), javaPlugin)
+
+                // We need a serialized list of weapons, so we run this 5 ticks after server start/reload
+                object : BukkitRunnable() {
+                    override fun run() {
+                        manager.registerEvents(WeaponMechanicsPlaceholderListener(), javaPlugin)
+                        if (manager.getPlugin("ArmorMechanics") != null)
+                            manager.registerEvents(ArmorMechanicsPlaceholderListener(), javaPlugin)
+                    }
+                }.runTaskLater(javaPlugin, 5L)
 
                 // Reregister WMP since we removed it earlier in HandlerList.unregisterAll
                 registerSerializerQueue()

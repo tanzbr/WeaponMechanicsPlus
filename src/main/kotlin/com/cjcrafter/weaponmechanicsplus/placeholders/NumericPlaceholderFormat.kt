@@ -8,7 +8,7 @@ import me.deecaad.core.utils.NumberUtil
 import java.util.*
 
 
-class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler>, Serializer<NumericPlaceholderFormat> {
+class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
 
     var defaultMode: Mode = Mode.VALUE
 
