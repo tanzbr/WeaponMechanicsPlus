@@ -3,13 +3,19 @@ package com.cjcrafter.weaponmechanicsplus.placeholders
 import com.cjcrafter.armormechanics.ArmorMechanics
 import com.cjcrafter.armormechanics.events.ArmorUpdateEvent
 import me.deecaad.core.MechanicsCore
+import me.deecaad.core.file.BukkitConfig
+import me.deecaad.core.file.SerializeData
+import me.deecaad.core.file.serializers.ItemSerializer
 import me.deecaad.core.placeholder.PlaceholderData
 import me.deecaad.core.placeholder.PlaceholderMessage
 import me.deecaad.core.placeholder.PlaceholderMessageChain
 import me.deecaad.core.utils.AdventureUtil
+import me.deecaad.core.utils.StringUtil
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import java.io.File
 
 class ArmorMechanicsPlaceholderListener : Listener {
 
@@ -17,15 +23,17 @@ class ArmorMechanicsPlaceholderListener : Listener {
     private val armorMechanicsLores: MutableMap<String, PlaceholderMessageChain> = HashMap()
 
     init {
-        val mini = MechanicsCore.getPlugin().message
+        val armorFile = File(ArmorMechanics.INSTANCE.dataFolder, "Armor.yml")
+        val config = YamlConfiguration.loadConfiguration(armorFile)
 
-        // ArmorMechanics armor updating template
-        for (entry in ArmorMechanics.INSTANCE.armors) {
-            val display = PlaceholderMessage(mini.serialize(AdventureUtil.getName(entry.value)))
-            val lores = AdventureUtil.getLore(entry.value)?.map { mini.serialize(it) }?.map { PlaceholderMessage(it) }
+        for (armorTitle in config.getKeys(false)) {
+            val data = SerializeData("Armor", armorFile, armorTitle, BukkitConfig(config))
 
-            armorMechanicsDisplays[entry.key] = display
-            if (lores != null) armorMechanicsLores[entry.key] = PlaceholderMessageChain(lores)
+            val display: PlaceholderMessage? = data.of("Name").getAdventure(null)?.let { PlaceholderMessage(it) }
+            val lores: List<PlaceholderMessage>? = (data.of("Lore").get(null as List<String>?))?.map { StringUtil.colorAdventure("<!i>$it") }?.map { PlaceholderMessage(it) }
+
+            if (display != null) armorMechanicsDisplays[armorTitle] = display
+            if (lores != null) armorMechanicsLores[armorTitle] = PlaceholderMessageChain(lores)
         }
     }
 

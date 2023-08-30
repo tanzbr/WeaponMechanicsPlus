@@ -32,23 +32,25 @@ class WeaponMechanicsPlaceholderListener : Listener {
 
         val mini = MechanicsCore.getPlugin().message
 
-        // WeaponMechanics weapon updating template
-        for (title in WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList) {
-            val item = WeaponMechanics.getConfigurations().getObject("$title.Info.Weapon_Item", ItemStack::class.java)!!
+        if (false) {
 
-            val display = PlaceholderMessage(mini.serialize(AdventureUtil.getName(item)))
-            val lores = AdventureUtil.getLore(item)?.map { mini.serialize(it) }?.map { PlaceholderMessage(it) }
+            // WeaponMechanics weapon updating template
+            for (title in WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList) {
+                val item = WeaponMechanics.getConfigurations().getObject("$title.Info.Weapon_Item", ItemStack::class.java)!!
 
-            // Frequent updates are used for when a placeholder changes often.
-            // TODO add config option to disable this
-            val needsFrequentUpdates = tagsWithFrequentUpdates.any { display.presentPlaceholders.contains(it) }
-                    || lores?.any { lore -> tagsWithFrequentUpdates.any { lore.presentPlaceholders.contains(it) } } ?: false
-            if (needsFrequentUpdates)
-                frequentUpdates.add(title)
+                val display = PlaceholderMessage(mini.serialize(AdventureUtil.getName(item)))
+                val lores = AdventureUtil.getLore(item)?.map { mini.serialize(it) }?.map { PlaceholderMessage(it) }
 
+                // Frequent updates are used for when a placeholder changes often.
+                // TODO add config option to disable this
+                val needsFrequentUpdates = tagsWithFrequentUpdates.any { display.presentPlaceholders.contains(it) }
+                        || lores?.any { lore -> tagsWithFrequentUpdates.any { lore.presentPlaceholders.contains(it) } } ?: false
+                if (needsFrequentUpdates)
+                    frequentUpdates.add(title)
 
-            weaponMechanicsDisplays[title] = display
-            if (lores != null) weaponMechanicsLores[title] = PlaceholderMessageChain(lores)
+                weaponMechanicsDisplays[title] = display
+                if (lores != null) weaponMechanicsLores[title] = PlaceholderMessageChain(lores)
+            }
         }
     }
 

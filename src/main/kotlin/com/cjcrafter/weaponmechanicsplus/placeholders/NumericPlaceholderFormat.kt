@@ -1,5 +1,6 @@
 package com.cjcrafter.weaponmechanicsplus.placeholders
 
+import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
 import me.deecaad.core.file.SerializeData
 import me.deecaad.core.placeholder.NumericPlaceholderHandler
 import me.deecaad.core.placeholder.PlaceholderData
@@ -60,7 +61,7 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
         when (defaultMode) {
             Mode.VALUE -> builder.append(value)
             Mode.ROMAN_NUMERAL -> builder.append(NumberUtil.toRomanNumeral(Math.round(value.toFloat())))
-            Mode.EMOJI -> appendEmoji(value.toDouble(), builder)
+            Mode.EMOJI -> appendEmoji(data, value.toDouble(), builder)
             Mode.PERCENTAGE -> (100 * NumberUtil.invLerp(min, max, value.toDouble())).toInt()
             Mode.BAR -> bar.append(value, builder)
         }
@@ -68,15 +69,20 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
         return builder.append(suffix).toString()
     }
 
-    fun appendEmoji(value: Double, builder: StringBuilder) {
+    fun appendEmoji(data: PlaceholderData, value: Double, builder: StringBuilder) {
+        var remainingValue = value
+        var counter = 0 // Count the number of iterations
 
-        val unit = emojis.floorKey(value)?.toDouble() ?: return
-        val amount = (value / unit).toInt()
-        if (amount != 0 && value % unit < 0.1) {
-            builder.append(amount).append(emojis[unit]).append(" ");
-            appendEmoji(value - amount * unit, builder)
+        while (counter < 50) {  // Limit to 50 iterations
+            val unit = emojis.floorKey(remainingValue)?.toDouble() ?: return
+            builder.append(emojis[unit])
+            remainingValue -= unit
+            counter++
         }
+
+        WeaponMechanicsPlus.getDebug().debug("Could not add emojis correctly when formatting '$builder' for $data")
     }
+
 
     override fun serialize(data: SerializeData): NumericPlaceholderFormat {
         val defaultMode = data.of("Default_Mode").assertExists().getEnum(Mode::class.java)
@@ -117,7 +123,7 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
                 index,
                 "Expected a number before the emoji, but got '$numberString'"
             )
-            colors[double] = emojiString
+            emojis[double] = emojiString
         }
 
         return NumericPlaceholderFormat(defaultMode, prefix, suffix, nullFormat, colors, min, max, bar, emojis)
