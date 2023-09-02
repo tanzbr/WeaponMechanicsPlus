@@ -36,6 +36,9 @@ object WeaponMechanicsPlusAPI {
     }
 
     fun forEachAttachment(item: ItemStack, action: (Attachment) -> Unit) {
+        if (!item.hasItemMeta())
+            return
+
         val attachmentIds = CustomTag.ATTACHMENTS.getStringArray(item)
         if (attachmentIds.isEmpty()) return
 

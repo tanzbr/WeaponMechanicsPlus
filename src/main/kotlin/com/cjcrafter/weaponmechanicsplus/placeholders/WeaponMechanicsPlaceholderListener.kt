@@ -72,6 +72,7 @@ class WeaponMechanicsPlaceholderListener : Listener {
                     else -> return
                 }
 
+                if (!weaponStack.hasItemMeta()) return
                 val weaponTitle = CustomTag.WEAPON_TITLE.getString(weaponStack) ?: return
 
                 // Dupe protection, it is theoretically possible for a client

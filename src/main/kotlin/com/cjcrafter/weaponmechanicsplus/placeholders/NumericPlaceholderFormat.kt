@@ -62,7 +62,7 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
             Mode.VALUE -> builder.append(value)
             Mode.ROMAN_NUMERAL -> builder.append(NumberUtil.toRomanNumeral(Math.round(value.toFloat())))
             Mode.EMOJI -> appendEmoji(data, value.toDouble(), builder)
-            Mode.PERCENTAGE -> (100 * NumberUtil.invLerp(min, max, value.toDouble())).toInt()
+            Mode.PERCENTAGE -> builder.append((100 * NumberUtil.invLerp(min, max, value.toDouble())).toInt())
             Mode.BAR -> bar.append(value, builder)
         }
 
