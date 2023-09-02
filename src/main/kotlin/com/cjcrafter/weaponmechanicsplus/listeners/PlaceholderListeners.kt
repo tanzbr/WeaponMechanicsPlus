@@ -63,18 +63,14 @@ class PlaceholderListeners : Listener {
     @EventHandler
     fun requestPlaceholders(event: PlaceholderRequestEvent) {
         for (entry in event.placeholders()) {
-            val placeholder = PlaceholderHandler.REGISTRY[entry.key]
-            val format = when (placeholder) {
+            val result = when (val placeholder = PlaceholderHandler.REGISTRY[entry.key]) {
                 is NumericPlaceholderHandler -> numerics[placeholder]?.format(placeholder, event.placeholderData)
                 is EnumPlaceholderHandler -> enums[placeholder]?.format(placeholder, event.placeholderData)
                 is ListPlaceholderHandler -> lists[placeholder]?.format(placeholder, event.placeholderData)
                 else -> null
             }
 
-            format?.format(placeholder, event.placeholderData)?.let{ event.setPlaceholder(entry.key, it) }
-
-            if (format != null)
-                event.setPlaceholder(entry.key, format)
+            result?.let { event.setPlaceholder(entry.key, it) }
         }
     }
 }
