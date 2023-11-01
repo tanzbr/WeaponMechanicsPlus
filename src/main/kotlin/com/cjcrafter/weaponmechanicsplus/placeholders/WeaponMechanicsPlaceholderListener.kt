@@ -2,6 +2,7 @@ package com.cjcrafter.weaponmechanicsplus.placeholders
 
 import com.cjcrafter.armormechanics.ArmorMechanics
 import com.cjcrafter.armormechanics.ArmorMechanicsAPI
+import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
 import me.deecaad.core.MechanicsCore
 import me.deecaad.core.events.EntityEquipmentEvent
 import me.deecaad.core.placeholder.PlaceholderData
@@ -87,7 +88,7 @@ class WeaponMechanicsPlaceholderListener : Listener {
                 display?.replaceAndDeserialize(placeholderData)?.let { AdventureUtil.setName(weaponStack, it) }
                 lore?.replaceAndDeserialize(placeholderData)?.let { AdventureUtil.setLore(weaponStack, it) }
             }
-        }.runTask(ArmorMechanics.INSTANCE)
+        }.runTask(WeaponMechanicsPlus.getPlugin())
     }
 
     @EventHandler
