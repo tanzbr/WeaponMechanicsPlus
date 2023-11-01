@@ -52,7 +52,7 @@ abstract class ModifierBase : Serializer<ModifierBase>, Comparable<ModifierBase>
                 //if (!options.contains(key))
                 //    throw SerializerOptionsException(data.serializer, "Weapon", options, key, data.of(key).location)
 
-                val temp = data.of("Per_Weapon_Modifiers.$key").serialize(WeaponModifier::class.java)
+                val temp = data.of("Per_Weapon_Modifiers.$key").assertExists().serialize(WeaponModifier::class.java)!!
                 perWeaponModifiers[key] = temp
             }
         }
@@ -74,7 +74,7 @@ abstract class ModifierBase : Serializer<ModifierBase>, Comparable<ModifierBase>
                 //if (!options.contains(key))
                 //    throw SerializerOptionsException(data.serializer, "Armor", options, key, data.of(key).location)
 
-                val temp = data.of("Per_Weapon_Modifiers.$key").serialize(ArmorModifier::class.java)
+                val temp = data.of("Per_Armor_Modifiers.$key").assertExists().serialize(ArmorModifier::class.java)!!
                 perArmorModifiers[key] = temp
             }
         }

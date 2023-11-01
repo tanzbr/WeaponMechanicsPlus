@@ -7,11 +7,15 @@ import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusAPI
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import java.security.SecureRandom
 
 class ModifierListeners : Listener {
 
     @EventHandler
     fun onDealDamage(event: WeaponDamageEntityEvent) {
+        if (event.weaponStack == null)
+            return
+
         WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
             val damage = modifier.getWeaponModifier(event.weaponTitle)?.damage ?: return@forEachModifier
 
@@ -43,6 +47,9 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onExplode(event: ProjectilePreExplodeEvent) {
+        if (event.weaponStack == null)
+            return
+
         WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
             val explosion = modifier.getWeaponModifier(event.weaponTitle)?.explosion ?: return@forEachModifier
 
@@ -52,6 +59,9 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onExplode(event: ProjectileExplodeEvent) {
+        if (event.weaponStack == null)
+            return
+
         WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
             val explosion = modifier.getWeaponModifier(event.weaponTitle)?.explosion ?: return@forEachModifier
 
@@ -61,6 +71,9 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onReload(event: WeaponReloadEvent) {
+        if (event.weaponStack == null)
+            return
+
         WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
             val reload = modifier.getWeaponModifier(event.weaponTitle)?.reload ?: return@forEachModifier
 
@@ -76,6 +89,9 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onScope(event: WeaponScopeEvent) {
+        if (event.weaponStack == null)
+            return
+
         WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
             val scope = modifier.getWeaponModifier(event.weaponTitle)?.scope ?: return@forEachModifier
 
@@ -94,6 +110,9 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onPrepareShoot(event: PrepareWeaponShootEvent) {
+        if (event.weaponStack == null)
+            return
+
         WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
             val shoot = modifier.getWeaponModifier(event.weaponTitle)?.shoot ?: return@forEachModifier
 
@@ -106,6 +125,9 @@ class ModifierListeners : Listener {
 
     @EventHandler
     fun onShoot(event: WeaponShootEvent) {
+        if (event.weaponStack == null)
+            return
+
         WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
             val projectile = modifier.getWeaponModifier(event.weaponTitle)?.projectile ?: return@forEachModifier
 

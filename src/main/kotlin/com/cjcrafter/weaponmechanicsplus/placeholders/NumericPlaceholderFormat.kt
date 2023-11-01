@@ -85,10 +85,10 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
 
 
     override fun serialize(data: SerializeData): NumericPlaceholderFormat {
-        val defaultMode = data.of("Default_Mode").assertExists().getEnum(Mode::class.java)
-        val prefix = data.of("Prefix").assertExists().adventure
-        val suffix = data.of("Suffix").assertExists().adventure
-        val nullFormat = data.of("Null_Format").assertExists().adventure
+        val defaultMode = data.of("Default_Mode").assertExists().getEnum(Mode::class.java)!!
+        val prefix = data.of("Prefix").assertExists().adventure!!
+        val suffix = data.of("Suffix").assertExists().adventure!!
+        val nullFormat = data.of("Null_Format").assertExists().adventure!!
 
         val colors = TreeMap<Double, String>()
         for ((index, colorLine) in data.of("Colors").assertExists().assertType(List::class.java).get<List<String>>().withIndex()) {
@@ -106,10 +106,10 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
         val min = data.of("Min").assertExists().double
         val max = data.of("Max").assertExists().double
 
-        val leftColor = data.of("Bar.Left_Color").assertExists().adventure
-        val rightColor = data.of("Bar.Right_Color").assertExists().adventure
-        val leftSymbol = data.of("Bar.Left_Symbol").assertExists().adventure
-        val rightSymbol = data.of("Bar.Right_Symbol").getAdventure(leftSymbol)
+        val leftColor = data.of("Bar.Left_Color").assertExists().adventure!!
+        val rightColor = data.of("Bar.Right_Color").assertExists().adventure!!
+        val leftSymbol = data.of("Bar.Left_Symbol").assertExists().adventure!!
+        val rightSymbol = data.of("Bar.Right_Symbol").getAdventure(leftSymbol)!!
         val symbolAmount = data.of("Bar.Symbol_Amount").assertExists().assertPositive().int
         val bar = StringBar(leftColor, rightColor, leftSymbol, rightSymbol, symbolAmount)
 

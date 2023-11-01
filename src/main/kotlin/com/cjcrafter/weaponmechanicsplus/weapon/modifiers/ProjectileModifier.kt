@@ -20,14 +20,13 @@ class ProjectileModifier : Serializer<ProjectileModifier> {
     var decreaseInWater: DoubleModifier? = null
     var decreaseWhenRainingOrSnowing: DoubleModifier? = null
     var maxAliveTicks: IntegerModifier? = null
-    //var size: DoubleModifier? = null  TODO add RayTrace modification
 
     var overrideSticky: Sticky? = null
 
     // If overrideThrough is used (not null), none of the variables in the group
     // below are used.
     var overrideThrough: Through? = null
-    var maximumThroughAmount: IntegerModifier? = null
+    var maximumThroughAmount: DoubleModifier? = null
 
     // If overrideBouncy is used (not null), none of the variables in the group
     // below are used.
@@ -50,7 +49,7 @@ class ProjectileModifier : Serializer<ProjectileModifier> {
         maxAliveTicks: IntegerModifier?,
         overrideSticky: Sticky?,
         overrideThrough: Through?,
-        maximumThroughAmount: IntegerModifier?,
+        maximumThroughAmount: DoubleModifier?,
         overrideBouncy: Bouncy?,
         maximumBounceAmount: IntegerModifier?
     ) {
@@ -85,7 +84,7 @@ class ProjectileModifier : Serializer<ProjectileModifier> {
         val overrideSticky: Sticky? = data.of("Override_Sticky").serialize(Sticky::class.java)
 
         val overrideThrough: Through? = data.of("Override_Through").serialize(Through::class.java)
-        val maximumThroughAmount = data.of("Maximum_Through_Amount").serialize(IntegerModifier::class.java)
+        val maximumThroughAmount = data.of("Maximum_Through_Amount").serialize(DoubleModifier::class.java)
 
         val overrideBouncy: Bouncy? = data.of("Override_Bouncy").serialize(Bouncy::class.java)
         val maximumBounceAmount = data.of("Maximum_Bounce_Amount").serialize(IntegerModifier::class.java)

@@ -33,7 +33,7 @@ class FireMode : Serializer<FireMode> {
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): FireMode {
-        val trigger = data.of("Trigger").assertExists().serialize(Trigger::class.java)
+        val trigger = data.of("Trigger").assertExists().serialize(Trigger::class.java)!!
         val nextMode = data.of("Next_Mode").assertExists().assertType(String::class.java).get<String>()
         val switchMechanics = data.of("Mechanics").serialize(Mechanics::class.java)
 

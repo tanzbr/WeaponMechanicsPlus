@@ -1,0 +1,7 @@
+Null_Format: "None"
+Prefix: "<yellow>"
+Suffix: "</yellow>"
+Elements_Per_Line: 3
+Skip_First_Line: false
+Separator: "<gray>, </gray>"
+New_Line: "<gray>  - </gray>"

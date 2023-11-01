@@ -21,6 +21,7 @@ import java.io.File
 
 class PlaceholderListeners : Listener {
 
+    private val allowedToBeMissing = setOf("armor_potion_immunities", "armor_bullet_resistance", "armor_explosion_resistance")
     private val numerics = HashMap<NumericPlaceholderHandler, PlaceholderFormat<NumericPlaceholderHandler>>()
     private val enums = HashMap<EnumPlaceholderHandler, PlaceholderFormat<EnumPlaceholderHandler>>()
     private val lists = HashMap<ListPlaceholderHandler, PlaceholderFormat<ListPlaceholderHandler>>()
@@ -42,11 +43,24 @@ class PlaceholderListeners : Listener {
     }
 
     private fun <T : PlaceholderHandler> loadPlaceholders(folder: File, serializer: PlaceholderFormat<T>, map: MutableMap<T, PlaceholderFormat<T>>) {
+        if (!folder.exists())
+            folder.mkdirs()
+
         for (file in folder.listFiles()!!) {
-            val placeholderName = file.nameWithoutExtension
+
+            // "link" the name of the file to an existing placeholder. "Optional"
+            // addons, like ArmorMechanics, use filenames that start with a '$'.
+            var placeholderName = file.nameWithoutExtension
+            var requiredPlaceholder = true
+            if (placeholderName.startsWith("$")) {
+                placeholderName = placeholderName.substring(1)
+                requiredPlaceholder = false
+            }
+
             val placeholder = PlaceholderHandler.REGISTRY[placeholderName]
             if (placeholder == null) {
-                WeaponMechanicsPlus.getDebug().error("Could not find placeholder associated with $file")
+                if (requiredPlaceholder)
+                    WeaponMechanicsPlus.getDebug().error("Could not find placeholder associated with $file")
                 continue
             } else if (!serializer.clazz.isAssignableFrom(placeholder::class.java)) {
                 WeaponMechanicsPlus.getDebug().error("Placeholder $placeholderName is a ${placeholder::class.java} but expected a ${serializer::class.java}")

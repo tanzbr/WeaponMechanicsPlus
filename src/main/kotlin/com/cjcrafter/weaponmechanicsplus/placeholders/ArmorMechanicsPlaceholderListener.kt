@@ -30,7 +30,7 @@ class ArmorMechanicsPlaceholderListener : Listener {
             val data = SerializeData("Armor", armorFile, armorTitle, BukkitConfig(config))
 
             val display: PlaceholderMessage? = data.of("Name").getAdventure(null)?.let { PlaceholderMessage(it) }
-            val lores: List<PlaceholderMessage>? = (data.of("Lore").get(null as List<String>?))?.map { StringUtil.colorAdventure("<!i>$it") }?.map { PlaceholderMessage(it) }
+            val lores: List<PlaceholderMessage>? = (data.of("Lore").get(null as List<String>?))?.map { StringUtil.colorAdventure("<!i>$it") }?.map { PlaceholderMessage(it!!) }
 
             if (display != null) armorMechanicsDisplays[armorTitle] = display
             if (lores != null) armorMechanicsLores[armorTitle] = PlaceholderMessageChain(lores)

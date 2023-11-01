@@ -80,7 +80,7 @@ class AddAttachment : Listener {
                 }
             })
         } catch (e: Throwable) {
-            WeaponMechanics.debug.log(LogLevel.ERROR, "Some error occurred whilst reading repair_kits folder", e)
+            WeaponMechanics.debug.log(LogLevel.ERROR, "Some error occurred whilst reading attachments folder", e)
         }
     }
 

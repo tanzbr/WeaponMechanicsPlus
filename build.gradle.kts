@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-group = "com.deecaad"
-version = "1.1.0"
+group = "com.cjcrafter"
+version = "1.1.2"
 
 plugins {
     `java-library`
@@ -57,10 +57,10 @@ repositories {
 dependencies {
     compileOnly("org.jetbrains:annotations:24.0.1")
 
-    api("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
+    api("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
 
-    compileOnly("me.deecaad:mechanicscore:2.5.0-SNAPSHOT3")
-    compileOnly("me.deecaad:weaponmechanics:2.7.0-SNAPSHOT3")
+    compileOnly("me.deecaad:mechanicscore:3.1.0")
+    compileOnly("me.deecaad:weaponmechanics:3.1.0")
     compileOnly(files(file("lib/ArmorMechanics-3.0.0.jar")))
 }
 
@@ -70,9 +70,6 @@ tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
 
     dependencies {
-
-        // Since MechanicsCore shades kotlin, we do not need to shade kotlin here
-        // exclude(dependency("org.jetbrains.kotlin:"))
 
         relocate ("kotlin.", "me.deecaad.core.lib.kotlin.") {
             include(dependency("org.jetbrains.kotlin:"))

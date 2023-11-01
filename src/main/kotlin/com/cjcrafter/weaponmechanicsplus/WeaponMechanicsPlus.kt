@@ -125,7 +125,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
     private fun registerSerializerQueue() {
         val listener = object : Listener {
             @EventHandler
-            fun onJoin(event: QueueSerializerEvent) {
+            fun onConfigSerialize(event: QueueSerializerEvent) {
                 // Perfect place to register all things to WM ;D
                 if (event.sourceName != "WeaponMechanics") return
 
