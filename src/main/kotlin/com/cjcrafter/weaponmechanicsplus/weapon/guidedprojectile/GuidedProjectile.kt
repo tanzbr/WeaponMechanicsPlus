@@ -3,7 +3,7 @@ package com.cjcrafter.weaponmechanicsplus.weapon.guidedprojectile
 import me.deecaad.core.file.SerializeData
 import me.deecaad.core.file.Serializer
 import me.deecaad.core.file.SerializerException
-import org.bukkit.util.Vector;
+import org.bukkit.util.Vector
 import kotlin.math.abs
 
 class GuidedProjectile : Serializer<GuidedProjectile> {
@@ -40,6 +40,6 @@ class GuidedProjectile : Serializer<GuidedProjectile> {
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): GuidedProjectile {
 
-        return GuidedProjectile();
+        return GuidedProjectile()
     }
 }

@@ -149,7 +149,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 projectilesRunnable.addScriptManager(ProjectileScriptManager(javaPlugin))
 
                 // Other listeners
-                val manager = Bukkit.getPluginManager();
+                val manager = Bukkit.getPluginManager()
                 manager.registerEvents(AddAttachment(), javaPlugin)
                 manager.registerEvents(ModifierListeners(), javaPlugin)
                 manager.registerEvents(ArmorModifierListeners(), javaPlugin)

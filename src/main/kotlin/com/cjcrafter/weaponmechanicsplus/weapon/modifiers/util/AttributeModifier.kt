@@ -30,7 +30,7 @@ class AttributeModifier(
     }
 
     override fun clone(): AttributeModifier {
-        return super.clone() as AttributeModifier;
+        return super.clone() as AttributeModifier
     }
 
     companion object {

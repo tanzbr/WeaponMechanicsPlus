@@ -1,7 +1,5 @@
 package com.cjcrafter.weaponmechanicsplus.placeholders
 
-import com.cjcrafter.armormechanics.ArmorMechanics
-import com.cjcrafter.armormechanics.ArmorMechanicsAPI
 import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
 import me.deecaad.core.MechanicsCore
 import me.deecaad.core.events.EntityEquipmentEvent
@@ -12,7 +10,6 @@ import me.deecaad.core.utils.AdventureUtil
 import me.deecaad.weaponmechanics.WeaponMechanics
 import me.deecaad.weaponmechanics.utils.CustomTag
 import me.deecaad.weaponmechanics.weapon.weaponevents.WeaponStopShootingEvent
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
