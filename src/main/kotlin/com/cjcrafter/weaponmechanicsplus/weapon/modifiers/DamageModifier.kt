@@ -14,6 +14,8 @@ class DamageModifier : Serializer<DamageModifier> {
     var fireTicks: IntegerModifier? = null
     var armorDamage: IntegerModifier? = null
     var dropoffOverride: DamageDropoff? = null
+    var criticalChance: DoubleModifier? = null
+    var criticalDamage: DoubleModifier? = null
 
     // An attachment can either add, or replace the DamageModifier
     var replaceDefaultDamageModifier = false
@@ -42,6 +44,8 @@ class DamageModifier : Serializer<DamageModifier> {
         fireTicks: IntegerModifier?,
         armorDamage: IntegerModifier?,
         dropoffOverride: DamageDropoff?,
+        criticalChance: DoubleModifier?,
+        criticalDamage: DoubleModifier?,
         replaceDefaultDamageModifier: Boolean,
         damageModifier: me.deecaad.weaponmechanics.weapon.damage.DamageModifier?,
         damageMechanicsModifier: MechanicsModifier?,
@@ -59,6 +63,8 @@ class DamageModifier : Serializer<DamageModifier> {
         this.fireTicks = fireTicks
         this.armorDamage = armorDamage
         this.dropoffOverride = dropoffOverride
+        this.criticalChance = criticalChance
+        this.criticalDamage = criticalDamage
         this.replaceDefaultDamageModifier = replaceDefaultDamageModifier
         this.damageModifier = damageModifier
         this.damageMechanicsModifier = damageMechanicsModifier
@@ -79,6 +85,8 @@ class DamageModifier : Serializer<DamageModifier> {
         val fireTicks = data.of("Fire_Ticks").serialize(IntegerModifier::class.java)
         val armorDamage = data.of("Armor_Damage").serialize(IntegerModifier::class.java)
         val dropoffOverride = data.of("Damage_Dropoff").serialize(DamageDropoff::class.java)
+        val criticalChance = data.of("Critical_Hit.Chance").serialize(DoubleModifier::class.java)
+        val criticalDamage = data.of("Critical_Hit.Damage").serialize(DoubleModifier::class.java)
 
         val replaceDamageModifier = data.of("Replace_Damage_Modifier").serialize(me.deecaad.weaponmechanics.weapon.damage.DamageModifier::class.java)
         val addDamageModifier = data.of("Add_Damage_Modifier").serialize(me.deecaad.weaponmechanics.weapon.damage.DamageModifier::class.java)
@@ -102,8 +110,9 @@ class DamageModifier : Serializer<DamageModifier> {
         val legsMechanicsModifier = data.serializeMechanicsModifier(section="Legs")
         val feetMechanicsModifier = data.serializeMechanicsModifier(section="Feet")
 
-        return DamageModifier(damage, explosionDamage, fireTicks, armorDamage, dropoffOverride, isReplace, damageModifier,
-            damageMechanicsModifier, killMechanicsModifier, backstabMechanicsModifier, criticalHitMechanicsModifier,
-            headMechanicsModifier, bodyMechanicsModifier, armsMechanicsModifier, legsMechanicsModifier, feetMechanicsModifier)
+        return DamageModifier(damage, explosionDamage, fireTicks, armorDamage, dropoffOverride, criticalChance, criticalDamage,
+            isReplace, damageModifier, damageMechanicsModifier, killMechanicsModifier, backstabMechanicsModifier,
+            criticalHitMechanicsModifier, headMechanicsModifier, bodyMechanicsModifier, armsMechanicsModifier,
+            legsMechanicsModifier, feetMechanicsModifier)
     }
 }

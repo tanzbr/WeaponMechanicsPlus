@@ -27,6 +27,10 @@ class ModifierListeners : Listener {
             else
                 damage.baseDamage?.let { event.baseDamage = it.apply(event.baseDamage) }
 
+            event.dropoff = damage.dropoffOverride ?: event.dropoff
+            damage.criticalChance?.let { event.critChance = it.apply(event.critChance) }
+            damage.criticalDamage?.let { event.critDamage = it.apply(event.critDamage) }
+
             if (damage.replaceDefaultDamageModifier)
                 event.damageModifiers[0] = damage.damageModifier
             else if (damage.damageModifier != null)

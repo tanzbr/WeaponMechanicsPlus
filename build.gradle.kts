@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 group = "com.cjcrafter"
-version = "1.1.2"
+version = "1.2.0"
 
 plugins {
     `java-library`
@@ -60,7 +60,7 @@ dependencies {
     api("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
 
     compileOnly("me.deecaad:mechanicscore:3.1.0")
-    compileOnly("me.deecaad:weaponmechanics:3.1.0")
+    compileOnly("me.deecaad:weaponmechanics:3.1.3")
     compileOnly(files(file("lib/ArmorMechanics-3.0.0.jar")))
 }
 

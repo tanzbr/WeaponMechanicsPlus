@@ -100,7 +100,8 @@ class AddAttachment : Listener {
             return
 
         // need to drag and drop an attachment onto a weapon
-        val itemTitle = CustomTag.WEAPON_TITLE.getString(item) ?: CustomTag.ARMOR_TITLE.getString(item)
+        val weaponTitle = CustomTag.WEAPON_TITLE.getString(item)
+        val itemTitle = weaponTitle ?: CustomTag.ARMOR_TITLE.getString(item)
         val attachmentTitle = CustomTag.ATTACHMENT_TITLE.getString(attachmentItem)
         if (itemTitle == null || attachmentTitle == null)
             return
@@ -121,7 +122,7 @@ class AddAttachment : Listener {
             return
         }
 
-        if (!attachment.canAttach(item)) {
+        if (!attachment.canAttach(item, itemTitle, weaponTitle != null)) {
             attachment.denyMechanics?.use(CastData(event.whoClicked, itemTitle, item))
             return
         }

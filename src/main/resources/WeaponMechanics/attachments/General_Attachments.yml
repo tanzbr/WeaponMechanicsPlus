@@ -18,7 +18,7 @@ Long_Barrel:
     Weapons:
       - AX_50
     Mechanics:
-      - "Sound{sound=ENTITY_WARDEN_LISTENING_ANGRY, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
       - "Title{title=<red>Denied, subtitle=<gray>Only 1 can be attached to AX-50}"
   Modifiers:
     Damage_Modifier:
@@ -45,7 +45,7 @@ High_Caliber_Rounds:
     Weapons:
       - Combat_Knife
     Mechanics:
-      - "Sound{sound=ENTITY_WARDEN_LISTENING_ANGRY, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
   Modifiers:
     Damage_Modifier:
       Damage: MULTIPLY 1.20

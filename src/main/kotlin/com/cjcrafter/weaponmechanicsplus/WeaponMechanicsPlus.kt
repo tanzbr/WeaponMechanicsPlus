@@ -152,7 +152,8 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 val manager = Bukkit.getPluginManager()
                 manager.registerEvents(AddAttachment(), javaPlugin)
                 manager.registerEvents(ModifierListeners(), javaPlugin)
-                manager.registerEvents(ArmorModifierListeners(), javaPlugin)
+                if (manager.getPlugin("ArmorMechanics") != null)
+                    manager.registerEvents(ArmorModifierListeners(), javaPlugin)
                 manager.registerEvents(PlaceholderListeners(), javaPlugin)
 
                 // We need a serialized list of weapons, so we run this 5 ticks after server start/reload

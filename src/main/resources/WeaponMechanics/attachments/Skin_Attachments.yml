@@ -19,7 +19,7 @@ Suppressor:
     Weapons:
       - M4A1
     Mechanics:
-      - "Sound{sound=ENTITY_WARDEN_LISTENING_ANGRY, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
       - "Title{title=<red>Denied, subtitle=<gray>Only 1 can be attached to M4A1}"
   Modifiers:
     Shoot_Modifier:
@@ -49,7 +49,7 @@ Reflex_Sight:
       - M4A1
       - STG44
     Mechanics:
-      - "Sound{sound=ENTITY_WARDEN_LISTENING_ANGRY, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
       - "Title{title=<red>Denied, subtitle=<gray>Only 1 can be attached to M4A1 or STG-44}"
   Modifiers: {}  # Empty modifiers since this attachment is only visual
 

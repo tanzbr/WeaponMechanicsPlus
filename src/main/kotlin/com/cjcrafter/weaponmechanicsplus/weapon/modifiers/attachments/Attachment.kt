@@ -16,7 +16,8 @@ class Attachment : ModifierBase {
     lateinit var item: ItemStack
     var attachmentRequireList: Set<String> = setOf()
     var attachmentDenyList: Set<String> = setOf()
-    lateinit var weaponWhitelist: Whitelist<String>
+    var weaponWhitelist: Whitelist<String>? = null
+    var armorWhitelist: Whitelist<String>? = null
     var denyMechanics: Mechanics? = null
     var equipMechanics: Mechanics? = null
     var dequipMechanics: Mechanics? = null
@@ -27,15 +28,26 @@ class Attachment : ModifierBase {
      */
     constructor()
 
-    constructor(attachmentTitle: String, maximumStackAmount: Int, item: ItemStack, attachmentRequireList: Set<String>,
-                attachmentDenyList: Set<String>, weaponWhitelist: Whitelist<String>, unlockable: Unlockable?,
-                denyMechanics: Mechanics?, equipMechanics: Mechanics?, dequipMechanics: Mechanics?) {
+    constructor(
+        attachmentTitle: String,
+        maximumStackAmount: Int,
+        item: ItemStack,
+        attachmentRequireList: Set<String>,
+        attachmentDenyList: Set<String>,
+        weaponWhitelist: Whitelist<String>?,
+        armorWhitelist: Whitelist<String>?,
+        unlockable: Unlockable?,
+        denyMechanics: Mechanics?,
+        equipMechanics: Mechanics?,
+        dequipMechanics: Mechanics?,
+    ) {
         this.attachmentTitle = attachmentTitle
         this.maximumStackAmount = maximumStackAmount
         this.item = item
         this.attachmentRequireList = attachmentRequireList
         this.attachmentDenyList = attachmentDenyList
         this.weaponWhitelist = weaponWhitelist
+        this.armorWhitelist = armorWhitelist
         this.unlockable = unlockable
         this.denyMechanics = denyMechanics
         this.equipMechanics = equipMechanics
@@ -47,19 +59,12 @@ class Attachment : ModifierBase {
      */
     fun generateItem() = item.clone()
 
-    /**
-     * Returns `true` if at least 1 more of this attachment can be
-     * added to the given weapon.
-     *
-     * @param weapon The non-null weapon to check.
-     * @return true if the attachment can be added.
-     */
-    fun canAttach(weapon: ItemStack?): Boolean {
-        val weaponTitle = CustomTag.WEAPON_TITLE.getString(weapon) ?: throw IllegalArgumentException()
-        if (!weaponWhitelist.isWhitelisted(weaponTitle)) return false
+    fun canAttach(item: ItemStack, itemTitle: String, isWeapon: Boolean): Boolean {
+        val whitelist = if (isWeapon) weaponWhitelist else armorWhitelist
+        if (whitelist == null || !whitelist.isWhitelisted(itemTitle)) return false
 
         // If there are no attachments currently on the weapon, then we can attach
-        val attached = WeaponMechanicsPlusAPI.getAttachments(weapon) ?: return true
+        val attached = WeaponMechanicsPlusAPI.getAttachments(item) ?: return true
         var duplicateCount = 0
         for (attachment in attached) {
             if (attachment === this) {
@@ -77,9 +82,7 @@ class Attachment : ModifierBase {
     }
 
     fun attach(weapon: ItemStack?) {
-        var array = CustomTag.ATTACHMENTS.getStringArray(weapon)
-        if (array == null)
-            array = emptyArray()
+        val array = CustomTag.ATTACHMENTS.getStringArray(weapon) ?: emptyArray()
 
         val attachments: MutableList<Attachment> = ArrayList(array.size + 1)
         for (id in array) {
@@ -107,10 +110,27 @@ class Attachment : ModifierBase {
         val tags = mapOf(Pair(CustomTag.ATTACHMENT_TITLE.key, attachmentTitle))
         val item = ItemSerializer().serializeWithTags(data.move("Item"), tags)
 
-        val isWeaponWhitelist = data.of("Denying.Weapon_Whitelist").getBool(false)
-        val weapons = data.ofList("Denying.Weapons").addArgument(String::class.java, true).assertList().get()
-                .stream().map { arr: Array<String> -> arr[0] }.toList()
-        val weaponWhitelist = Whitelist(isWeaponWhitelist, weapons)
+        var weaponWhitelist: Whitelist<String>? = null
+        var armorWhitelist: Whitelist<String>? = null
+        if (data.has("Denying")) {
+            if (!data.has("Denying.Weapon_Whitelist") && !data.has("Denying.Armor_Whitelist")) {
+                throw data.exception("Denying", "Must have either Weapon_Whitelist or Armor_Whitelist")
+            }
+
+            if (data.has("Denying.Weapon_Whitelist")) {
+                val isWeaponWhitelist = data.of("Denying.Weapon_Whitelist").getBool(false)
+                val weapons = data.ofList("Denying.Weapons").addArgument(String::class.java, true).assertList().get()
+                        .map { arr: Array<String> -> arr[0] }
+                weaponWhitelist = Whitelist(isWeaponWhitelist, weapons)
+            }
+
+            if (data.has("Denying.Armor_Whitelist")) {
+                val isArmorWhitelist = data.of("Denying.Armor_Whitelist").getBool(false)
+                val armors = data.ofList("Denying.Armors").addArgument(String::class.java, true).assertList().get()
+                        .map { arr: Array<String> -> arr[0] }
+                armorWhitelist = Whitelist(isArmorWhitelist, armors)
+            }
+        }
 
         val attachmentRequireList: MutableSet<String> = HashSet()
         val attachmentDenyList: MutableSet<String> = HashSet()
@@ -130,7 +150,7 @@ class Attachment : ModifierBase {
         val equipMechanics = data.of("Attach_Mechanics").serialize(Mechanics::class.java)
         val dequipMechanics = data.of("Detach_Mechanics").serialize(Mechanics::class.java)
 
-        val returnValue = Attachment(attachmentTitle, maximumStackAmount, item, attachmentRequireList, attachmentDenyList, weaponWhitelist, unlockable, denyMechanics, equipMechanics, dequipMechanics)
+        val returnValue = Attachment(attachmentTitle, maximumStackAmount, item, attachmentRequireList, attachmentDenyList, weaponWhitelist, armorWhitelist, unlockable, denyMechanics, equipMechanics, dequipMechanics)
 
         val base = super.serialize(data)
         returnValue.priority = base.priority
