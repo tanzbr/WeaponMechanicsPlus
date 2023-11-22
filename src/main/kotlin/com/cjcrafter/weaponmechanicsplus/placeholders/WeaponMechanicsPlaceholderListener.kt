@@ -30,7 +30,8 @@ class WeaponMechanicsPlaceholderListener : Listener {
 
         val mini = MechanicsCore.getPlugin().message
 
-        if (false) {
+        // TODO: Test how lore changes, see if anything breaks
+        if (true) {
 
             // WeaponMechanics weapon updating template
             for (title in WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList) {
@@ -40,7 +41,6 @@ class WeaponMechanicsPlaceholderListener : Listener {
                 val lores = AdventureUtil.getLore(item)?.map { mini.serialize(it) }?.map { PlaceholderMessage(it) }
 
                 // Frequent updates are used for when a placeholder changes often.
-                // TODO add config option to disable this
                 val needsFrequentUpdates = tagsWithFrequentUpdates.any { display.presentPlaceholders.contains(it) }
                         || lores?.any { lore -> tagsWithFrequentUpdates.any { lore.presentPlaceholders.contains(it) } } ?: false
                 if (needsFrequentUpdates)
@@ -56,7 +56,7 @@ class WeaponMechanicsPlaceholderListener : Listener {
     fun onEquip(event: EntityEquipmentEvent) {
         val player = event.entity as? Player ?: return
 
-        val item = event.equipped ?: event.dequipped
+        val item: ItemStack? = event.equipped
         if (item == null || !item.hasItemMeta() || CustomTag.WEAPON_TITLE.getString(item) == null)
             return
 
@@ -91,6 +91,9 @@ class WeaponMechanicsPlaceholderListener : Listener {
     @EventHandler
     fun onStopShoot(event: WeaponStopShootingEvent) {
         val player = event.entity as? Player ?: return
+
+        // Very few tags need to be updated after every shot... Only update
+        // display/lore tags when needed.
         if (!frequentUpdates.contains(event.weaponTitle))
             return
 

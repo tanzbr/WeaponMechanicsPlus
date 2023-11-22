@@ -1,5 +1,6 @@
 package com.cjcrafter.weaponmechanicsplus
 
+import com.cjcrafter.weaponmechanicsplus.listeners.*
 import me.deecaad.core.events.QueueSerializerEvent
 import me.deecaad.core.file.SerializerInstancer
 import me.deecaad.core.file.TaskChain
@@ -12,10 +13,6 @@ import me.deecaad.weaponmechanics.lib.auto.UpdateChecker
 import me.deecaad.weaponmechanics.lib.auto.UpdateInfo
 import me.deecaad.weaponmechanics.lib.bstats.bukkit.Metrics
 import com.cjcrafter.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
-import com.cjcrafter.weaponmechanicsplus.listeners.AddAttachment
-import com.cjcrafter.weaponmechanicsplus.listeners.ArmorModifierListeners
-import com.cjcrafter.weaponmechanicsplus.listeners.ModifierListeners
-import com.cjcrafter.weaponmechanicsplus.listeners.PlaceholderListeners
 import com.cjcrafter.weaponmechanicsplus.placeholders.ArmorMechanicsPlaceholderListener
 import com.cjcrafter.weaponmechanicsplus.placeholders.WeaponMechanicsPlaceholderListener
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
@@ -152,9 +149,13 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 val manager = Bukkit.getPluginManager()
                 manager.registerEvents(AddAttachment(), javaPlugin)
                 manager.registerEvents(ModifierListeners(), javaPlugin)
-                if (manager.getPlugin("ArmorMechanics") != null)
-                    manager.registerEvents(ArmorModifierListeners(), javaPlugin)
                 manager.registerEvents(PlaceholderListeners(), javaPlugin)
+                manager.registerEvents(WeaponGenerateListener(), javaPlugin)
+
+                if (manager.getPlugin("ArmorMechanics") != null) {
+                    manager.registerEvents(ArmorModifierListeners(), javaPlugin)
+                    manager.registerEvents(ArmorGenerateListener(), javaPlugin)
+                }
 
                 // We need a serialized list of weapons, so we run this 5 ticks after server start/reload
                 object : BukkitRunnable() {
