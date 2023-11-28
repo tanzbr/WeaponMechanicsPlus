@@ -17,6 +17,9 @@ import kotlin.collections.ArrayList
 object WeaponMechanicsPlusAPI {
 
     fun getAttachments(weapon: ItemStack?): List<Attachment>? {
+        if (weapon == null || !weapon.hasItemMeta())
+            return null
+
         val attachmentIds = CustomTag.ATTACHMENTS.getStringArray(weapon)
         if (attachmentIds.isEmpty()) return null
 
