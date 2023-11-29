@@ -95,7 +95,7 @@ class FireMode : Serializer<FireMode> {
         // Then we can loop through until we find a valid next firemode.
         // If we loop all the way back to where we started, next weapon is null.
         for (i in 1 until modes.size) {
-            val mode = modes[currentIndex + i]
+            val mode = modes[(currentIndex + i) % modes.size]
             if (mode.canUse(weaponStack))
                 return mode
         }
@@ -105,9 +105,7 @@ class FireMode : Serializer<FireMode> {
 
     override fun getKeyword() = "Fire_Mode"
 
-    override fun getWikiLink(): String {
-        return "";
-    }
+    override fun getWikiLink() = "https://cjcrafter.gitbook.io/weaponmechanicsplus/firemode"
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): FireMode {
