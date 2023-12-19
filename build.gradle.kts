@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 group = "com.cjcrafter"
-version = "1.2.2"
+version = "1.2.3"
 
 plugins {
     `java-library`

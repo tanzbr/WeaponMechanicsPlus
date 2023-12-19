@@ -17,6 +17,12 @@ import org.bukkit.scheduler.BukkitRunnable
 
 class FireMode : Serializer<FireMode> {
 
+    companion object {
+        const val UNIVERSAL_AMMO = "universal"
+        const val AMMO_LEFT_SUFFIX = "_ammo_left"
+        const val AMMO_TYPE_INDEX_SUFFIX = "_ammo_type_index"
+    }
+
     /**
      * This solves a niche problem. Imagine you have a m4a1 with a grenade
      * launcher attachment. Of course, you don't want the grenade launcher mode
@@ -26,7 +32,7 @@ class FireMode : Serializer<FireMode> {
     data class FireModeSelector(
         val weaponTitle: String,
         val requiresAttachments: List<String> = emptyList(),
-        val separateAmmo: String = "universal",
+        val separateAmmo: String = UNIVERSAL_AMMO,
     ) {
         fun canUse(weapon: ItemStack): Boolean {
             val attachments = CustomTag.ATTACHMENTS.getStringArray(weapon)
@@ -77,13 +83,15 @@ class FireMode : Serializer<FireMode> {
             val currentAmmoLeft = CustomTag.AMMO_LEFT.getInteger(weaponStack)
             val currentAmmoTypeIndex = CustomTag.AMMO_TYPE_INDEX.getInteger(weaponStack)
 
-            val nextAmmoLeft = nbt.getInt(weaponStack, "weaponmechanicsplus", "${next.separateAmmo}_ammo_left")
-            val nextAmmoTypeIndex = nbt.getInt(weaponStack, "weaponmechanicsplus", "${next.separateAmmo}_ammo_type_index")
+            val nextAmmoLeft = nbt.getInt(weaponStack, "weaponmechanicsplus", next.separateAmmo + AMMO_LEFT_SUFFIX)
+            val nextAmmoTypeIndex = nbt.getInt(weaponStack, "weaponmechanicsplus", next.separateAmmo + AMMO_TYPE_INDEX_SUFFIX)
+            nbt.remove(weaponStack, "weaponmechanicsplus", current.separateAmmo + AMMO_LEFT_SUFFIX)
+            nbt.remove(weaponStack, "weaponmechanicsplus", current.separateAmmo + AMMO_TYPE_INDEX_SUFFIX)
             CustomTag.AMMO_LEFT.setInteger(weaponStack, nextAmmoLeft)
             CustomTag.AMMO_TYPE_INDEX.setInteger(weaponStack, nextAmmoTypeIndex)
 
-            nbt.setInt(weaponStack, "weaponmechanicsplus", "${current.separateAmmo}_ammo_left", currentAmmoLeft)
-            nbt.setInt(weaponStack, "weaponmechanicsplus", "${current.separateAmmo}_ammo_type_index", currentAmmoTypeIndex)
+            nbt.setInt(weaponStack, "weaponmechanicsplus", current.separateAmmo + AMMO_LEFT_SUFFIX, currentAmmoLeft)
+            nbt.setInt(weaponStack, "weaponmechanicsplus", current.separateAmmo + AMMO_TYPE_INDEX_SUFFIX, currentAmmoTypeIndex)
         }
 
         CustomTag.WEAPON_TITLE.setString(weaponStack, next.weaponTitle)
