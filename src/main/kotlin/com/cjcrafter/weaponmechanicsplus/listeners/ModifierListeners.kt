@@ -128,6 +128,20 @@ class ModifierListeners : Listener {
     }
 
     @EventHandler
+    fun onFullAuto(event: WeaponFullAutoEvent) {
+        if (event.weaponStack == null)
+            return
+
+        WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
+            val shoot = modifier.getWeaponModifier(event.weaponTitle)?.shoot ?: return@forEachModifier
+
+            shoot.fullyAutomaticShotsPerSecond?.let {
+                event.shotsPerSecond = it.apply(event.shotsPerSecond)
+            }
+        }
+    }
+
+    @EventHandler
     fun onShoot(event: WeaponShootEvent) {
         if (event.weaponStack == null)
             return

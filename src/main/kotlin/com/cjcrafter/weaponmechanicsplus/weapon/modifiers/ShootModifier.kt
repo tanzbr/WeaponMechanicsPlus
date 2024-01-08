@@ -10,6 +10,7 @@ class ShootModifier : Serializer<ShootModifier> {
 
     var projectileAmount: IntegerModifier? = null
     var projectileSpeed: DoubleModifier? = null
+    var fullyAutomaticShotsPerSecond: IntegerModifier? = null
     var mechanicsModifier: MechanicsModifier? = null
 
     /**
@@ -28,6 +29,7 @@ class ShootModifier : Serializer<ShootModifier> {
 
         val projectileAmount = data.of("Projectile_Amount").serialize(IntegerModifier::class.java)
         val projectileSpeed = data.of("Projectile_Speed").serialize(DoubleModifier::class.java)
+        val fullyAutomaticShotsPerSecond = data.of("Fully_Automatic_Shots_Per_Second").serialize(DoubleModifier::class.java)
         val mechanicsModifier = data.serializeMechanicsModifier()
 
         return ShootModifier(projectileAmount, projectileSpeed, mechanicsModifier)
