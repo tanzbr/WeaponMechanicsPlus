@@ -43,24 +43,15 @@ repositories {
     maven {
         url = uri("https://repo.aikar.co/content/groups/aikar/")
     }
-
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/WeaponMechanics/MechanicsMain")
-        credentials {
-            username = findProperty("user").toString()
-            password = findProperty("pass").toString()
-        }
-    }
 }
 
 dependencies {
     compileOnly("org.jetbrains:annotations:24.0.1")
 
-    api("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
+    api("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
 
-    compileOnly("me.deecaad:mechanicscore:3.1.0")
-    compileOnly("me.deecaad:weaponmechanics:3.1.5")
+    compileOnly("com.cjcrafter:mechanicscore:3.2.1")
+    compileOnly("com.cjcrafter:weaponmechanics:3.2.3")
     compileOnly(files(file("lib/ArmorMechanics-3.0.2.jar")))
 }
 
