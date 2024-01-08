@@ -1,28 +1,26 @@
 package com.cjcrafter.weaponmechanicsplus
 
 import com.cjcrafter.weaponmechanicsplus.listeners.*
+import com.cjcrafter.weaponmechanicsplus.placeholders.ArmorMechanicsPlaceholderListener
+import com.cjcrafter.weaponmechanicsplus.placeholders.WeaponMechanicsPlaceholderListener
+import com.cjcrafter.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
+import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
+import com.jeff_media.updatechecker.UpdateCheckSource
+import com.jeff_media.updatechecker.UpdateChecker
+import com.jeff_media.updatechecker.UserAgentBuilder
 import me.deecaad.core.events.QueueSerializerEvent
 import me.deecaad.core.file.SerializerInstancer
-import me.deecaad.core.file.TaskChain
 import me.deecaad.core.utils.Debugger
 import me.deecaad.core.utils.FileUtil
 import me.deecaad.core.utils.LogLevel
 import me.deecaad.core.utils.ReflectionUtil
 import me.deecaad.weaponmechanics.WeaponMechanics
-import me.deecaad.weaponmechanics.lib.auto.UpdateChecker
-import me.deecaad.weaponmechanics.lib.auto.UpdateInfo
-import me.deecaad.weaponmechanics.lib.bstats.bukkit.Metrics
-import com.cjcrafter.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
-import com.cjcrafter.weaponmechanicsplus.placeholders.ArmorMechanicsPlaceholderListener
-import com.cjcrafter.weaponmechanicsplus.placeholders.WeaponMechanicsPlaceholderListener
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
+import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitRunnable
 import java.io.File
@@ -86,27 +84,13 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
     }
 
     private fun registerUpdateChecker() {
+        WeaponMechanics.debug.debug("Registering update checker")
 
-        // TODO WHEN APPROVED CHANGE ID
-        if (true) return
-
-        if (!config.getBoolean("Update_Checker.Enabled", true)) return
-        update = UpdateChecker(javaPlugin, UpdateChecker.spigot(1, "WeaponMechanicsPlus"))
-        val listener: Listener = object : Listener {
-            @EventHandler
-            fun onJoin(event: PlayerJoinEvent) {
-                if (event.player.isOp) {
-                    TaskChain(javaPlugin)
-                        .thenRunAsync { callback -> update?.hasUpdate() }
-                        .thenRunSync { callback ->
-                            val update = callback as UpdateInfo?
-                            if (callback != null) event.player.sendMessage(ChatColor.RED.toString() + "WeaponMechanicsPlus is out of date! " + update!!.current + " -> " + update.newest)
-                            null
-                        }
-                }
-            }
-        }
-        Bukkit.getPluginManager().registerEvents(listener, javaPlugin)
+        UpdateChecker(javaPlugin, UpdateCheckSource.SPIGOT, "113789")
+            .setNotifyOpsOnJoin(true)
+            .setUserAgent(UserAgentBuilder().addPluginNameAndVersion())
+            .checkEveryXHours(24.0)
+            .checkNow()
     }
 
     private fun registerBStats() {

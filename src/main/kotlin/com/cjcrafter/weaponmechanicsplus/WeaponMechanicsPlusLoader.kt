@@ -1,6 +1,5 @@
 package com.cjcrafter.weaponmechanicsplus
 
-import me.deecaad.weaponmechanics.lib.auto.AutoMechanicsDownload
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
@@ -17,14 +16,6 @@ class WeaponMechanicsPlusLoader : JavaPlugin() {
         get() = file
 
     override fun onLoad() {
-
-        // Attempt to automatically download MechanicsCore and WeaponMechanics.
-        if (false && config.getBoolean("Auto_Download.Enabled", true)) {
-            val auto = AutoMechanicsDownload(config)
-            auto.MECHANICS_CORE.install()
-            auto.WEAPON_MECHANICS.install()
-        }
-
         // Don't enable the plugin if either dependencies are absent
         if (Bukkit.getPluginManager().getPlugin("MechanicsCore") == null)
             return

@@ -2,10 +2,8 @@ package com.cjcrafter.weaponmechanicsplus.placeholders
 
 import com.cjcrafter.armormechanics.ArmorMechanics
 import com.cjcrafter.armormechanics.events.ArmorUpdateEvent
-import me.deecaad.core.MechanicsCore
 import me.deecaad.core.file.BukkitConfig
 import me.deecaad.core.file.SerializeData
-import me.deecaad.core.file.serializers.ItemSerializer
 import me.deecaad.core.placeholder.PlaceholderData
 import me.deecaad.core.placeholder.PlaceholderMessage
 import me.deecaad.core.placeholder.PlaceholderMessageChain

@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 group = "com.cjcrafter"
-version = "1.2.3"
+version = "1.3.0"
 
 plugins {
     `java-library`
@@ -26,33 +26,29 @@ bukkit {
 
 repositories {
     mavenCentral()
-    mavenLocal()
 
-    maven {
-        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    }
-
-    maven {
-        url = uri("https://repo.maven.apache.org/maven2/")
-    }
-
-    maven {
-        url = uri("https://jitpack.io")
-    }
-
-    maven {
-        url = uri("https://repo.aikar.co/content/groups/aikar/")
-    }
+    maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven(url = "https://repo.maven.apache.org/maven2/")
+    maven(url = "https://jitpack.io")
+    maven(url = "https://repo.aikar.co/content/groups/aikar/")
+    maven(url = "https://repo.jeff-media.com/public/")
 }
 
 dependencies {
+    implementation("org.bstats:bstats-bukkit:3.0.1")
+    implementation("com.jeff_media:SpigotUpdateChecker:3.0.3")
+
     compileOnly("org.jetbrains:annotations:24.0.1")
-
-    api("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
-
+    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
     compileOnly("com.cjcrafter:mechanicscore:3.2.1")
     compileOnly("com.cjcrafter:weaponmechanics:3.2.3")
     compileOnly(files(file("lib/ArmorMechanics-3.0.2.jar")))
+
+    // adventure
+    compileOnly("net.kyori:adventure-api:4.15.0")
+    compileOnly("net.kyori:adventure-platform-bukkit:4.3.2")
+    compileOnly("net.kyori:adventure-text-serializer-legacy:4.15.0")
+    compileOnly("net.kyori:adventure-text-minimessage:4.15.0")
 }
 
 tasks.named<ShadowJar>("shadowJar") {
@@ -62,10 +58,21 @@ tasks.named<ShadowJar>("shadowJar") {
 
     dependencies {
 
-        relocate ("kotlin.", "me.deecaad.core.lib.kotlin.") {
+        relocate ("kotlin.", "com.cjcrafter.weaponmechanicsplus.lib.kotlin.") {
             include(dependency("org.jetbrains.kotlin:"))
         }
+
+        relocate("org.bstats", "com.cjcrafter.weaponmechanicsplus.lib.bstats") {
+            include(dependency("org.bstats:"))
+        }
+        relocate("com.jeff_media", "com.cjcrafter.weaponmechanicsplus.lib") {
+            include(dependency("com.jeff_media:"))
+        }
     }
+
+    // This doesn't actually include any dependencies, this relocates all references
+    // to the mechanics core lib.
+    relocate("net.kyori", "me.deecaad.core.lib")
 }
 
 tasks.named("assemble").configure {
