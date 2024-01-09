@@ -108,7 +108,9 @@ class ModifierListeners : Listener {
                     scope.zoomStacking[event.zoomStack]?.let { event.zoomAmount = it.apply(event.zoomAmount) }
             }
 
-            // TODO night vision
+            // Basically, take the value of these booleans unless they are null
+            event.isPumpkinOverlay = scope.isPumpkinOverlay ?: event.isPumpkinOverlay
+            event.isNightVision = scope.isNightVision ?: event.isNightVision
         }
     }
 

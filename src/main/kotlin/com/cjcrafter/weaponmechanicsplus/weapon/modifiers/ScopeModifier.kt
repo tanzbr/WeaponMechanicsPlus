@@ -10,6 +10,7 @@ class ScopeModifier : Serializer<ScopeModifier> {
 
     var zoomAmount: DoubleModifier? = null
     var isNightVision: Boolean? = null
+    var isPumpkinOverlay: Boolean? = null
     var zoomStacking: List<DoubleModifier?> = listOf()
     var mechanicsModifier: MechanicsModifier? = null
 
@@ -18,10 +19,16 @@ class ScopeModifier : Serializer<ScopeModifier> {
      */
     constructor()
 
-    constructor(zoomAmount: DoubleModifier?, isNightVision: Boolean?, zoomStacking: List<DoubleModifier?>,
-                mechanicsModifier: MechanicsModifier?) {
+    constructor(
+        zoomAmount: DoubleModifier?,
+        isNightVision: Boolean?,
+        isPumpkinOverlay: Boolean?,
+        zoomStacking: List<DoubleModifier?>,
+        mechanicsModifier: MechanicsModifier?,
+    ) {
         this.zoomAmount = zoomAmount
         this.isNightVision = isNightVision
+        this.isPumpkinOverlay = isPumpkinOverlay
         this.zoomStacking = zoomStacking
         this.mechanicsModifier = mechanicsModifier
     }
@@ -30,6 +37,7 @@ class ScopeModifier : Serializer<ScopeModifier> {
     override fun serialize(data: SerializeData): ScopeModifier {
         val zoomAmount = data.of("Zoom_Amount").serialize(DoubleModifier::class.java)
         val isNightVision = if (data.has("Night_Vision")) data.of("Night_Vision").assertExists().bool else null
+        val isPumpkinOverlay = if (data.has("Pumpkin_Overlay")) data.of("Pumpkin_Overlay").assertExists().bool else null
 
         val splits = data.ofList("Zoom_Stacking")
             .addArgument(Operation::class.java, true)
@@ -44,6 +52,6 @@ class ScopeModifier : Serializer<ScopeModifier> {
 
         val mechanicsModifier = data.serializeMechanicsModifier()
 
-        return ScopeModifier(zoomAmount, isNightVision, zoomStacking, mechanicsModifier)
+        return ScopeModifier(zoomAmount, isNightVision, isPumpkinOverlay, zoomStacking, mechanicsModifier)
     }
 }
