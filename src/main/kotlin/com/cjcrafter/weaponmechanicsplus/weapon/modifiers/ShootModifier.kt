@@ -5,6 +5,7 @@ import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.DoubleModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.IntegerModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier.Companion.serializeMechanicsModifier
+import me.deecaad.weaponmechanics.weapon.shoot.spread.Spread
 
 class ShootModifier : Serializer<ShootModifier> {
 
@@ -12,6 +13,8 @@ class ShootModifier : Serializer<ShootModifier> {
     var projectileSpeed: DoubleModifier? = null
     var fullyAutomaticShotsPerSecond: IntegerModifier? = null
     var mechanicsModifier: MechanicsModifier? = null
+    var baseSpread: DoubleModifier? = null
+    var overrideSpread: Spread? = null
 
     /**
      * Default constructor for serializer.
@@ -23,11 +26,15 @@ class ShootModifier : Serializer<ShootModifier> {
         projectileSpeed: DoubleModifier?,
         fullyAutomaticShotsPerSecond: IntegerModifier?,
         mechanicsModifier: MechanicsModifier?,
+        baseSpread: DoubleModifier?,
+        overrideSpread: Spread?,
     ) {
         this.projectileAmount = projectileAmount
         this.projectileSpeed = projectileSpeed
         this.fullyAutomaticShotsPerSecond = fullyAutomaticShotsPerSecond
         this.mechanicsModifier = mechanicsModifier
+        this.baseSpread = baseSpread
+        this.overrideSpread = overrideSpread
     }
 
     @Throws(SerializerException::class)
@@ -38,6 +45,16 @@ class ShootModifier : Serializer<ShootModifier> {
         val fullyAutomaticShotsPerSecond = data.of("Fully_Automatic_Shots_Per_Second").serialize(IntegerModifier::class.java)
         val mechanicsModifier = data.serializeMechanicsModifier()
 
-        return ShootModifier(projectileAmount, projectileSpeed, fullyAutomaticShotsPerSecond, mechanicsModifier)
+        val baseSpread = data.of("Base_Spread").serialize(DoubleModifier::class.java)
+        val overrideSpread = data.of("Override_Spread").serialize(Spread::class.java)
+
+        return ShootModifier(
+            projectileAmount,
+            projectileSpeed,
+            fullyAutomaticShotsPerSecond,
+            mechanicsModifier,
+            baseSpread,
+            overrideSpread,
+        )
     }
 }

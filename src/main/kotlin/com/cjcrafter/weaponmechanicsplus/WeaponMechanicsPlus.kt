@@ -86,7 +86,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
     private fun registerUpdateChecker() {
         WeaponMechanics.debug.debug("Registering update checker")
 
-        UpdateChecker(javaPlugin, UpdateCheckSource.SPIGOT, "113789")
+        update = UpdateChecker(javaPlugin, UpdateCheckSource.SPIGOT, "113789")
             .setNotifyOpsOnJoin(true)
             .setUserAgent(UserAgentBuilder().addPluginNameAndVersion())
             .checkEveryXHours(24.0)

@@ -126,6 +126,9 @@ class ModifierListeners : Listener {
 
             shoot.projectileAmount?.let { event.projectileAmount = it.apply(event.projectileAmount) }
             shoot.projectileSpeed?.let { event.projectileSpeed = it.apply(event.projectileSpeed) }
+
+            shoot.baseSpread?.let { event.baseSpread = it.apply(event.baseSpread) }
+            shoot.overrideSpread?.let { event.spread = it }
         }
     }
 
