@@ -4,6 +4,7 @@ import com.cjcrafter.weaponmechanicsplus.listeners.*
 import com.cjcrafter.weaponmechanicsplus.placeholders.ArmorMechanicsPlaceholderListener
 import com.cjcrafter.weaponmechanicsplus.placeholders.WeaponMechanicsPlaceholderListener
 import com.cjcrafter.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
+import com.cjcrafter.weaponmechanicsplus.weapon.listeners.AttractMobsListener
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
 import com.jeff_media.updatechecker.UpdateCheckSource
 import com.jeff_media.updatechecker.UpdateChecker
@@ -135,6 +136,9 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 manager.registerEvents(ModifierListeners(), javaPlugin)
                 manager.registerEvents(PlaceholderListeners(), javaPlugin)
                 manager.registerEvents(WeaponGenerateListener(), javaPlugin)
+
+                // Weapon listeners
+                manager.registerEvents(AttractMobsListener(), javaPlugin)
 
                 if (manager.getPlugin("ArmorMechanics") != null) {
                     manager.registerEvents(ArmorModifierListeners(), javaPlugin)
