@@ -15,6 +15,7 @@ class ShootModifier : Serializer<ShootModifier> {
     var mechanicsModifier: MechanicsModifier? = null
     var baseSpread: DoubleModifier? = null
     var overrideSpread: Spread? = null
+    var skipAttractMobs: Boolean = false
 
     /**
      * Default constructor for serializer.
@@ -28,6 +29,7 @@ class ShootModifier : Serializer<ShootModifier> {
         mechanicsModifier: MechanicsModifier?,
         baseSpread: DoubleModifier?,
         overrideSpread: Spread?,
+        skipAttractMobs: Boolean,
     ) {
         this.projectileAmount = projectileAmount
         this.projectileSpeed = projectileSpeed
@@ -35,6 +37,7 @@ class ShootModifier : Serializer<ShootModifier> {
         this.mechanicsModifier = mechanicsModifier
         this.baseSpread = baseSpread
         this.overrideSpread = overrideSpread
+        this.skipAttractMobs = skipAttractMobs
     }
 
     @Throws(SerializerException::class)
@@ -48,6 +51,8 @@ class ShootModifier : Serializer<ShootModifier> {
         val baseSpread = data.of("Base_Spread").serialize(DoubleModifier::class.java)
         val overrideSpread = data.of("Override_Spread").serialize(Spread::class.java)
 
+        val skipAttractMobs = data.of("Skip_Attract_Mobs").getBool(false)
+
         return ShootModifier(
             projectileAmount,
             projectileSpeed,
@@ -55,6 +60,7 @@ class ShootModifier : Serializer<ShootModifier> {
             mechanicsModifier,
             baseSpread,
             overrideSpread,
+            skipAttractMobs
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.cjcrafter.weaponmechanicsplus.weapon.attract
 
+import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusAPI
 import me.deecaad.core.file.SerializeData
 import me.deecaad.core.file.Serializer
 import me.deecaad.core.file.serializers.ChanceSerializer
@@ -90,7 +91,19 @@ class AttractMobs : Serializer<AttractMobs> {
      * @param weaponStack The weapon stack which was shot
      */
     fun attract(shooter: LivingEntity, weaponTitle: String, weaponStack: ItemStack) {
+        if (NumberUtil.chance(skipChance))
+            return
         if (isOnlyPlayerShooter && shooter.type != EntityType.PLAYER)
+            return
+
+        // Attachments, like suppressors can skip mob attraction
+        var skipAttractMobs = false
+        WeaponMechanicsPlusAPI.forEachModifier(shooter, weaponStack) { modifier ->
+            if (modifier.getWeaponModifier(weaponTitle)?.shoot?.skipAttractMobs == true)
+                skipAttractMobs = true
+        }
+
+        if (skipAttractMobs)
             return
 
         val nearbyEntities = shooter.world.getNearbyEntities(shooter.location, maxDistance, maxDistance, maxDistance) { mob ->
@@ -130,6 +143,7 @@ class AttractMobs : Serializer<AttractMobs> {
     override fun getKeyword() = "Attract_Mobs"
 
     override fun getParentKeywords(): MutableList<String> {
+        // weapon_title.Shoot.Attract_Mobs
         return mutableListOf("Shoot")
     }
 
