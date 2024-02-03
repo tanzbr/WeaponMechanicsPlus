@@ -52,7 +52,7 @@ class AddAttachment : Listener {
 
                     try {
                         config = YamlConfiguration()
-                        config.load(InputStreamReader(stream))
+                        config.load(InputStreamReader(stream, Charsets.UTF_8))
                     } catch (ex: InvalidConfigurationException) {
                         WeaponMechanics.debug.log(
                             LogLevel.WARN,
