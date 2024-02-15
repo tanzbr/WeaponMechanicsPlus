@@ -1,14 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 group = "com.cjcrafter"
-version = "1.4.2"
+version = "1.4.3"
 
 plugins {
     `java-library`
-    id("com.github.johnrengelman.shadow") version "7.1.0"
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
-    kotlin("jvm") version "1.7.20-RC"
+    kotlin("jvm") version "1.9.22"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
 }
 
 configurations {
@@ -26,7 +25,6 @@ bukkit {
 
 repositories {
     mavenCentral()
-    mavenLocal()
 
     maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven(url = "https://repo.maven.apache.org/maven2/")
@@ -40,9 +38,9 @@ dependencies {
     implementation("com.jeff_media:SpigotUpdateChecker:3.0.3")
 
     compileOnly("org.jetbrains:annotations:24.0.1")
-    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
-    compileOnly("com.cjcrafter:mechanicscore:3.2.5")
-    compileOnly("com.cjcrafter:weaponmechanics:3.2.7")
+    compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("com.cjcrafter:mechanicscore:3.3.0")
+    compileOnly("com.cjcrafter:weaponmechanics:3.3.0")
     compileOnly(files(file("lib/ArmorMechanics-3.0.2.jar")))
 
     // adventure
@@ -52,10 +50,8 @@ dependencies {
     compileOnly("net.kyori:adventure-text-minimessage:4.15.0")
 }
 
-tasks.named<ShadowJar>("shadowJar") {
-    classifier = null
+tasks.shadowJar {
     archiveFileName.set("WeaponMechanicsPlus-${project.version}.jar")
-    configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
 
     dependencies {
 
@@ -74,10 +70,6 @@ tasks.named<ShadowJar>("shadowJar") {
     // This doesn't actually include any dependencies, this relocates all references
     // to the mechanics core lib.
     relocate("net.kyori", "me.deecaad.core.lib")
-}
-
-tasks.named("assemble").configure {
-    dependsOn("shadowJar")
 }
 
 java {
