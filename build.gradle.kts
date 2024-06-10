@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.cjcrafter"
-version = "1.4.3"
+version = "1.4.5"
 
 plugins {
     `java-library`
@@ -38,9 +38,9 @@ dependencies {
     implementation("com.jeff_media:SpigotUpdateChecker:3.0.3")
 
     compileOnly("org.jetbrains:annotations:24.0.1")
-    compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
-    compileOnly("com.cjcrafter:mechanicscore:3.3.0")
-    compileOnly("com.cjcrafter:weaponmechanics:3.3.0")
+    compileOnly("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT")
+    compileOnly("com.cjcrafter:mechanicscore:3.4.1")
+    compileOnly("com.cjcrafter:weaponmechanics:3.4.1")
     compileOnly(files(file("lib/ArmorMechanics-3.0.2.jar")))
 
     // adventure
@@ -74,7 +74,7 @@ tasks.shadowJar {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 

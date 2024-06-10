@@ -8,11 +8,14 @@ import me.deecaad.core.mechanics.CastData
 import me.deecaad.core.mechanics.Mechanics
 import me.deecaad.core.utils.EnumUtil
 import me.deecaad.core.utils.NumberUtil
+import me.deecaad.core.utils.RandomUtil
+import me.deecaad.core.utils.chance
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.inventory.ItemStack
 import java.util.EnumMap
+import java.util.Random
 import kotlin.math.sqrt
 
 /**
@@ -91,7 +94,7 @@ class AttractMobs : Serializer<AttractMobs> {
      * @param weaponStack The weapon stack which was shot
      */
     fun attract(shooter: LivingEntity, weaponTitle: String, weaponStack: ItemStack) {
-        if (NumberUtil.chance(skipChance))
+        if (RandomUtil.chance(skipChance))
             return
         if (isOnlyPlayerShooter && shooter.type != EntityType.PLAYER)
             return
@@ -123,7 +126,7 @@ class AttractMobs : Serializer<AttractMobs> {
                 return@getNearbyEntities false
             if (mob.target != null && !(mobData?.overrideCurrentTarget ?: defaultOverrideCurrentTarget))
                 return@getNearbyEntities false
-            if (!NumberUtil.chance(mobData?.chance ?: defaultChance))
+            if (!RandomUtil.chance(mobData?.chance ?: defaultChance))
                 return@getNearbyEntities false
 
             // Ok! We can attract this mob!
@@ -168,8 +171,18 @@ class AttractMobs : Serializer<AttractMobs> {
             val entities = EnumUtil.parseEnums(EntityType::class.java, split[0] as String)
             val mode = AttractMode.valueOf(split[1] as String)
             val distance: Double? = split.getOrNull(2)?.toDouble()
-            val chance: Double? = split.getOrNull(3)?.let { NumberUtil.parseChance(it) }
+            val chanceStr: String? = split.getOrNull(3)?.trim()
             val overrideCurrentTarget: Boolean? = split.getOrNull(4)?.let { it.equals("true", ignoreCase = true) }
+
+            // Parse the percentage
+            val chance: Double? = chanceStr?.let {
+                if (it.endsWith("%")) {
+                    val percent = it.substring(0, it.length - 1).toDouble()
+                    percent / 100.0
+                } else {
+                    it.toDouble()
+                }
+            }
 
             for (entity in entities)
                 mobs[entity] = MobData(mode, distance?.times(distance), chance, overrideCurrentTarget)

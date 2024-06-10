@@ -14,6 +14,7 @@ import me.deecaad.core.file.SerializerInstancer
 import me.deecaad.core.utils.Debugger
 import me.deecaad.core.utils.FileUtil
 import me.deecaad.core.utils.LogLevel
+import me.deecaad.core.utils.MinecraftVersions
 import me.deecaad.core.utils.ReflectionUtil
 import me.deecaad.weaponmechanics.WeaponMechanics
 import org.bstats.bukkit.Metrics
@@ -63,7 +64,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
         registerBStats()
         registerSerializerQueue()
 
-        if (ReflectionUtil.getMCVersion() >= 13)
+        if (MinecraftVersions.UPDATE_AQUATIC.isAtLeast())
             Command.register()
     }
 

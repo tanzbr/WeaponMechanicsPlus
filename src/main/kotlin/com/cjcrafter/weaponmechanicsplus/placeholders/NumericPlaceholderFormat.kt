@@ -53,7 +53,7 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
     }
 
     override fun format(placeholder: NumericPlaceholderHandler, data: PlaceholderData): String {
-        val value = placeholder.requestValue(data) ?: return nullFormat
+        val value: Number = placeholder.requestValue(data) ?: return nullFormat
 
         val builder = StringBuilder(prefix)
         colors.floorEntry(value.toDouble())?.value?.let { builder.append(it) }
@@ -62,7 +62,7 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
             Mode.VALUE -> builder.append(value)
             Mode.ROMAN_NUMERAL -> builder.append(NumberUtil.toRomanNumeral(Math.round(value.toFloat())))
             Mode.EMOJI -> appendEmoji(data, value.toDouble(), builder)
-            Mode.PERCENTAGE -> builder.append((100 * NumberUtil.invLerp(min, max, value.toDouble())).toInt())
+            Mode.PERCENTAGE -> builder.append((100 * NumberUtil.inverseLerp(min, max, value.toDouble())).toInt())
             Mode.BAR -> bar.append(value, builder)
         }
 
@@ -137,7 +137,7 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
         val symbolAmount: Int,
     ) {
         fun append(value: Number, builder: StringBuilder) {
-            val delimiterIndex: Int = (NumberUtil.invLerp(min, max, value.toDouble()) * symbolAmount).toInt()
+            val delimiterIndex: Int = (NumberUtil.inverseLerp(min, max, value.toDouble()) * symbolAmount).toInt()
 
             builder.append(leftColor)
 
