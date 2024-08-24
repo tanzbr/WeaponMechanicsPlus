@@ -54,11 +54,9 @@ tasks.shadowJar {
     archiveFileName.set("WeaponMechanicsPlus-${project.version}.jar")
 
     dependencies {
-
         relocate ("kotlin.", "com.cjcrafter.weaponmechanicsplus.lib.kotlin.") {
             include(dependency("org.jetbrains.kotlin:"))
         }
-
         relocate("org.bstats", "com.cjcrafter.weaponmechanicsplus.lib.bstats") {
             include(dependency("org.bstats:"))
         }

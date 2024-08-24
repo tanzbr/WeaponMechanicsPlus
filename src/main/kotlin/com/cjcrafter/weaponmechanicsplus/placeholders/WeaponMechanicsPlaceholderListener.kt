@@ -28,28 +28,24 @@ class WeaponMechanicsPlaceholderListener : Listener {
             "ammo_left", "custom_durability", "reload"
         )
 
-        val mini = MechanicsCore.getPlugin().message
-
-        // TODO: Test how lore changes, see if anything breaks
-        if (true) {
-
-            // WeaponMechanics weapon updating template
-            for (title in WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList) {
-                val item = WeaponMechanics.getConfigurations().getObject("$title.Info.Weapon_Item", ItemStack::class.java)!!
-
-                val display = PlaceholderMessage(mini.serialize(AdventureUtil.getName(item)))
-                val lores = AdventureUtil.getLore(item)?.map { mini.serialize(it) }?.map { PlaceholderMessage(it) }
-
-                // Frequent updates are used for when a placeholder changes often.
-                val needsFrequentUpdates = tagsWithFrequentUpdates.any { display.presentPlaceholders.contains(it) }
-                        || lores?.any { lore -> tagsWithFrequentUpdates.any { lore.presentPlaceholders.contains(it) } } ?: false
-                if (needsFrequentUpdates)
-                    frequentUpdates.add(title)
-
-                weaponMechanicsDisplays[title] = display
-                if (lores != null) weaponMechanicsLores[title] = PlaceholderMessageChain(lores)
+        // WeaponMechanics weapon updating template
+        for (title in WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList) {
+            val display = PlaceholderMessage(WeaponMechanics.getConfigurations().getString("$title.Info.Weapon_Item.Name")!!)
+            val lores = WeaponMechanics.getConfigurations().getList("$title.Info.Weapon_Item.Lore", null)?.map {
+                PlaceholderMessage(it!!)
             }
+
+            // Frequent updates are used for when a placeholder changes often.
+            val needsFrequentUpdates = tagsWithFrequentUpdates.any { display.presentPlaceholders.contains(it) }
+                    || lores?.any { lore -> tagsWithFrequentUpdates.any { lore.presentPlaceholders.contains(it) } } ?: false
+            if (needsFrequentUpdates)
+                frequentUpdates.add(title)
+
+            weaponMechanicsDisplays[title] = display
+            if (lores != null) weaponMechanicsLores[title] = PlaceholderMessageChain(lores)
         }
+
+        WeaponMechanicsPlus.getDebug().info("Loaded ${weaponMechanicsDisplays.size} weapon mechanics placeholders")
     }
 
     @EventHandler
@@ -70,13 +66,10 @@ class WeaponMechanicsPlaceholderListener : Listener {
                     else -> return
                 }
 
+                // We make the assumption that we know NOTHING about this item. 1 tick later, the
+                // user may have switched weapons, so we need to do every check again.
                 if (!weaponStack.hasItemMeta()) return
                 val weaponTitle = CustomTag.WEAPON_TITLE.getString(weaponStack) ?: return
-
-                // Dupe protection, it is theoretically possible for a client
-                // to swap out the item with a different weapon. Not a very useful
-                // dupe since it replaces the old weapon, but still a potential bug
-                if (item != weaponStack) return
 
                 val display = weaponMechanicsDisplays[weaponTitle]
                 val lore = weaponMechanicsLores[weaponTitle]

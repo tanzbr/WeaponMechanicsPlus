@@ -4,8 +4,8 @@ Prefix: "<gray>"
 Suffix: "</gray>"
 Null_Format: "0"
 Colors:
-  - "0.0 <green>"
-  - "6.0 <gold>"
+  - "-100000 <green>"  # healing
+  - "0.0 <red>"  # damage
 
 Min: 0.0
 Max: 20.0

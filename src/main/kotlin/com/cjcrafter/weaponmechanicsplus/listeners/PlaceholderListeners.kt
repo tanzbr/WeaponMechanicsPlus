@@ -13,11 +13,17 @@ import me.deecaad.core.placeholder.NumericPlaceholderHandler
 import me.deecaad.core.placeholder.PlaceholderHandler
 import me.deecaad.core.placeholder.PlaceholderRequestEvent
 import me.deecaad.core.utils.FileUtil
+import me.deecaad.core.utils.LogLevel
 import me.deecaad.weaponmechanics.WeaponMechanics
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import java.io.File
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
 
 class PlaceholderListeners : Listener {
 
@@ -33,9 +39,29 @@ class PlaceholderListeners : Listener {
     init {
 
         // Register placeholder formats
+        val placeholdersResource = javaClass.classLoader.getResource("WeaponMechanics/placeholders")!!
         val placeholdersFolder = File(WeaponMechanics.getPlugin().dataFolder, "placeholders")
         if (!placeholdersFolder.exists() || (placeholdersFolder.listFiles()?.size ?: 0) == 0)
-            FileUtil.copyResourcesTo(javaClass.classLoader.getResource("WeaponMechanics/placeholders"), placeholdersFolder.toPath())
+            FileUtil.copyResourcesTo(placeholdersResource, placeholdersFolder.toPath())
+
+        // Walk the placeholders folder, and make sure that we set any missing files
+        // to their default values.
+        val pathReference = FileUtil.PathReference.of(placeholdersResource.toURI())
+        Files.walkFileTree(pathReference.path, object : SimpleFileVisitor<Path>() {
+            override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
+                val relativePath = pathReference.path.relativize(file)
+                val targetFile = File(placeholdersFolder, relativePath.toString())
+                if (!targetFile.exists()) {
+                    try {
+                        Files.copy(file, targetFile.toPath())
+                    } catch (e: Exception) {
+                        WeaponMechanicsPlus.getDebug().log(LogLevel.WARN, "Could not copy $file to $targetFile", e)
+                    }
+                }
+
+                return FileVisitResult.CONTINUE
+            }
+        })
 
         loadPlaceholders(File(placeholdersFolder, "numeric"), NumericPlaceholderFormat(), numerics)
         loadPlaceholders(File(placeholdersFolder, "enums"), EnumPlaceholderFormat(), enums)

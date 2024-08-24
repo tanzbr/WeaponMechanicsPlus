@@ -10,7 +10,9 @@ import com.jeff_media.updatechecker.UpdateCheckSource
 import com.jeff_media.updatechecker.UpdateChecker
 import com.jeff_media.updatechecker.UserAgentBuilder
 import me.deecaad.core.events.QueueSerializerEvent
+import me.deecaad.core.file.JarSearcher
 import me.deecaad.core.file.SerializerInstancer
+import me.deecaad.core.placeholder.PlaceholderHandler
 import me.deecaad.core.utils.Debugger
 import me.deecaad.core.utils.FileUtil
 import me.deecaad.core.utils.LogLevel
@@ -55,6 +57,17 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
         val level = config.getInt("Debug_Level", 2)
         val printTraces = config.getBoolean("Print_Traces", false)
         debug = Debugger(logger, level, printTraces)
+
+        val placeholderSearcher = JarSearcher(JarFile(file))
+        val subclasses = placeholderSearcher.findAllSubclasses(PlaceholderHandler::class.java, classLoader, true)
+        for (sub in subclasses) {
+            try {
+                val instance = ReflectionUtil.newInstance(sub)
+                PlaceholderHandler.REGISTRY.add(instance)
+            } catch (e: Exception) {
+                debug.log(LogLevel.WARN, "Failed to register placeholder: ${sub.simpleName}", e)
+            }
+        }
     }
 
     fun onEnable() {
