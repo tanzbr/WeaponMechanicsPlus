@@ -13,7 +13,7 @@ class ProjectileScriptManager(plugin: Plugin?) : ProjectileScriptManager(plugin)
         if (aProjectile !is WeaponProjectile)
             return
 
-        if (WeaponMechanics.getConfigurations().containsKey("${aProjectile.weaponTitle}.Projectile.Guided_Projectile")) {
+        if (WeaponMechanics.getConfigurations().contains("${aProjectile.weaponTitle}.Projectile.Guided_Projectile")) {
             aProjectile.addProjectileScript(GuidedProjectileScript(plugin, aProjectile))
         }
     }

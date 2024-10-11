@@ -1,7 +1,6 @@
 package com.cjcrafter.weaponmechanicsplus.placeholders
 
 import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
-import me.deecaad.core.MechanicsCore
 import me.deecaad.core.events.EntityEquipmentEvent
 import me.deecaad.core.placeholder.PlaceholderData
 import me.deecaad.core.placeholder.PlaceholderMessage
@@ -15,7 +14,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scheduler.BukkitRunnable
 
 class WeaponMechanicsPlaceholderListener : Listener {
 
@@ -28,20 +26,26 @@ class WeaponMechanicsPlaceholderListener : Listener {
             "ammo_left", "custom_durability", "reload"
         )
 
+        if (WeaponMechanics.getConfigurations() == null) {
+            throw IllegalStateException("WeaponMechanicsPlus cannot load placeholders without WeaponMechanics loaded.")
+        }
+
         // WeaponMechanics weapon updating template
         for (title in WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList) {
-            val display = PlaceholderMessage(WeaponMechanics.getConfigurations().getString("$title.Info.Weapon_Item.Name")!!)
-            val lores = WeaponMechanics.getConfigurations().getList("$title.Info.Weapon_Item.Lore", null)?.map {
-                PlaceholderMessage(it!!)
+            val display = WeaponMechanics.getConfigurations().getString("$title.Info.Weapon_Item.Name")?.let {
+                PlaceholderMessage(it)
+            }
+            val lores = WeaponMechanics.getConfigurations().getObject("$title.Info.Weapon_Item.Lore", List::class.java)?.map {
+                PlaceholderMessage(it as String)
             }
 
             // Frequent updates are used for when a placeholder changes often.
-            val needsFrequentUpdates = tagsWithFrequentUpdates.any { display.presentPlaceholders.contains(it) }
+            val needsFrequentUpdates = tagsWithFrequentUpdates.any { display?.presentPlaceholders?.contains(it) == true }
                     || lores?.any { lore -> tagsWithFrequentUpdates.any { lore.presentPlaceholders.contains(it) } } ?: false
             if (needsFrequentUpdates)
                 frequentUpdates.add(title)
 
-            weaponMechanicsDisplays[title] = display
+            if (display != null) weaponMechanicsDisplays[title] = display
             if (lores != null) weaponMechanicsLores[title] = PlaceholderMessageChain(lores)
         }
 
@@ -58,27 +62,25 @@ class WeaponMechanicsPlaceholderListener : Listener {
 
         // We want to update the weapon, but unfortunately we cannot modify the
         // event since it contains a COPY of the weapon. So check 1 tick later.
-        object : BukkitRunnable() {
-            override fun run() {
-                val weaponStack = when (event.slot) {
-                    EquipmentSlot.HAND -> player.inventory.itemInMainHand
-                    EquipmentSlot.OFF_HAND -> player.inventory.itemInOffHand
-                    else -> return
-                }
-
-                // We make the assumption that we know NOTHING about this item. 1 tick later, the
-                // user may have switched weapons, so we need to do every check again.
-                if (!weaponStack.hasItemMeta()) return
-                val weaponTitle = CustomTag.WEAPON_TITLE.getString(weaponStack) ?: return
-
-                val display = weaponMechanicsDisplays[weaponTitle]
-                val lore = weaponMechanicsLores[weaponTitle]
-
-                val placeholderData = PlaceholderData.of(player, weaponStack, weaponTitle, event.slot)
-                display?.replaceAndDeserialize(placeholderData)?.let { AdventureUtil.setName(weaponStack, it) }
-                lore?.replaceAndDeserialize(placeholderData)?.let { AdventureUtil.setLore(weaponStack, it) }
+        WeaponMechanicsPlus.getScheduler().entity(player).runDelayed(Runnable {
+            val weaponStack = when (event.slot) {
+                EquipmentSlot.HAND -> player.inventory.itemInMainHand
+                EquipmentSlot.OFF_HAND -> player.inventory.itemInOffHand
+                else -> return@Runnable
             }
-        }.runTask(WeaponMechanicsPlus.getPlugin())
+
+            // We make the assumption that we know NOTHING about this item. 1 tick later, the
+            // user may have switched weapons, so we need to do every check again.
+            if (!weaponStack.hasItemMeta()) return@Runnable
+            val weaponTitle = CustomTag.WEAPON_TITLE.getString(weaponStack) ?: return@Runnable
+
+            val display = weaponMechanicsDisplays[weaponTitle]
+            val lore = weaponMechanicsLores[weaponTitle]
+
+            val placeholderData = PlaceholderData.of(player, weaponStack, weaponTitle, event.slot)
+            display?.replaceAndDeserialize(placeholderData)?.let { AdventureUtil.setName(weaponStack, it) }
+            lore?.replaceAndDeserialize(placeholderData)?.let { AdventureUtil.setLore(weaponStack, it) }
+        }, 1L)
     }
 
     @EventHandler

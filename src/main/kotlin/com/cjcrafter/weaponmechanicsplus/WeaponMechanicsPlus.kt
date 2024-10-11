@@ -1,5 +1,7 @@
 package com.cjcrafter.weaponmechanicsplus
 
+import com.cjcrafter.foliascheduler.FoliaCompatibility
+import com.cjcrafter.foliascheduler.ServerImplementation
 import com.cjcrafter.weaponmechanicsplus.listeners.*
 import com.cjcrafter.weaponmechanicsplus.placeholders.ArmorMechanicsPlaceholderListener
 import com.cjcrafter.weaponmechanicsplus.placeholders.WeaponMechanicsPlaceholderListener
@@ -26,7 +28,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
-import org.bukkit.scheduler.BukkitRunnable
 import java.io.File
 import java.io.IOException
 import java.util.jar.JarFile
@@ -37,6 +38,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
     private lateinit var debug: Debugger
     private var update: UpdateChecker? = null
     private var metrics: Metrics? = null
+    lateinit var scheduler: ServerImplementation
 
     val config: FileConfiguration
         get() = javaPlugin.config
@@ -57,6 +59,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
         val level = config.getInt("Debug_Level", 2)
         val printTraces = config.getBoolean("Print_Traces", false)
         debug = Debugger(logger, level, printTraces)
+        scheduler = FoliaCompatibility(javaPlugin).serverImplementation
 
         val placeholderSearcher = JarSearcher(JarFile(file))
         val subclasses = placeholderSearcher.findAllSubclasses(PlaceholderHandler::class.java, classLoader, true)
@@ -95,10 +98,13 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
     private fun registerDebugger() {
         debug.permission = "weaponmechanicsplus.errorlog"
         debug.msg = "WeaponMechanicsPlus had %s error(s) in console."
-        debug.start(javaPlugin)
+        debug.start(scheduler)
     }
 
     private fun registerUpdateChecker() {
+        // TODO: Update to folia compatible
+        if (true)
+            return
         WeaponMechanics.debug.debug("Registering update checker")
 
         update = UpdateChecker(javaPlugin, UpdateCheckSource.SPIGOT, "113789")
@@ -141,7 +147,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 weaponHandler.addTriggerListener(FireModeTriggerListener())
 
                 // Register projectile script manager
-                val projectilesRunnable = WeaponMechanics.getProjectilesRunnable()
+                val projectilesRunnable = WeaponMechanics.getProjectileSpawner()
                 projectilesRunnable.addScriptManager(ProjectileScriptManager(javaPlugin))
 
                 // Other listeners
@@ -160,13 +166,11 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
                 }
 
                 // We need a serialized list of weapons, so we run this 5 ticks after server start/reload
-                object : BukkitRunnable() {
-                    override fun run() {
-                        manager.registerEvents(WeaponMechanicsPlaceholderListener(), javaPlugin)
-                        if (manager.getPlugin("ArmorMechanics") != null)
-                            manager.registerEvents(ArmorMechanicsPlaceholderListener(), javaPlugin)
-                    }
-                }.runTaskLater(javaPlugin, 5L)
+                scheduler.global().runDelayed(Runnable {
+                    manager.registerEvents(WeaponMechanicsPlaceholderListener(), javaPlugin)
+                    if (manager.getPlugin("ArmorMechanics") != null)
+                        manager.registerEvents(ArmorMechanicsPlaceholderListener(), javaPlugin)
+                }, 5L)
 
                 // Reregister WMP since we removed it earlier in HandlerList.unregisterAll
                 registerSerializerQueue()
@@ -178,6 +182,10 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
 
     companion object {
         private lateinit var plugin: WeaponMechanicsPlus
+        fun getScheduler(): ServerImplementation {
+            return plugin.scheduler
+        }
+
         fun getDebug(): Debugger {
             return plugin.debug
         }

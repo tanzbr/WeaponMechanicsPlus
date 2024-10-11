@@ -1,7 +1,6 @@
 package com.cjcrafter.weaponmechanicsplus.weapon.firemode
 
 import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
-import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusAPI
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
 import me.deecaad.core.compatibility.CompatibilityAPI
 import me.deecaad.core.file.SerializeData
@@ -13,7 +12,6 @@ import me.deecaad.weaponmechanics.utils.CustomTag
 import me.deecaad.weaponmechanics.weapon.trigger.Trigger
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scheduler.BukkitRunnable
 
 class FireMode : Serializer<FireMode> {
 
@@ -145,7 +143,7 @@ class FireMode : Serializer<FireMode> {
             val attachments = if (split.size > 2) listOf(split[2]) else emptyList()
 
             // Only 1 weapon can have a firemode
-            if (config.containsKey("$weapon.Fire_Mode")) {
+            if (config.contains("$weapon.Fire_Mode")) {
                 throw data.listException("Order", index,
                     "The weapon '$weapon' already had a 'Fire_Mode' option defined.",
                     "When using firemodes, only 1 of the weapons can have a 'Fire_Mode' defined",
@@ -155,7 +153,7 @@ class FireMode : Serializer<FireMode> {
 
             // Run some checks to make sure the weapon and attachment actually
             // exist. We have to do this 1 tick later due to serialization
-            Bukkit.getScheduler().runTask(WeaponMechanicsPlus.getPlugin(), Runnable {
+            WeaponMechanicsPlus.getScheduler().global().run(Runnable {
                 if (!WeaponMechanics.getWeaponHandler().infoHandler.hasWeapon(weapon)) {
                     data.listException("Order", index,
                         "Could not find any weapon named '$weapon'",

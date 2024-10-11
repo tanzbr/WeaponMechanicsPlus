@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.cjcrafter"
-version = "1.4.5"
+version = "1.4.6"
 
 plugins {
     `java-library`
@@ -18,12 +18,14 @@ bukkit {
     main = "com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusLoader"
     name = "WeaponMechanicsPlus"
     apiVersion = "1.13"
+    foliaSupported = true
 
     authors = listOf("DeeCaaD", "CJCrafter")
     softDepend = listOf("MechanicsCore", "WeaponMechanics")
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 
     maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
@@ -39,8 +41,9 @@ dependencies {
 
     compileOnly("org.jetbrains:annotations:24.0.1")
     compileOnly("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT")
-    compileOnly("com.cjcrafter:mechanicscore:3.4.1")
-    compileOnly("com.cjcrafter:weaponmechanics:3.4.1")
+    compileOnly("com.cjcrafter:mechanicscore:3.4.13-FOLIA")
+    compileOnly("com.cjcrafter:weaponmechanics:3.4.14-FOLIA")
+    compileOnly("com.cjcrafter:foliascheduler:0.6.0")
     compileOnly(files(file("lib/ArmorMechanics-3.0.2.jar")))
 
     // adventure
@@ -68,6 +71,7 @@ tasks.shadowJar {
     // This doesn't actually include any dependencies, this relocates all references
     // to the mechanics core lib.
     relocate("net.kyori", "me.deecaad.core.lib")
+    relocate("com.cjcrafter.foliascheduler", "me.deecaad.core.lib.scheduler")
 }
 
 java {
