@@ -48,9 +48,13 @@ class IntegerModifier : Serializer<IntegerModifier> {
             operation = EnumUtil.getIfPresent(Operation::class.java, split[0]).orElseThrow()
             amount = if (operation == Operation.MULTIPLY) split[1].toDouble() else split[1].toInt()
         } catch (ex: NoSuchElementException) {
-            throw SerializerEnumException(data.serializer, Operation::class.java, split[0], false, data.of().location)
+            throw SerializerException.builder()
+                .locationRaw(data.of().location)
+                .buildInvalidEnumOption(split[0], Operation::class.java)
         } catch (ex: NumberFormatException) {
-            throw SerializerTypeException(data.serializer, Int::class.java, String::class.java, split[1], data.of().location)
+            throw SerializerException.builder()
+                .locationRaw(data.of().location)
+                .buildInvalidType("integer", split[1])
         }
         return IntegerModifier(operation, amount)
     }

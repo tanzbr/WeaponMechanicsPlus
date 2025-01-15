@@ -7,6 +7,7 @@ import me.deecaad.weaponmechanics.weapon.projectile.weaponprojectile.Sticky
 import me.deecaad.weaponmechanics.weapon.projectile.weaponprojectile.Through
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.DoubleModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.IntegerModifier
+import kotlin.jvm.optionals.getOrNull
 
 class ProjectileModifier : Serializer<ProjectileModifier> {
 
@@ -72,22 +73,22 @@ class ProjectileModifier : Serializer<ProjectileModifier> {
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): ProjectileModifier {
 
-        val overrideProjectileSettings: ProjectileSettings? = data.of("Override_Projectile_Settings").serialize(ProjectileSettings::class.java)
-        val gravity = data.of("Gravity").serialize(DoubleModifier::class.java)
-        val minimumSpeed = data.of("Minimum_Speed").serialize(DoubleModifier::class.java)
-        val maximumSpeed = data.of("Maximum_Speed").serialize(DoubleModifier::class.java)
-        val decrease = data.of("Drag.Base").serialize(DoubleModifier::class.java)
-        val decreaseInWater = data.of("Drag.In_Water").serialize(DoubleModifier::class.java)
-        val decreaseWhenRainingOrSnowing = data.of("Drag.When_Raining_Or_Snowing").serialize(DoubleModifier::class.java)
-        val maxAliveTicks = data.of("Maximum_Alive_Ticks").serialize(IntegerModifier::class.java)
+        val overrideProjectileSettings: ProjectileSettings? = data.of("Override_Projectile_Settings").serialize(ProjectileSettings::class.java).getOrNull()
+        val gravity = data.of("Gravity").serialize(DoubleModifier::class.java).getOrNull()
+        val minimumSpeed = data.of("Minimum_Speed").serialize(DoubleModifier::class.java).getOrNull()
+        val maximumSpeed = data.of("Maximum_Speed").serialize(DoubleModifier::class.java).getOrNull()
+        val decrease = data.of("Drag.Base").serialize(DoubleModifier::class.java).getOrNull()
+        val decreaseInWater = data.of("Drag.In_Water").serialize(DoubleModifier::class.java).getOrNull()
+        val decreaseWhenRainingOrSnowing = data.of("Drag.When_Raining_Or_Snowing").serialize(DoubleModifier::class.java).getOrNull()
+        val maxAliveTicks = data.of("Maximum_Alive_Ticks").serialize(IntegerModifier::class.java).getOrNull()
 
-        val overrideSticky: Sticky? = data.of("Override_Sticky").serialize(Sticky::class.java)
+        val overrideSticky: Sticky? = data.of("Override_Sticky").serialize(Sticky::class.java).getOrNull()
 
-        val overrideThrough: Through? = data.of("Override_Through").serialize(Through::class.java)
-        val maximumThroughAmount = data.of("Maximum_Through_Amount").serialize(DoubleModifier::class.java)
+        val overrideThrough: Through? = data.of("Override_Through").serialize(Through::class.java).getOrNull()
+        val maximumThroughAmount = data.of("Maximum_Through_Amount").serialize(DoubleModifier::class.java).getOrNull()
 
-        val overrideBouncy: Bouncy? = data.of("Override_Bouncy").serialize(Bouncy::class.java)
-        val maximumBounceAmount = data.of("Maximum_Bounce_Amount").serialize(IntegerModifier::class.java)
+        val overrideBouncy: Bouncy? = data.of("Override_Bouncy").serialize(Bouncy::class.java).getOrNull()
+        val maximumBounceAmount = data.of("Maximum_Bounce_Amount").serialize(IntegerModifier::class.java).getOrNull()
 
         return ProjectileModifier(
             overrideProjectileSettings,

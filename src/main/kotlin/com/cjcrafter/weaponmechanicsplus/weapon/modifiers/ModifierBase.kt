@@ -5,6 +5,7 @@ import me.deecaad.core.file.*
 import me.deecaad.weaponmechanics.WeaponMechanics
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
+import kotlin.jvm.optionals.getOrNull
 
 abstract class ModifierBase : Serializer<ModifierBase>, Comparable<ModifierBase> {
 
@@ -40,24 +41,20 @@ abstract class ModifierBase : Serializer<ModifierBase>, Comparable<ModifierBase>
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): ModifierBase {
-        val priority = data.of("Priority").getInt(0) // can be negative
+        val priority = data.of("Priority").getInt().orElse(0) // can be negative
 
-        val weaponModifier = data.of("Modifiers").assertExists().serialize(WeaponModifier::class.java)
+        val weaponModifier = data.of("Modifiers").assertExists().serialize(WeaponModifier::class.java).get()
         val perWeaponModifiers = HashMap<String, WeaponModifier>()
         if (data.has("Per_Weapon_Modifiers")) {
-            val config = data.of("Per_Weapon_Modifiers").assertExists().assertType(ConfigurationSection::class.java).get<ConfigurationSection>()
+            val config = data.of("Per_Weapon_Modifiers").assertExists().get(ConfigurationSection::class.java).get()
 
-            val options = WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList
             for (key in config.getKeys(false)) {
-                //if (!options.contains(key))
-                //    throw SerializerOptionsException(data.serializer, "Weapon", options, key, data.of(key).location)
-
-                val temp = data.of("Per_Weapon_Modifiers.$key").assertExists().serialize(WeaponModifier::class.java)!!
+                val temp = data.of("Per_Weapon_Modifiers.$key").assertExists().serialize(WeaponModifier::class.java).get()
                 perWeaponModifiers[key] = temp
             }
         }
 
-        val armorModifier: ArmorModifier? = data.of("Armor_Modifiers").serialize(ArmorModifier::class.java)
+        val armorModifier: ArmorModifier? = data.of("Armor_Modifiers").serialize(ArmorModifier::class.java).getOrNull()
         val perArmorModifiers = HashMap<String, ArmorModifier>()
 
         // If they use ArmorModifiers, but ArmorMechanics is not installed...
@@ -67,14 +64,9 @@ abstract class ModifierBase : Serializer<ModifierBase>, Comparable<ModifierBase>
         }
 
         if (data.has("Per_Armor_Modifiers")) {
-            val config = data.of("Per_Armor_Modifiers").assertExists().assertType(ConfigurationSection::class.java).get<ConfigurationSection>()
-
-            val options = ArmorMechanics.INSTANCE.armors.keys
+            val config = data.of("Per_Armor_Modifiers").assertExists().get(ConfigurationSection::class.java).get()
             for (key in config.getKeys(false)) {
-                //if (!options.contains(key))
-                //    throw SerializerOptionsException(data.serializer, "Armor", options, key, data.of(key).location)
-
-                val temp = data.of("Per_Armor_Modifiers.$key").assertExists().serialize(ArmorModifier::class.java)!!
+                val temp = data.of("Per_Armor_Modifiers.$key").assertExists().serialize(ArmorModifier::class.java).get()
                 perArmorModifiers[key] = temp
             }
         }

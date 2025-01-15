@@ -4,7 +4,10 @@ import me.deecaad.core.file.*
 import me.deecaad.core.utils.EnumUtil
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.*
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier.Companion.serializeMechanicsModifier
+import me.deecaad.core.file.simple.DoubleSerializer
+import me.deecaad.core.file.simple.EnumValueSerializer
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 class ScopeModifier : Serializer<ScopeModifier> {
 
@@ -35,19 +38,21 @@ class ScopeModifier : Serializer<ScopeModifier> {
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): ScopeModifier {
-        val zoomAmount = data.of("Zoom_Amount").serialize(DoubleModifier::class.java)
-        val isNightVision = if (data.has("Night_Vision")) data.of("Night_Vision").assertExists().bool else null
-        val isPumpkinOverlay = if (data.has("Pumpkin_Overlay")) data.of("Pumpkin_Overlay").assertExists().bool else null
+        val zoomAmount = data.of("Zoom_Amount").serialize(DoubleModifier::class.java).getOrNull()
+        val isNightVision = data.of("Night_Vision").assertExists().getBool().getOrNull()
+        val isPumpkinOverlay = data.of("Pumpkin_Overlay").assertExists().getBool().getOrNull()
 
         val splits = data.ofList("Zoom_Stacking")
-            .addArgument(Operation::class.java, true)
-            .addArgument(Double::class.javaPrimitiveType, true)
-            .assertList().get()
+            .addArgument(EnumValueSerializer(Operation::class.java, false))
+            .addArgument(DoubleSerializer())
+            .requireAllPreviousArgs()
+            .assertList()
 
         val zoomStacking: MutableList<DoubleModifier> = ArrayList()
         for (split in splits) {
-            val math = EnumUtil.getIfPresent(Operation::class.java, split[0]).orElseThrow()
-            zoomStacking.add(DoubleModifier(math, split[1].toDouble()))
+            val operation = (split[0].get() as List<Operation>).first()
+            val number = split[1].get() as Double
+            zoomStacking.add(DoubleModifier(operation, number))
         }
 
         val mechanicsModifier = data.serializeMechanicsModifier()

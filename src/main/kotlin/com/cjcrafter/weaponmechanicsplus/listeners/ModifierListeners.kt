@@ -5,6 +5,7 @@ import me.deecaad.weaponmechanics.weapon.weaponevents.*
 import me.deecaad.weaponmechanics.weapon.weaponevents.WeaponScopeEvent.ScopeType
 import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusAPI
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier
+import me.deecaad.weaponmechanics.weapon.damage.ExplosionDamageSource
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import java.security.SecureRandom
@@ -22,7 +23,7 @@ class ModifierListeners : Listener {
             damage.armorDamage?.let { event.armorDamage = it.apply(event.armorDamage) }
             damage.fireTicks?.let { event.fireTicks = it.apply(event.fireTicks) }
 
-            if (event.isExplosion)
+            if (event.source is ExplosionDamageSource)
                 damage.explosionDamage?.let { event.baseDamage = it.apply(event.baseDamage) }
             else
                 damage.baseDamage?.let { event.baseDamage = it.apply(event.baseDamage) }

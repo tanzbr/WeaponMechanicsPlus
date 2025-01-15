@@ -58,13 +58,13 @@ class ListPlaceholderFormat : PlaceholderFormat<ListPlaceholderHandler> {
     }
 
     override fun serialize(data: SerializeData): PlaceholderFormat<ListPlaceholderHandler> {
-        val nullFormat = data.of("Null_Format").assertExists().adventure!!
-        val prefix = data.of("Prefix").assertExists().adventure!!
-        val suffix = data.of("Suffix").assertExists().adventure!!
-        val perLine = data.of("Elements_Per_Line").assertExists().assertPositive().int
-        val skipFirstLine = data.of("Skip_First_Line").assertExists().bool
-        val separator = data.of("Separator").assertExists().adventure!!
-        val newLine = data.of("New_Line").assertExists().adventure!!
+        val nullFormat = data.of("Null_Format").assertExists().getAdventure().get()
+        val prefix = data.of("Prefix").assertExists().getAdventure().get()
+        val suffix = data.of("Suffix").assertExists().getAdventure().get()
+        val perLine = data.of("Elements_Per_Line").assertExists().assertRange(1, null).getInt().asInt
+        val skipFirstLine = data.of("Skip_First_Line").assertExists().getBool().get()
+        val separator = data.of("Separator").assertExists().getAdventure().get()
+        val newLine = data.of("New_Line").assertExists().getAdventure().get()
         return ListPlaceholderFormat(nullFormat, prefix, suffix, perLine, skipFirstLine, separator, newLine)
     }
 }

@@ -2,6 +2,7 @@ package com.cjcrafter.weaponmechanicsplus
 
 import com.cjcrafter.foliascheduler.FoliaCompatibility
 import com.cjcrafter.foliascheduler.ServerImplementation
+import com.cjcrafter.foliascheduler.util.ReflectionUtil
 import com.cjcrafter.weaponmechanicsplus.listeners.*
 import com.cjcrafter.weaponmechanicsplus.placeholders.ArmorMechanicsPlaceholderListener
 import com.cjcrafter.weaponmechanicsplus.placeholders.WeaponMechanicsPlaceholderListener
@@ -18,8 +19,6 @@ import me.deecaad.core.placeholder.PlaceholderHandler
 import me.deecaad.core.utils.Debugger
 import me.deecaad.core.utils.FileUtil
 import me.deecaad.core.utils.LogLevel
-import me.deecaad.core.utils.MinecraftVersions
-import me.deecaad.core.utils.ReflectionUtil
 import me.deecaad.weaponmechanics.WeaponMechanics
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
@@ -65,7 +64,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
         val subclasses = placeholderSearcher.findAllSubclasses(PlaceholderHandler::class.java, classLoader, true)
         for (sub in subclasses) {
             try {
-                val instance = ReflectionUtil.newInstance(sub)
+                val instance = ReflectionUtil.getConstructor(sub).newInstance()
                 PlaceholderHandler.REGISTRY.add(instance)
             } catch (e: Exception) {
                 debug.log(LogLevel.WARN, "Failed to register placeholder: ${sub.simpleName}", e)
@@ -80,8 +79,7 @@ class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMec
         registerBStats()
         registerSerializerQueue()
 
-        if (MinecraftVersions.UPDATE_AQUATIC.isAtLeast())
-            Command.register()
+        Command.register()
     }
 
     fun onDisable() {

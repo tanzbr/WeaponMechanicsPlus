@@ -3,14 +3,14 @@ package com.cjcrafter.weaponmechanicsplus.weapon.modifiers
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.DoubleModifier
 import me.deecaad.core.file.SerializeData
 import me.deecaad.core.file.Serializer
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.AttributeModifier
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.AttributeModifier.Companion.getAttributeModifiers
+import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.AttributeModifiers
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier.Companion.serializeMechanicsModifier
+import kotlin.jvm.optionals.getOrNull
 
 class ArmorModifier : Serializer<ArmorModifier> {
 
-    lateinit var attributeModifiers: List<AttributeModifier>
+    var attributeModifiers: AttributeModifiers? = null
 
     var bulletResistance: DoubleModifier? = null
     var explosionResistance: DoubleModifier? = null
@@ -23,7 +23,7 @@ class ArmorModifier : Serializer<ArmorModifier> {
     constructor()
 
     constructor(
-        attributeModifiers: List<AttributeModifier>,
+        attributeModifiers: AttributeModifiers?,
         bulletResistance: DoubleModifier?,
         explosionResistance: DoubleModifier?,
         equipMechanicsModifier: MechanicsModifier?,
@@ -37,10 +37,10 @@ class ArmorModifier : Serializer<ArmorModifier> {
     }
 
     override fun serialize(data: SerializeData): ArmorModifier {
-        val attributeModifiers = data.ofList("Attributes").getAttributeModifiers()
+        val attributeModifiers = data.of("Attributes").serialize(AttributeModifiers::class.java).getOrNull()
 
-        val bulletResistance = data.of("Bullet_Resistance").serialize(DoubleModifier::class.java)
-        val explosionResistance = data.of("Explosion_Resistance").serialize(DoubleModifier::class.java)
+        val bulletResistance = data.of("Bullet_Resistance").serialize(DoubleModifier::class.java).getOrNull()
+        val explosionResistance = data.of("Explosion_Resistance").serialize(DoubleModifier::class.java).getOrNull()
         val equipMechanicsModifier = data.serializeMechanicsModifier("Equip_Mechanics")
         val dequipMechanicsModifier = data.serializeMechanicsModifier("Dequip_Mechanics")
 

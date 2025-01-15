@@ -9,7 +9,6 @@ import me.deecaad.core.utils.FileUtil
 import me.deecaad.core.utils.FileUtil.PathReference
 import me.deecaad.core.utils.LogLevel
 import me.deecaad.weaponmechanics.WeaponMechanics
-import me.deecaad.weaponmechanics.listeners.RepairItemListener.RepairKit
 import me.deecaad.weaponmechanics.utils.CustomTag
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
@@ -64,8 +63,8 @@ class AddAttachment : Listener {
                     // For each key in the file, treat it as a new repair kit.
                     for (key in config.getKeys(false)) {
                         try {
-                            val data = SerializeData(RepairKit(), file.toFile(), key, BukkitConfig(config))
-                            val attachment = data.of().serialize(Attachment()) as Attachment
+                            val data = SerializeData(Attachment(), file.toFile(), key, BukkitConfig(config))
+                            val attachment = data.of().assertExists().serialize(Attachment()).get() as Attachment
                             if (AttachmentRegistry.INSTANCE.has(attachment)) throw data.exception(
                                 null,
                                 "Found duplicate Attachment name '$key'"

@@ -6,6 +6,7 @@ import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.DoubleModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.IntegerModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier.Companion.serializeMechanicsModifier
+import kotlin.jvm.optionals.getOrNull
 
 class DamageModifier : Serializer<DamageModifier> {
 
@@ -80,16 +81,16 @@ class DamageModifier : Serializer<DamageModifier> {
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): DamageModifier {
-        val damage = data.of("Base_Damage").serialize(DoubleModifier::class.java)
-        val explosionDamage = data.of("Base_Explosion_Damage").serialize(DoubleModifier::class.java)
-        val fireTicks = data.of("Fire_Ticks").serialize(IntegerModifier::class.java)
-        val armorDamage = data.of("Armor_Damage").serialize(IntegerModifier::class.java)
-        val dropoffOverride = data.of("Damage_Dropoff").serialize(DamageDropoff::class.java)
-        val criticalChance = data.of("Critical_Hit.Chance").serialize(DoubleModifier::class.java)
-        val criticalDamage = data.of("Critical_Hit.Damage").serialize(DoubleModifier::class.java)
+        val damage = data.of("Base_Damage").serialize(DoubleModifier::class.java).getOrNull()
+        val explosionDamage = data.of("Base_Explosion_Damage").serialize(DoubleModifier::class.java).getOrNull()
+        val fireTicks = data.of("Fire_Ticks").serialize(IntegerModifier::class.java).getOrNull()
+        val armorDamage = data.of("Armor_Damage").serialize(IntegerModifier::class.java).getOrNull()
+        val dropoffOverride = data.of("Damage_Dropoff").serialize(DamageDropoff::class.java).getOrNull()
+        val criticalChance = data.of("Critical_Hit.Chance").serialize(DoubleModifier::class.java).getOrNull()
+        val criticalDamage = data.of("Critical_Hit.Damage").serialize(DoubleModifier::class.java).getOrNull()
 
-        val replaceDamageModifier = data.of("Replace_Damage_Modifier").serialize(me.deecaad.weaponmechanics.weapon.damage.DamageModifier::class.java)
-        val addDamageModifier = data.of("Add_Damage_Modifier").serialize(me.deecaad.weaponmechanics.weapon.damage.DamageModifier::class.java)
+        val replaceDamageModifier = data.of("Replace_Damage_Modifier").serialize(me.deecaad.weaponmechanics.weapon.damage.DamageModifier::class.java).getOrNull()
+        val addDamageModifier = data.of("Add_Damage_Modifier").serialize(me.deecaad.weaponmechanics.weapon.damage.DamageModifier::class.java).getOrNull()
         val isReplace = replaceDamageModifier != null
         val damageModifier = if (isReplace) replaceDamageModifier else addDamageModifier
 

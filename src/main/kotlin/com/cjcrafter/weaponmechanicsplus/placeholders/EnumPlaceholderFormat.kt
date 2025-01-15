@@ -8,14 +8,14 @@ import kotlin.collections.HashMap
 class EnumPlaceholderFormat : PlaceholderFormat<EnumPlaceholderHandler> {
 
     // Options available for all modes
-    var enums: Map<String?, String> = mapOf()
+    var enums: Map<String, String> = mapOf()
 
     /**
      * Default constructor for serializer
      */
     constructor() : super(EnumPlaceholderHandler::class.java)
     constructor(
-        enums: Map<String?, String>,
+        enums: Map<String, String>,
     ) : super(EnumPlaceholderHandler::class.java) {
         this.enums = enums
     }
@@ -25,9 +25,10 @@ class EnumPlaceholderFormat : PlaceholderFormat<EnumPlaceholderHandler> {
     }
 
     override fun serialize(data: SerializeData): EnumPlaceholderFormat {
-        val enums = HashMap<String?, String>()
+        val enums = HashMap<String, String>()
 
-        for (colorLine in data.of().assertExists().assertType(List::class.java).get<List<String>>()) {
+        for (colorObj in data.of().assertExists().get(List::class.java).get()) {
+            val colorLine = colorObj as String
             val splitIndex = colorLine.indexOf(' ')
             val enumString = colorLine.substring(0, splitIndex)
             val textString = colorLine.substring(splitIndex + 1)

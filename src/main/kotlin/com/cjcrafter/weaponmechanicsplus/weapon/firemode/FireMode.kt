@@ -6,12 +6,14 @@ import me.deecaad.core.compatibility.CompatibilityAPI
 import me.deecaad.core.file.SerializeData
 import me.deecaad.core.file.Serializer
 import me.deecaad.core.file.SerializerException
+import me.deecaad.core.file.simple.StringSerializer
 import me.deecaad.core.mechanics.Mechanics
 import me.deecaad.weaponmechanics.WeaponMechanics
 import me.deecaad.weaponmechanics.utils.CustomTag
 import me.deecaad.weaponmechanics.weapon.trigger.Trigger
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
+import kotlin.jvm.optionals.getOrNull
 
 class FireMode : Serializer<FireMode> {
 
@@ -123,13 +125,14 @@ class FireMode : Serializer<FireMode> {
                 "Please use the 'Order' option instead")
         }
 
-        val trigger = data.of("Trigger").assertExists().serialize(Trigger::class.java)!!
-        val switchMechanics = data.of("Mechanics").serialize(Mechanics::class.java)
+        val trigger = data.of("Trigger").assertExists().serialize(Trigger::class.java).get()
+        val switchMechanics = data.of("Mechanics").serialize(Mechanics::class.java).getOrNull()
         val orderInput = data.ofList("Order").assertExists()
-            .addArgument(String::class.java, true)  // weapon
-            .addArgument(String::class.java, false) // separate ammo id
-            .addArgument(String::class.java, false) // attachment
-            .assertList().get()
+            .addArgument(StringSerializer()) // weapon
+            .requireAllPreviousArgs()
+            .addArgument(StringSerializer()) // ammo
+            .addArgument(StringSerializer()) // attachment
+            .assertList()
 
         // Make sure the user has put in at least 1 firemode. We allow 1 firemode for WIP weapons
         if (orderInput.isEmpty()) {
@@ -138,9 +141,9 @@ class FireMode : Serializer<FireMode> {
 
         val order = mutableListOf<FireModeSelector>()
         for ((index, split) in orderInput.withIndex()) {
-            val weapon = split[0]
-            val ammo = if (split.size > 1) split[1].lowercase() else "universal"
-            val attachments = if (split.size > 2) listOf(split[2]) else emptyList()
+            val weapon = split[0].get() as String
+            val ammo = split[1].getOrNull() as String? ?: UNIVERSAL_AMMO
+            val attachments = split[2].getOrNull() as List<String>? ?: emptyList()
 
             // Only 1 weapon can have a firemode
             if (config.contains("$weapon.Fire_Mode")) {
@@ -155,18 +158,21 @@ class FireMode : Serializer<FireMode> {
             // exist. We have to do this 1 tick later due to serialization
             WeaponMechanicsPlus.getScheduler().global().run(Runnable {
                 if (!WeaponMechanics.getWeaponHandler().infoHandler.hasWeapon(weapon)) {
-                    data.listException("Order", index,
-                        "Could not find any weapon named '$weapon'",
-                        SerializerException.didYouMean(weapon, WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList)
-                    ).log(WeaponMechanicsPlus.getDebug())
+                    SerializerException.builder()
+                        .locationRaw(data.ofList("Order").getLocation(index))
+                        .addMessage("Could not find any weapon named '$weapon'")
+                        .buildInvalidOption(weapon, WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList)
+                        .log(WeaponMechanicsPlus.getDebug())
                 }
                 for (attachment in attachments) {
-                    if (AttachmentRegistry.INSTANCE[attachment] == null) {
-                        data.listException("Order", index,
-                            "Could not find any attachment named '$attachment'",
-                            SerializerException.didYouMean(attachment, AttachmentRegistry.INSTANCE.map { it.attachmentTitle })
-                        ).log(WeaponMechanicsPlus.getDebug())
-                    }
+                    if (AttachmentRegistry.INSTANCE[attachment] != null)
+                        continue
+
+                    SerializerException.builder()
+                        .locationRaw(data.ofList("Order").getLocation(index))
+                        .addMessage("Could not find any attachment named '$attachment'")
+                        .buildInvalidOption(attachment, AttachmentRegistry.INSTANCE.map { it.attachmentTitle })
+                        .log(WeaponMechanicsPlus.getDebug())
                 }
             })
 
@@ -175,7 +181,7 @@ class FireMode : Serializer<FireMode> {
 
         // Make sure that the CURRENT WEAPON is first in the order list, and it
         // uses 'universal' ammo and no attachments.
-        val currentWeaponTitle = data.key.split(".").first()
+        val currentWeaponTitle = data.key!!.split(".").first()
         if (order.first().weaponTitle != currentWeaponTitle) {
             throw data.exception("We expected '$currentWeaponTitle' to be the FIRST weapon in the list",
                 "Instead, '${order.first().weaponTitle}' was the first element",

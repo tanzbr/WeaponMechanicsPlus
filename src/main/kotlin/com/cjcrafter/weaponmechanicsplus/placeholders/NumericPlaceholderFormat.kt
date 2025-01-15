@@ -85,13 +85,15 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
 
 
     override fun serialize(data: SerializeData): NumericPlaceholderFormat {
-        val defaultMode = data.of("Default_Mode").assertExists().getEnum(Mode::class.java)!!
-        val prefix = data.of("Prefix").assertExists().adventure!!
-        val suffix = data.of("Suffix").assertExists().adventure!!
-        val nullFormat = data.of("Null_Format").assertExists().adventure!!
+        val defaultMode = data.of("Default_Mode").assertExists().getEnum(Mode::class.java).get()
+        val prefix = data.of("Prefix").assertExists().getAdventure().get()
+        val suffix = data.of("Suffix").assertExists().getAdventure().get()
+        val nullFormat = data.of("Null_Format").assertExists().getAdventure().get()
 
         val colors = TreeMap<Double, String>()
-        for ((index, colorLine) in data.of("Colors").assertExists().assertType(List::class.java).get<List<String>>().withIndex()) {
+        for ((index, colorLine) in data.of("Colors").assertExists().get(List::class.java).get().withIndex()) {
+            colorLine as String
+
             val splitIndex = colorLine.indexOf(' ')
             val numberString = colorLine.substring(0, splitIndex)
             val colorString = colorLine.substring(splitIndex + 1)
@@ -103,18 +105,20 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
             colors[double] = colorString
         }
 
-        val min = data.of("Min").assertExists().double
-        val max = data.of("Max").assertExists().double
+        val min = data.of("Min").assertExists().getDouble().asDouble
+        val max = data.of("Max").assertExists().getDouble().asDouble
 
-        val leftColor = data.of("Bar.Left_Color").assertExists().adventure!!
-        val rightColor = data.of("Bar.Right_Color").assertExists().adventure!!
-        val leftSymbol = data.of("Bar.Left_Symbol").assertExists().adventure!!
-        val rightSymbol = data.of("Bar.Right_Symbol").getAdventure(leftSymbol)!!
-        val symbolAmount = data.of("Bar.Symbol_Amount").assertExists().assertPositive().int
+        val leftColor = data.of("Bar.Left_Color").assertExists().getAdventure().get()
+        val rightColor = data.of("Bar.Right_Color").assertExists().getAdventure().get()
+        val leftSymbol = data.of("Bar.Left_Symbol").assertExists().getAdventure().get()
+        val rightSymbol = data.of("Bar.Right_Symbol").getAdventure().orElse(leftSymbol)
+        val symbolAmount = data.of("Bar.Symbol_Amount").assertExists().assertRange(1, null).getInt().asInt
         val bar = StringBar(leftColor, rightColor, leftSymbol, rightSymbol, symbolAmount)
 
         val emojis = TreeMap<Double, String>()
-        for ((index, colorLine) in data.of("Emojis").assertExists().assertType(List::class.java).get<List<String>>().withIndex()) {
+        for ((index, colorLine) in data.of("Emojis").assertExists().get(List::class.java).get().withIndex()) {
+            colorLine as String
+
             val splitIndex = colorLine.indexOf(' ')
             val numberString = colorLine.substring(0, splitIndex)
             val emojiString = colorLine.substring(splitIndex + 1)

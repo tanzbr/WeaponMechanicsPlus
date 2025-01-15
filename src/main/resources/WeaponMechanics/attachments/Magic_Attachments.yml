@@ -16,15 +16,15 @@ Slow_Falling_Bullets:
       - ""
       - "<dark_gray>Drag and click on a weapon to attach"
   Attach_Mechanics:
-    - "Sound{sound=BLOCK_ENCHANTMENT_TABLE_USE, pitch=1.8, noise=0.05}"
+    - "Sound{sound=block.enchantment_table.use, pitch=1.8, noise=0.05}"
   Detach_Mechanics:
-    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+    - "Sound{sound=block.chain.place, pitch=0.5, noise=0.05}"
   Denying:
     Weapon_Whitelist: false
     Weapons:
       - Combat_Knife
     Mechanics:
-      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=entity.villager.no, pitch=1.9, listeners=Source{}}"
   Modifiers:
     Projectile_Modifier:
       Gravity: MULTIPLY 0.60  # 60% gravity
@@ -48,15 +48,15 @@ Fiery_Bullets:
       - ""
       - "<dark_gray>Drag and click on a weapon to attach"
   Attach_Mechanics:
-    - "Sound{sound=BLOCK_ENCHANTMENT_TABLE_USE, pitch=1.8, noise=0.05}"
+    - "Sound{sound=block.enchantment_table.use, pitch=1.8, noise=0.05}"
   Detach_Mechanics:
-    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+    - "Sound{sound=block.chain.place, pitch=0.5, noise=0.05}"
   Denying:
     Weapon_Whitelist: false
     Weapons:
       - Combat_Knife
     Mechanics:
-      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=entity.villager.no, pitch=1.9, listeners=Source{}}"
   Modifiers:
     Damage_Modifier:
       Fire_Ticks: ADD 60  # 20 ticks for 1 second, so this is 3 seconds of fire
@@ -74,15 +74,15 @@ Fin_Bullets:
       - ""
       - "<dark_gray>Drag and click on a weapon to attach"
   Attach_Mechanics:
-    - "Sound{sound=BLOCK_ENCHANTMENT_TABLE_USE, pitch=1.8, noise=0.05}"
+    - "Sound{sound=block.enchantment_table.use, pitch=1.8, noise=0.05}"
   Detach_Mechanics:
-    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+    - "Sound{sound=block.chain.place, pitch=0.5, noise=0.05}"
   Denying:
     Weapon_Whitelist: false
     Weapons:
       - Combat_Knife
     Mechanics:
-      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=entity.villager.no, pitch=1.9, listeners=Source{}}"
   Modifiers:
     Projectile_Modifier:
       Drag:
@@ -103,15 +103,15 @@ Frostbite_Bullets:
       - ""
       - "<dark_gray>Drag and click on a weapon to attach"
   Attach_Mechanics:
-    - "Sound{sound=BLOCK_ENCHANTMENT_TABLE_USE, pitch=1.8, noise=0.05}"
+    - "Sound{sound=block.enchantment_table.use, pitch=1.8, noise=0.05}"
   Detach_Mechanics:
-    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+    - "Sound{sound=block.chain.place, pitch=0.5, noise=0.05}"
   Denying:
     Weapon_Whitelist: false
     Weapons:
       - Combat_Knife
     Mechanics:
-      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=entity.villager.no, pitch=1.9, listeners=Source{}}"
   Modifiers:
     Damage_Modifier:
       Add_Mechanics:
@@ -133,15 +133,15 @@ Lens_Makers_Glasses:
       - ""
       - "<dark_gray>Drag and click on an armor to attach"
   Attach_Mechanics:
-    - "Sound{sound=BLOCK_ENCHANTMENT_TABLE_USE, pitch=1.8, noise=0.05}"
+    - "Sound{sound=block.enchantment_table.use, pitch=1.8, noise=0.05}"
   Detach_Mechanics:
-    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+    - "Sound{sound=block.chain.place, pitch=0.5, noise=0.05}"
   Denying:
     Armor_Whitelist: true
     Armors:
       - Tactical_Helmet
     Mechanics:
-      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=entity.villager.no, pitch=1.9, listeners=Source{}}"
   Modifiers:
     Damage_Modifier:
       Critical_Hit:

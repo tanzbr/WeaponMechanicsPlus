@@ -4,6 +4,7 @@ import me.deecaad.core.file.*
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.IntegerModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier.Companion.serializeMechanicsModifier
+import kotlin.jvm.optionals.getOrNull
 
 class ReloadModifier : Serializer<ReloadModifier> {
 
@@ -29,10 +30,10 @@ class ReloadModifier : Serializer<ReloadModifier> {
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): ReloadModifier {
-        val magazineSize = data.of("Magazine_Size").serialize(IntegerModifier::class.java)
-        val ammoPerReload = data.of("Ammo_Per_Reload").serialize(IntegerModifier::class.java)
-        val reloadDuration = data.of("Reload_Duration").serialize(IntegerModifier::class.java)
-        val shootDelayAfterReload = data.of("Shoot_Delay_After_Reload").serialize(IntegerModifier::class.java)
+        val magazineSize = data.of("Magazine_Size").serialize(IntegerModifier::class.java).getOrNull()
+        val ammoPerReload = data.of("Ammo_Per_Reload").serialize(IntegerModifier::class.java).getOrNull()
+        val reloadDuration = data.of("Reload_Duration").serialize(IntegerModifier::class.java).getOrNull()
+        val shootDelayAfterReload = data.of("Shoot_Delay_After_Reload").serialize(IntegerModifier::class.java).getOrNull()
         val mechanicsModifier = data.serializeMechanicsModifier()
 
         return ReloadModifier(magazineSize, ammoPerReload, reloadDuration, shootDelayAfterReload, mechanicsModifier)

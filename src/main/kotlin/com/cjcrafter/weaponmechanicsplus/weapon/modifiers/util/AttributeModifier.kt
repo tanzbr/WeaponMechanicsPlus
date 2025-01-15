@@ -1,73 +1,103 @@
 package com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util
 
-import me.deecaad.core.compatibility.nbt.NBTCompatibility.AttributeSlot
+import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
 import me.deecaad.core.file.SerializeData
-import me.deecaad.core.utils.AttributeType
-import me.deecaad.core.utils.EnumUtil
+import me.deecaad.core.file.Serializer
+import me.deecaad.core.file.SerializerException
+import me.deecaad.core.file.simple.ByNameSerializer
+import me.deecaad.core.file.simple.DoubleSerializer
+import me.deecaad.core.file.simple.EnumValueSerializer
+import me.deecaad.core.file.simple.RegistryValueSerializer
+import org.bukkit.NamespacedKey
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
+import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.inventory.meta.ItemMeta
 
-class AttributeModifier(
-    val attribute: AttributeType,
-    val slot: AttributeSlot? = null,
-    var amount: Double = 0.0,
-): Cloneable {
+class AttributeModifiers: Serializer<AttributeModifiers> {
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+    lateinit var attributes: Map<Attribute, AttributeModifier>
 
-        other as AttributeModifier
+    /**
+     * Default constructor for serializer
+     */
+    constructor()
 
-        if (attribute != other.attribute) return false
-        if (slot != other.slot) return false
-
-        return true
+    constructor(attributes: Map<Attribute, AttributeModifier>) {
+        this.attributes = attributes
     }
 
-    override fun hashCode(): Int {
-        var result = attribute.hashCode()
-        result = 31 * result + (slot?.hashCode() ?: 0)
-        return result
+    /**
+     * Adds the attribute modifiers to the given item.
+     *
+     * Before calling this method, it might be a good idea to call
+     * [stripAllAttributeModifiers].
+     */
+    fun addTo(meta: ItemMeta) {
+        for ((attribute, modifier) in attributes) {
+            meta.addAttributeModifier(attribute, modifier)
+        }
     }
 
-    override fun clone(): AttributeModifier {
-        return super.clone() as AttributeModifier
+    @Throws(SerializerException::class)
+    override fun serialize(data: SerializeData): AttributeModifiers {
+
+        // TODO: Spigot will surely improve this
+        val slotGroupsByName: MutableMap<String, EquipmentSlotGroup> = mutableMapOf(
+            "any" to EquipmentSlotGroup.ANY,
+            "mainhand" to EquipmentSlotGroup.MAINHAND,
+            "offhand" to EquipmentSlotGroup.OFFHAND,
+            "hand" to EquipmentSlotGroup.HAND,
+            "head" to EquipmentSlotGroup.HEAD,
+            "chest" to EquipmentSlotGroup.CHEST,
+            "legs" to EquipmentSlotGroup.LEGS,
+            "feet" to EquipmentSlotGroup.FEET,
+            "armor" to EquipmentSlotGroup.ARMOR
+        )
+
+        val splitTempData = data.ofList()
+            .addArgument(RegistryValueSerializer(Attribute::class.java, true))
+            .addArgument(DoubleSerializer())
+            .requireAllPreviousArgs()
+            .addArgument(ByNameSerializer(EquipmentSlotGroup::class.java, slotGroupsByName))
+            .addArgument(EnumValueSerializer(AttributeModifier.Operation::class.java, false))
+            .assertExists()
+            .assertList()
+
+        val builtAttributes = mutableMapOf<Attribute, AttributeModifier>()
+        for (split in splitTempData) {
+            val parsedAttributes = split[0].get() as List<Attribute>
+            val amount = split[1].get() as Double
+            val slot = split[2].orElse(EquipmentSlotGroup.ANY) as EquipmentSlotGroup
+            val operation = (split[3].orElse(listOf(AttributeModifier.Operation.ADD_NUMBER)) as List<AttributeModifier.Operation>).first()
+
+            for (attribute in parsedAttributes) {
+                val key = NamespacedKey(WeaponMechanicsPlus.getPlugin(), attribute.key.key + "-" + slot)
+                val modifier = AttributeModifier(key, amount, operation, slot)
+                builtAttributes[attribute] = modifier
+            }
+        }
+
+        return AttributeModifiers(builtAttributes)
     }
 
     companion object {
 
-        fun flatten(lists: List<List<AttributeModifier>>): MutableSet<AttributeModifier> {
-            val flattened = HashMap<AttributeModifier, AttributeModifier>()
+        /**
+         * Removes all attribute modifiers from the given item meta, if the modifiers
+         * were added by an [AttributeModifiers] instance (added by an attachment).
+         */
+        @JvmStatic
+        fun stripAllAttributeModifiers(meta: ItemMeta) {
+            if (!meta.hasAttributeModifiers())
+                return
 
-            for (list in lists) {
-                for (modifier in list) {
-                    if (flattened.containsKey(modifier)) {
-                        flattened[modifier]!!.amount += modifier.amount
-                        continue
-                    }
+            for ((attribute, modifier) in meta.attributeModifiers!!.entries()) {
+                if (!modifier.key.namespace.equals(WeaponMechanicsPlus.getPlugin().name, ignoreCase = true))
+                    continue
 
-                    flattened[modifier] = modifier.clone()
-                }
+                meta.removeAttributeModifier(attribute, modifier)
             }
-
-            return flattened.keys
-        }
-
-        fun SerializeData.ConfigListAccessor.getAttributeModifiers(): List<AttributeModifier> {
-            addArgument(AttributeType::class.java, true)
-            addArgument(Double::class.java, true)
-            addArgument(AttributeSlot::class.java, false)
-            assertList()
-
-            val temp = ArrayList<AttributeModifier>()
-            for (split in get()) {
-                val attribute = EnumUtil.parseEnums(AttributeType::class.java, split[0])[0]
-                val slot = if (split.size > 2) EnumUtil.parseEnums(AttributeSlot::class.java, split[2])[0] else null
-                val amount = split[1].toDouble()
-
-                temp.add(AttributeModifier(attribute, slot, amount))
-            }
-
-            return temp
         }
     }
 }

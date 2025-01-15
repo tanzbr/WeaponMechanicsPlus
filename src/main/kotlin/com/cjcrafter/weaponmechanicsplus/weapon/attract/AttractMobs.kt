@@ -4,6 +4,10 @@ import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusAPI
 import me.deecaad.core.file.SerializeData
 import me.deecaad.core.file.Serializer
 import me.deecaad.core.file.serializers.ChanceSerializer
+import me.deecaad.core.file.simple.BooleanSerializer
+import me.deecaad.core.file.simple.DoubleSerializer
+import me.deecaad.core.file.simple.EnumValueSerializer
+import me.deecaad.core.file.simple.RegistryValueSerializer
 import me.deecaad.core.mechanics.CastData
 import me.deecaad.core.mechanics.Mechanics
 import me.deecaad.core.utils.EnumUtil
@@ -151,45 +155,37 @@ class AttractMobs : Serializer<AttractMobs> {
     }
 
     override fun serialize(data: SerializeData): AttractMobs {
-        val skipChance: Double = data.of("Skip_Chance").serialize(ChanceSerializer()) ?: 0.0
+        val skipChance: Double = data.of("Skip_Chance").serialize(ChanceSerializer()).orElse(0.0)
 
-        val defaultMode = data.of("Default_Mode").getEnum(AttractMode::class.java, AttractMode.CANCEL)!!
-        val defaultDistance = data.of("Default_Distance").assertPositive().getDouble(30.0)
-        val defaultChance = data.of("Default_Chance").serialize(ChanceSerializer()) ?: 1.0
-        val defaultOverrideCurrentTarget = data.of("Default_Override_Current_Target").getBool(false)
+        val defaultMode = data.of("Default_Mode").getEnum(AttractMode::class.java).orElse(AttractMode.CANCEL)
+        val defaultDistance = data.of("Default_Distance").assertRange(0.0, null).getDouble().orElse(30.0)
+        val defaultChance = data.of("Default_Chance").serialize(ChanceSerializer()).orElse(1.0)
+        val defaultOverrideCurrentTarget = data.of("Default_Override_Current_Target").getBool().orElse(false)
 
         val mobs = EnumMap<EntityType, MobData>(EntityType::class.java)
         val list = data.ofList("Mobs")
-            .addArgument(EntityType::class.java, true)
-            .addArgument(AttractMode::class.java, true)
-            .addArgument(Double::class.java, false).assertArgumentPositive()
-            .addArgument(String::class.java, false)
-            .addArgument(Boolean::class.java, false)
-            .assertExists().assertList().get()
+            .addArgument(RegistryValueSerializer(EntityType::class.java, true))
+            .addArgument(EnumValueSerializer(AttractMode::class.java, false))
+            .requireAllPreviousArgs()
+            .addArgument(DoubleSerializer(min = 0.0))
+            .addArgument(ChanceSerializer())
+            .addArgument(BooleanSerializer())
+            .assertExists()
+            .assertList()
 
         for (split in list) {
-            val entities = EnumUtil.parseEnums(EntityType::class.java, split[0] as String)
-            val mode = AttractMode.valueOf(split[1] as String)
-            val distance: Double? = split.getOrNull(2)?.toDouble()
-            val chanceStr: String? = split.getOrNull(3)?.trim()
-            val overrideCurrentTarget: Boolean? = split.getOrNull(4)?.let { it.equals("true", ignoreCase = true) }
-
-            // Parse the percentage
-            val chance: Double? = chanceStr?.let {
-                if (it.endsWith("%")) {
-                    val percent = it.substring(0, it.length - 1).toDouble()
-                    percent / 100.0
-                } else {
-                    it.toDouble()
-                }
-            }
+            val entities = split[0].get() as List<EntityType>
+            val mode = (split[1].get() as List<AttractMode>).first()
+            val distance = split[2].orElse(null) as? Double?
+            val chance = split[3].orElse(null) as? Double?
+            val overrideCurrentTarget = split[4].orElse(null) as? Boolean?
 
             for (entity in entities)
                 mobs[entity] = MobData(mode, distance?.times(distance), chance, overrideCurrentTarget)
         }
 
-        val mechanics = data.of("Mechanics").serialize(Mechanics::class.java)
-        val isOnlyPlayerShooter = data.of("Only_Player_Shooter").getBool(true)
+        val mechanics = data.of("Mechanics").serialize(Mechanics::class.java).get()
+        val isOnlyPlayerShooter = data.of("Only_Player_Shooter").getBool().orElse(true)
 
         return AttractMobs(
             skipChance,

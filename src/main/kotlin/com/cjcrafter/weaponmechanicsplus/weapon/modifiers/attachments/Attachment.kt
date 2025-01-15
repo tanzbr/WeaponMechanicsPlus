@@ -7,7 +7,10 @@ import me.deecaad.weaponmechanics.utils.CustomTag
 import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusAPI
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.ModifierBase
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.Whitelist
+import me.deecaad.core.file.simple.EnumValueSerializer
+import me.deecaad.core.file.simple.StringSerializer
 import org.bukkit.inventory.ItemStack
+import kotlin.jvm.optionals.getOrNull
 
 class Attachment : ModifierBase {
 
@@ -102,8 +105,8 @@ class Attachment : ModifierBase {
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): Attachment {
-        val attachmentTitle = data.key
-        val maximumStackAmount = data.of("Maximum_Stack_Amount").assertRange(1, 100).getInt(1)
+        val attachmentTitle = data.key!!
+        val maximumStackAmount = data.of("Maximum_Stack_Amount").assertRange(1, 100).getInt().orElse(1)
 
         // Make sure to use CustomTag during serialization so recipe works
         data.of("Item").assertExists()
@@ -118,37 +121,45 @@ class Attachment : ModifierBase {
             }
 
             if (data.has("Denying.Weapon_Whitelist")) {
-                val isWeaponWhitelist = data.of("Denying.Weapon_Whitelist").getBool(false)
-                val weapons = data.ofList("Denying.Weapons").addArgument(String::class.java, true).assertList().get()
-                        .map { arr: Array<String> -> arr[0] }
+                val isWeaponWhitelist = data.of("Denying.Weapon_Whitelist").getBool().orElse(false)
+                val weapons = data.ofList("Denying.Weapons")
+                    .addArgument(StringSerializer())
+                    .requireAllPreviousArgs()
+                    .assertList()
+                    .map { it[0].get().toString() }
                 weaponWhitelist = Whitelist(isWeaponWhitelist, weapons)
             }
 
             if (data.has("Denying.Armor_Whitelist")) {
-                val isArmorWhitelist = data.of("Denying.Armor_Whitelist").getBool(false)
-                val armors = data.ofList("Denying.Armors").addArgument(String::class.java, true).assertList().get()
-                        .map { arr: Array<String> -> arr[0] }
+                val isArmorWhitelist = data.of("Denying.Armor_Whitelist").getBool().orElse(false)
+                val armors = data.ofList("Denying.Armors")
+                    .addArgument(StringSerializer())
+                    .requireAllPreviousArgs()
+                    .assertList()
+                    .map { it[0].get().toString() }
                 armorWhitelist = Whitelist(isArmorWhitelist, armors)
             }
         }
 
         val attachmentRequireList: MutableSet<String> = HashSet()
         val attachmentDenyList: MutableSet<String> = HashSet()
-        for (split in data.ofList("Denying.Attachments")
-            .addArgument(State::class.java, true)
-            .addArgument(String::class.java, true)
-            .assertList().get()) {
 
-            if (split[0].equals("deny", ignoreCase = true))
-                attachmentDenyList.add(split[1])
+        val tempSplitData = data.ofList("Denying.Attachments")
+            .addArgument(EnumValueSerializer(State::class.java, false))
+            .addArgument(StringSerializer())
+            .requireAllPreviousArgs()
+            .assertList()
+        for (split in tempSplitData) {
+            if ((split[0].get() as String).equals("deny", ignoreCase = true))
+                attachmentDenyList.add(split[1].get() as String)
             else
-                attachmentRequireList.add(split[1])
+                attachmentRequireList.add(split[1].get() as String)
         }
 
-        val unlockable = data.of("Unlockable").serialize(Unlockable::class.java)
-        val denyMechanics = data.of("Denying.Mechanics").serialize(Mechanics::class.java)
-        val equipMechanics = data.of("Attach_Mechanics").serialize(Mechanics::class.java)
-        val dequipMechanics = data.of("Detach_Mechanics").serialize(Mechanics::class.java)
+        val unlockable = data.of("Unlockable").serialize(Unlockable::class.java).getOrNull()
+        val denyMechanics = data.of("Denying.Mechanics").serialize(Mechanics::class.java).getOrNull()
+        val equipMechanics = data.of("Attach_Mechanics").serialize(Mechanics::class.java).getOrNull()
+        val dequipMechanics = data.of("Detach_Mechanics").serialize(Mechanics::class.java).getOrNull()
 
         val returnValue = Attachment(attachmentTitle, maximumStackAmount, item, attachmentRequireList, attachmentDenyList, weaponWhitelist, armorWhitelist, unlockable, denyMechanics, equipMechanics, dequipMechanics)
 

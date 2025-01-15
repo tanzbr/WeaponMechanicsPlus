@@ -10,15 +10,15 @@ Long_Barrel:
       - ""
       - "<dark_gray>Drag and click on a weapon to attach"
   Attach_Mechanics:
-    - "Sound{sound=BLOCK_ANVIL_USE, volume=0.8, pitch=1.28, noise=0.05}"
+    - "Sound{sound=block.anvil.use, volume=0.8, pitch=1.28, noise=0.05}"
   Detach_Mechanics:
-    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+    - "Sound{sound=block.chain.place, pitch=0.5, noise=0.05}"
   Denying:
     Weapon_Whitelist: true
     Weapons:
       - AX_50
     Mechanics:
-      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=entity.villager.no, pitch=1.9, listeners=Source{}}"
       - "Title{title=<red>Denied, subtitle=<gray>Only 1 can be attached to AX-50}"
   Modifiers:
     Damage_Modifier:
@@ -37,15 +37,15 @@ High_Caliber_Rounds:
       - ""
       - "<dark_gray>Drag and click on a weapon to attach"
   Attach_Mechanics:
-    - "Sound{sound=BLOCK_ANVIL_USE, volume=0.8, pitch=1.28, noise=0.05}"
+    - "Sound{sound=block.anvil.use, volume=0.8, pitch=1.28, noise=0.05}"
   Detach_Mechanics:
-    - "Sound{sound=BLOCK_CHAIN_PLACE, pitch=0.5, noise=0.05}"
+    - "Sound{sound=block.chain.place, pitch=0.5, noise=0.05}"
   Denying:
     Weapon_Whitelist: false
     Weapons:
       - Combat_Knife
     Mechanics:
-      - "Sound{sound=ENTITY_VILLAGER_NO, pitch=1.9, listeners=Source{}}"
+      - "Sound{sound=entity.villager.no, pitch=1.9, listeners=Source{}}"
   Modifiers:
     Damage_Modifier:
       Damage: MULTIPLY 1.20

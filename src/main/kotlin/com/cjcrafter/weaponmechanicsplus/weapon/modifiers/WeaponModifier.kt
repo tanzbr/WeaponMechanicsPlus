@@ -1,6 +1,7 @@
 package com.cjcrafter.weaponmechanicsplus.weapon.modifiers
 
 import me.deecaad.core.file.*
+import kotlin.jvm.optionals.getOrNull
 
 class WeaponModifier : Serializer<WeaponModifier> {
 
@@ -40,14 +41,14 @@ class WeaponModifier : Serializer<WeaponModifier> {
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): WeaponModifier {
-        val damageModifier = data.of("Damage_Modifier").serialize(DamageModifier::class.java)
-        val explosionModifier = data.of("Explosion_Modifier").serialize(ExplosionModifier::class.java)
-        val infoModifier = data.of("Info_Modifier").serialize(InfoModifier::class.java)
-        val meleeModifier = data.of("Melee_Modifier").serialize(MeleeModifier::class.java)
-        val projectileModifier = data.of("Projectile_Modifier").serialize(ProjectileModifier::class.java)
-        val reloadModifier = data.of("Reload_Modifier").serialize(ReloadModifier::class.java)
-        val scopeModifier = data.of("Scope_Modifier").serialize(ScopeModifier::class.java)
-        val shootModifier = data.of("Shoot_Modifier").serialize(ShootModifier::class.java)
+        val damageModifier = data.of("Damage_Modifier").serialize(DamageModifier::class.java).getOrNull()
+        val explosionModifier = data.of("Explosion_Modifier").serialize(ExplosionModifier::class.java).getOrNull()
+        val infoModifier = data.of("Info_Modifier").serialize(InfoModifier::class.java).getOrNull()
+        val meleeModifier = data.of("Melee_Modifier").serialize(MeleeModifier::class.java).getOrNull()
+        val projectileModifier = data.of("Projectile_Modifier").serialize(ProjectileModifier::class.java).getOrNull()
+        val reloadModifier = data.of("Reload_Modifier").serialize(ReloadModifier::class.java).getOrNull()
+        val scopeModifier = data.of("Scope_Modifier").serialize(ScopeModifier::class.java).getOrNull()
+        val shootModifier = data.of("Shoot_Modifier").serialize(ShootModifier::class.java).getOrNull()
 
         return WeaponModifier(
             damageModifier,

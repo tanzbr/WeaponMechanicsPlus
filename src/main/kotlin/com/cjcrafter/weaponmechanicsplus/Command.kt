@@ -2,116 +2,103 @@
 
 package com.cjcrafter.weaponmechanicsplus
 
-import me.deecaad.core.commands.*
-import me.deecaad.core.commands.arguments.EntityListArgumentType
-import me.deecaad.core.commands.arguments.IntegerArgumentType
-import me.deecaad.core.commands.arguments.StringArgumentType
 import me.deecaad.core.mechanics.CastData
 import me.deecaad.core.utils.StringUtil
 import me.deecaad.weaponmechanics.utils.CustomTag
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
+import dev.jorel.commandapi.SuggestionInfo
+import dev.jorel.commandapi.arguments.ArgumentSuggestions
+import dev.jorel.commandapi.kotlindsl.anyExecutor
+import dev.jorel.commandapi.kotlindsl.commandAPICommand
+import dev.jorel.commandapi.kotlindsl.entitySelectorArgumentManyEntities
+import dev.jorel.commandapi.kotlindsl.integerArgument
+import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.jorel.commandapi.kotlindsl.stringArgument
+import dev.jorel.commandapi.kotlindsl.subcommand
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import org.bukkit.permissions.Permission
-import org.bukkit.permissions.PermissionDefault
-import java.util.function.Function
-
 
 object Command {
 
     private var ATTACHMENT_SUGGESTIONS =
-        Function { _: CommandData ->
-            return@Function AttachmentRegistry.INSTANCE.asSequence()
-                .map { it.attachmentTitle }
-                .map { Tooltip.of(it) }
-                .toList().toTypedArray()
+        ArgumentSuggestions.strings { _: SuggestionInfo<CommandSender> ->
+            AttachmentRegistry.INSTANCE.asSequence().map { it.attachmentTitle }.toList().toTypedArray()
         }
 
 
     fun register() {
-
-        val cmd = com.cjcrafter.core.commands.command("wmp") {
-            aliases("weaponmechanicsplus")
-            permission("weaponmechanicsplus.admin")
-            description("WeaponMechanicsPlus main command")
+        commandAPICommand("wmp") {
+            withAliases("weaponmechanicsplus")
+            withPermission("weaponmechanicsplus.admin")
+            withShortDescription("WeaponMechanicsPlus main command")
 
             subcommand("give") {
-                permission("weaponmechanicsplus.commands.give")
-                description("Give attachments to players")
-                argument("target", EntityListArgumentType()) {
-                    description = "Who to give the attachments to"
+                withPermission("weaponmechanicsplus.commands.give")
+                withShortDescription("Give attachments to players")
+
+                entitySelectorArgumentManyEntities("target")
+                stringArgument("attachment") {
+                    replaceSuggestions(ATTACHMENT_SUGGESTIONS)
                 }
-                argument("attachment", StringArgumentType()) {
-                    description = "Which attachment to give"
-                    append(ATTACHMENT_SUGGESTIONS)
-                }
-                argument("amount", IntegerArgumentType(1, 64)) {
-                    description = "How many of the attachment to give"
-                    default = 1
-                    append(IntegerArgumentType.ITEM_COUNT)
-                }
-                executeAny { sender: CommandSender, args: Array<Any?> ->
-                    give(sender, args[0] as List<Entity>, args[1] as String, args[2] as Int)
+                integerArgument("amount", 1, 99, optional = true)
+
+                anyExecutor { sender, args ->
+                    val receivers = args[0] as List<Entity>
+                    val attachmentStr = args[1] as String
+                    val amount = args[2] as Int? ?: 1
+
+                    give(sender, receivers, attachmentStr, amount)
                 }
             }
 
             subcommand("get") {
-                permission("weaponmechanicsplus.commands.get")
-                description("Give attachments to yourself")
+                withPermission("weaponmechanicsplus.commands.get")
+                withShortDescription("Give attachments to yourself")
 
-                argument("attachment", StringArgumentType()) {
-                    description = "Which attachment to give"
-                    append(ATTACHMENT_SUGGESTIONS)
+                stringArgument("attachment") {
+                    replaceSuggestions(ATTACHMENT_SUGGESTIONS)
                 }
-                argument("amount", IntegerArgumentType(1, 64)) {
-                    description = "How many of the attachment to give"
-                    default = 1
-                    append(IntegerArgumentType.ITEM_COUNT)
-                }
-                executePlayer { sender: Player, args: Array<Any?> ->
-                    give(sender, listOf(sender), args[0] as String, args[1] as Int)
+                integerArgument("amount", 1, 99, optional = true)
+
+                playerExecutor { sender, args ->
+                    val attachmentStr = args[0] as String
+                    val amount = args[1] as Int? ?: 1
+
+                    give(sender, listOf(sender), attachmentStr, amount)
                 }
             }
 
             subcommand("detach") {
-                permission("weaponmechanicsplus.commands.detach")
-                description("Detach attachments from the weapon")
+                withPermission("weaponmechanicsplus.commands.detach")
+                withShortDescription("Detach attachments from the weapon")
 
-                argument("target", EntityListArgumentType()) {
-                    description = "Who to remove the attachment from"
-                    default = null
+                entitySelectorArgumentManyEntities("target", optional = true)
+                stringArgument("attachment", optional = true)
+
+                anyExecutor { sender, args ->
+                    val targets = (args[0] ?: listOf(sender)) as List<LivingEntity>
+                    val removeAttachment = args[1] as String?
+
+                    detach(sender, targets, removeAttachment)
                 }
+            }
 
-                argument("attachment", StringArgumentType()) {
-                    description = "Which attachment to remove"
-                    default = null
-                }
+            subcommand("detach") {
+                withPermission("weaponmechanicsplus.commands.detach")
+                withShortDescription("Detach attachments from the weapon")
 
-                executeAny { sender: CommandSender, args: Array<Any?> ->
-                    detach(sender, (args[0] ?: listOf(sender)) as List<LivingEntity>, args[1] as String?)
+                stringArgument("attachment", optional = true)
+
+                playerExecutor { sender, args ->
+                    val removeAttachment = args[0] as String?
+
+                    detach(sender, listOf(sender), removeAttachment)
                 }
             }
         }
-
-        com.cjcrafter.core.commands.command("detach") {
-            permission = Permission("weaponmechanicsplus.detach", PermissionDefault.TRUE)
-            description("Detach attachments from the weapon")
-
-            argument("attachment", StringArgumentType()) {
-                description = "Which attachment to remove"
-                default = null
-            }
-
-            executePlayer { sender: Player, args: Array<Any?> ->
-                detach(sender, listOf(sender), args[0] as String?)
-            }
-        }.register()
-
-        cmd.registerHelp(HelpCommandBuilder.HelpColor.from(ChatColor.GOLD, ChatColor.GRAY, '\u27A2'))
-        cmd.register()
     }
 
     fun give(sender: CommandSender, receivers: List<Entity>, attachmentStr: String, amount: Int) {

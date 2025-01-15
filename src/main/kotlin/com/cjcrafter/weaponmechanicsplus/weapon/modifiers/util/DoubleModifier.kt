@@ -25,10 +25,10 @@ class DoubleModifier : Serializer<DoubleModifier> {
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): DoubleModifier {
-        val line = data.of().assertExists().assertType(String::class.java).get<String>()
+        val line = data.of().assertExists().get(String::class.java).get()
         val split = StringUtil.split(line)
         if (split.size != 2)
-            throw data.exception(null, "Invalid input: '$line'", "Expected 2 arguments, but got " + split.size, "Valid Format: <ADD/MULTIPLY> <Decimal>")
+            throw data.exception(null, "Invalid input: '$line'", "Expected 2 arguments, but got " + split.size, "Valid Format: <ADD/MULTIPLY/SET> <Decimal>")
 
         val amount: Double
         val operation: Operation
@@ -38,9 +38,13 @@ class DoubleModifier : Serializer<DoubleModifier> {
             operation = EnumUtil.getIfPresent(Operation::class.java, split[0]).orElseThrow()
             amount = split[1].toDouble()
         } catch (ex: NoSuchElementException) {
-            throw SerializerEnumException(data.serializer, Operation::class.java, split[0], false, data.of().location)
+            throw SerializerException.builder()
+                .locationRaw(data.of().location)
+                .buildInvalidEnumOption(split[0], Operation::class.java)
         } catch (ex: NumberFormatException) {
-            throw SerializerTypeException(data.serializer, Double::class.java, String::class.java, split[1], data.of().location)
+            throw SerializerException.builder()
+                .locationRaw(data.of().location)
+                .buildInvalidType("decimal", split[1])
         }
         return DoubleModifier(operation, amount)
     }

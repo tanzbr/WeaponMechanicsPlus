@@ -6,9 +6,10 @@ import com.cjcrafter.armormechanics.events.ArmorUpdateEvent
 import com.cjcrafter.armormechanics.events.ResistBulletDamageEvent
 import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusAPI
 import com.cjcrafter.weaponmechanicsplus.listeners.ModifierListeners.Companion.updateMechanics
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.AttributeModifier
+import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.AttributeModifiers
 import me.deecaad.core.compatibility.CompatibilityAPI
 import me.deecaad.weaponmechanics.weapon.damage.DamagePoint
+import me.deecaad.weaponmechanics.weapon.damage.ExplosionDamageSource
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 
@@ -35,17 +36,14 @@ class ArmorModifierListeners : Listener {
     @EventHandler
     fun onUpdate(event: ArmorUpdateEvent) {
         val armor = event.armor
+        val armorMeta = armor.itemMeta ?: return
 
-        val lists = ArrayList<List<AttributeModifier>>()
+        // remove any modifiers from the WeaponMechanicsPlus namespace...
+        // prevents any duplication (if it is even possible)
+        AttributeModifiers.stripAllAttributeModifiers(armorMeta)
+
         WeaponMechanicsPlusAPI.forEachAttachment(armor) { attachment ->
-            attachment.armorModifier?.attributeModifiers?.let { lists.add(it) }
-        }
-
-        val attributes = AttributeModifier.flatten(lists)
-        for (attribute in attributes) {
-            val current = CompatibilityAPI.getNBTCompatibility().getAttribute(armor, attribute.attribute, attribute.slot)
-            val value = (current?.amount ?: 0.0) + attribute.amount
-            CompatibilityAPI.getNBTCompatibility().setAttribute(armor, attribute.attribute, attribute.slot, value)
+            attachment.armorModifier?.attributeModifiers
         }
     }
 
@@ -62,7 +60,7 @@ class ArmorModifierListeners : Listener {
                 // No damage point? Use all modifiers for the entity
                 var resistance = 1.0 - event.rate
                 WeaponMechanicsPlusAPI.forEachModifier(event.weaponDamageEvent.victim) { modifier ->
-                    if (event.weaponDamageEvent.isExplosion)
+                    if (event.weaponDamageEvent.source is ExplosionDamageSource)
                         modifier.armorModifier?.explosionResistance?.let { resistance = it.apply(resistance) }
                     else
                         modifier.armorModifier?.bulletResistance?.let { resistance = it.apply(resistance) }
@@ -75,7 +73,7 @@ class ArmorModifierListeners : Listener {
         // Since we know the damage slot, we only check that specific armor
         var resistance = 1.0 - event.rate
         WeaponMechanicsPlusAPI.forEachAttachment(armor) { attachment ->
-            if (event.weaponDamageEvent.isExplosion)
+            if (event.weaponDamageEvent.source is ExplosionDamageSource)
                 attachment.armorModifier?.explosionResistance?.let { resistance = it.apply(resistance) }
             else
                 attachment.armorModifier?.bulletResistance?.let { resistance = it.apply(resistance) }

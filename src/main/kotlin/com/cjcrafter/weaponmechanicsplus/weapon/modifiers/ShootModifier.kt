@@ -6,6 +6,7 @@ import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.IntegerModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier.Companion.serializeMechanicsModifier
 import me.deecaad.weaponmechanics.weapon.shoot.spread.Spread
+import kotlin.jvm.optionals.getOrNull
 
 class ShootModifier : Serializer<ShootModifier> {
 
@@ -43,15 +44,15 @@ class ShootModifier : Serializer<ShootModifier> {
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): ShootModifier {
 
-        val projectileAmount = data.of("Projectile_Amount").serialize(IntegerModifier::class.java)
-        val projectileSpeed = data.of("Projectile_Speed").serialize(DoubleModifier::class.java)
-        val fullyAutomaticShotsPerSecond = data.of("Fully_Automatic_Shots_Per_Second").serialize(IntegerModifier::class.java)
+        val projectileAmount = data.of("Projectile_Amount").serialize(IntegerModifier::class.java).getOrNull()
+        val projectileSpeed = data.of("Projectile_Speed").serialize(DoubleModifier::class.java).getOrNull()
+        val fullyAutomaticShotsPerSecond = data.of("Fully_Automatic_Shots_Per_Second").serialize(IntegerModifier::class.java).getOrNull()
         val mechanicsModifier = data.serializeMechanicsModifier()
 
-        val baseSpread = data.of("Base_Spread").serialize(DoubleModifier::class.java)
-        val overrideSpread = data.of("Override_Spread").serialize(Spread::class.java)
+        val baseSpread = data.of("Base_Spread").serialize(DoubleModifier::class.java).getOrNull()
+        val overrideSpread = data.of("Override_Spread").serialize(Spread::class.java).getOrNull()
 
-        val skipAttractMobs = data.of("Skip_Attract_Mobs").getBool(false)
+        val skipAttractMobs = data.of("Skip_Attract_Mobs").getBool().orElse(false)
 
         return ShootModifier(
             projectileAmount,
