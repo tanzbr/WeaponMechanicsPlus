@@ -27,7 +27,6 @@ import java.nio.file.attribute.BasicFileAttributes
 
 class PlaceholderListeners : Listener {
 
-    private val allowedToBeMissing = setOf("armor_potion_immunities", "armor_bullet_resistance", "armor_explosion_resistance")
     private val numerics = HashMap<NumericPlaceholderHandler, PlaceholderFormat<NumericPlaceholderHandler>>()
     private val enums = HashMap<EnumPlaceholderHandler, PlaceholderFormat<EnumPlaceholderHandler>>()
     private val lists = HashMap<ListPlaceholderHandler, PlaceholderFormat<ListPlaceholderHandler>>()
