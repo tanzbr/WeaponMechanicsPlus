@@ -23,6 +23,10 @@ Long_Barrel:
   Modifiers:
     Damage_Modifier:
       Projectile_Speed: MULTIPLY 1.10  # 10% more speed
+    Shoot_Modifier:
+      Recoil_Modifier:
+        # A longer barrel tends to use the felt recoil slightly
+        Speed: MULTIPLY 0.90  # 10% less recoil, approximately
 
 High_Caliber_Rounds:
   Item:
@@ -51,3 +55,7 @@ High_Caliber_Rounds:
       Damage: MULTIPLY 1.20
     Reload_Modifier:
       Reload_Duration: MULTIPLY 1.30
+    Shoot_Modifier:
+      Recoil_Modifier:
+        # a larger bullet tends to have more powder, increasing kick
+        Speed: MULTIPLY 1.20
