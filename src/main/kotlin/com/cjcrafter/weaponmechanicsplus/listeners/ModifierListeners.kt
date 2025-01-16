@@ -196,6 +196,25 @@ class ModifierListeners : Listener {
         }
     }
 
+    @EventHandler
+    fun onRecoil(event: WeaponRecoilEvent) {
+        if (event.weaponStack == null)
+            return
+
+        WeaponMechanicsPlusAPI.forEachModifier(event.shooter, event.weaponStack) { modifier ->
+            val recoil = modifier.getWeaponModifier(event.weaponTitle)?.shoot?.recoilModifier ?: return@forEachModifier
+
+            recoil.recoilMeanX?.let { event.recoilMeanX = it.apply(event.recoilMeanX) }
+            recoil.recoilMeanY?.let { event.recoilMeanY = it.apply(event.recoilMeanY) }
+            recoil.recoilVarianceX?.let { event.recoilVarianceX = it.apply(event.recoilVarianceX) }
+            recoil.recoilVarianceY?.let { event.recoilVarianceY = it.apply(event.recoilVarianceY) }
+            recoil.recoilSpeed?.let { event.recoilSpeed = it.apply(event.recoilSpeed) }
+            recoil.damping?.let { event.damping = it.apply(event.damping) }
+            recoil.dampingRecovery?.let { event.dampingRecovery = it.apply(event.dampingRecovery) }
+            recoil.smoothingFactor?.let { event.smoothingFactor = it.apply(event.smoothingFactor) }
+        }
+    }
+
     companion object {
         fun updateMechanics(currentMechanics: Mechanics?, modifier: MechanicsModifier?): Mechanics? {
             if (currentMechanics == null) {

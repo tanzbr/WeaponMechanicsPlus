@@ -54,6 +54,7 @@ class IntegerModifier : Serializer<IntegerModifier> {
         } catch (ex: NumberFormatException) {
             throw SerializerException.builder()
                 .locationRaw(data.of().location)
+                .apply { ex.message?.let { addMessage(it) } }
                 .buildInvalidType("integer", split[1])
         }
         return IntegerModifier(operation, amount)

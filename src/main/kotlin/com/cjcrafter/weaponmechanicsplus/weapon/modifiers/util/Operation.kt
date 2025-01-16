@@ -9,12 +9,20 @@ enum class Operation {
             return a + b
         }
 
+        override fun evaluate(a: Float, b: Float): Float {
+            return a + b
+        }
+
         override fun evaluate(a: Int, b: Int): Int {
             return a + b
         }
     },
     MULTIPLY {
         override fun evaluate(a: Double, b: Double): Double {
+            return a * b
+        }
+
+        override fun evaluate(a: Float, b: Float): Float {
             return a * b
         }
 
@@ -27,11 +35,16 @@ enum class Operation {
             return b
         }
 
+        override fun evaluate(a: Float, b: Float): Float {
+            return b
+        }
+
         override fun evaluate(a: Int, b: Int): Int {
             return b
         }
     };
 
     abstract fun evaluate(a: Double, b: Double): Double
+    abstract fun evaluate(a: Float, b: Float): Float
     abstract fun evaluate(a: Int, b: Int): Int
 }
