@@ -59,3 +59,30 @@ High_Caliber_Rounds:
       Recoil_Modifier:
         # a larger bullet tends to have more powder, increasing kick
         Speed: MULTIPLY 1.20
+
+Increase_Magazine:
+  Item:
+    Type: IRON_NUGGET
+    Name: "<yellow>High-Capacity Magazine"
+    Lore:
+      - "<gray>Increases the magazine capacity of this weapon by 25%"
+      - "<gray>but also increases the reload duration by 35%"
+      - ""
+      - "<gray>Attaches to:"
+      - "<blue> All Guns"
+      - ""
+      - "<dark_gray>Drag and click on a weapon to attach"
+  Attach_Mechanics:
+    - "Sound{sound=block.anvil.use, volume=0.8, pitch=1.28, noise=0.05}"
+  Detach_Mechanics:
+    - "Sound{sound=block.chain.place, pitch=0.5, noise=0.05}"
+  Denying:
+    Weapon_Whitelist: false
+    Weapons:
+      - Combat_Knife
+    Mechanics:
+      - "Sound{sound=entity.villager.no, pitch=1.9, listeners=Source{}}"
+  Modifiers:
+    Reload_Modifier:
+      Magazine_Size: MULTIPLY 1.25
+      Reload_Duration: MULTIPLY 1.35

@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.cjcrafter"
-version = "2.0.1"
+version = "2.0.2"
 
 plugins {
     `java-library`
@@ -37,8 +37,8 @@ dependencies {
 
     compileOnly("org.jetbrains:annotations:24.0.1")
     compileOnly("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
-    compileOnly("com.cjcrafter:mechanicscore:4.0.0-BETA4")
-    compileOnly("com.cjcrafter:weaponmechanics:4.0.0-BETA4")
+    compileOnly("com.cjcrafter:mechanicscore:4.0.2")
+    compileOnly("com.cjcrafter:weaponmechanics:4.0.4")
     compileOnly("com.cjcrafter:foliascheduler:0.6.3")
     compileOnly("dev.jorel:commandapi-bukkit-core:9.7.0")
     compileOnly("dev.jorel:commandapi-bukkit-kotlin:9.7.0")
@@ -55,9 +55,6 @@ tasks.shadowJar {
     archiveFileName.set("WeaponMechanicsPlus-${project.version}.jar")
 
     dependencies {
-        relocate ("kotlin.", "com.cjcrafter.weaponmechanicsplus.lib.kotlin.") {
-            include(dependency("org.jetbrains.kotlin:"))
-        }
         relocate("org.bstats", "com.cjcrafter.weaponmechanicsplus.lib.bstats") {
             include(dependency("org.bstats:"))
         }
@@ -68,6 +65,7 @@ tasks.shadowJar {
 
     // This doesn't actually include any dependencies, this relocates all references
     // to the mechanics core lib.
+    relocate("kotlin.", "me.deecaad.core.lib.kotlin.")
     relocate("net.kyori", "me.deecaad.core.lib")
     relocate("com.cjcrafter.foliascheduler", "me.deecaad.core.lib.scheduler")
     relocate("dev.jorel.commandapi", "me.deecaad.core.lib.commandapi")
