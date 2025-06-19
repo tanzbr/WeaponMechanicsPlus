@@ -1,87 +1,17 @@
 package com.cjcrafter.weaponmechanicsplus.listeners
 
 import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
-import me.deecaad.core.file.BukkitConfig
-import me.deecaad.core.file.SerializeData
-import me.deecaad.core.file.SerializerException
-import me.deecaad.core.mechanics.CastData
-import me.deecaad.core.utils.FileUtil
-import me.deecaad.core.utils.FileUtil.PathReference
-import me.deecaad.core.utils.LogLevel
-import me.deecaad.weaponmechanics.WeaponMechanics
-import me.deecaad.weaponmechanics.utils.CustomTag
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
+import me.deecaad.core.mechanics.CastData
+import me.deecaad.weaponmechanics.utils.CustomTag
 import org.bukkit.ChatColor
-import org.bukkit.configuration.InvalidConfigurationException
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCreativeEvent
 import org.bukkit.inventory.PlayerInventory
-import java.io.File
-import java.io.IOException
-import java.io.InputStreamReader
-import java.nio.file.FileVisitResult
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.SimpleFileVisitor
-import java.nio.file.attribute.BasicFileAttributes
 
 class AddAttachment : Listener {
-
-    init {
-        val attachmentsFolder = File(WeaponMechanics.getPlugin().dataFolder, "attachments")
-        try {
-
-            // Ensure the folder exists
-            if (!attachmentsFolder.exists()) FileUtil.copyResourcesTo(
-                javaClass.classLoader.getResource("WeaponMechanics/attachments"),
-                attachmentsFolder.toPath()
-            )
-
-            // Read in all files within the folder
-            val pathReference = PathReference.of(attachmentsFolder.toURI())
-            Files.walkFileTree(pathReference.path(), object : SimpleFileVisitor<Path>() {
-                @Throws(IOException::class)
-                override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
-                    val stream = Files.newInputStream(file)
-                    val config: YamlConfiguration
-
-                    try {
-                        config = YamlConfiguration()
-                        config.load(InputStreamReader(stream, Charsets.UTF_8))
-                    } catch (ex: InvalidConfigurationException) {
-                        WeaponMechanics.debug.log(
-                            LogLevel.WARN,
-                            "Could not read file '" + file.toFile() + "'... make sure it is a valid YAML file"
-                        )
-                        return FileVisitResult.CONTINUE
-                    }
-
-                    // For each key in the file, treat it as a new repair kit.
-                    for (key in config.getKeys(false)) {
-                        try {
-                            val data = SerializeData(Attachment(), file.toFile(), key, BukkitConfig(config))
-                            val attachment = data.of().assertExists().serialize(Attachment()).get() as Attachment
-                            if (AttachmentRegistry.INSTANCE.has(attachment)) throw data.exception(
-                                null,
-                                "Found duplicate Attachment name '$key'"
-                            )
-
-                            AttachmentRegistry.INSTANCE.add(attachment)
-                        } catch (ex: SerializerException) {
-                            ex.log(WeaponMechanics.debug)
-                        }
-                    }
-                    return FileVisitResult.CONTINUE
-                }
-            })
-        } catch (e: Throwable) {
-            WeaponMechanics.debug.log(LogLevel.ERROR, "Some error occurred whilst reading attachments folder", e)
-        }
-    }
 
     @EventHandler(ignoreCancelled = true)
     fun onInventoryClick(event: InventoryClickEvent) {
@@ -109,15 +39,16 @@ class AddAttachment : Listener {
         // items get duplicated.
         if (event is InventoryCreativeEvent) {
             event.whoClicked.sendMessage("${ChatColor.RED}Cannot use attachments while in Creative mode")
-            WeaponMechanicsPlus.getDebug().debug("Cannot use InventoryCreativeEvent for attachments")
+            WeaponMechanicsPlus.getInstance().debugger.fine("Cannot use InventoryCreativeEvent for attachments")
             return
         }
 
         // This happens when the admin deleted attachment from config, but
         // players still have the attachment items in their inventory.
-        val attachment = AttachmentRegistry.INSTANCE[attachmentTitle]
+        val config = WeaponMechanicsPlus.getInstance().attachmentConfiguration
+        val attachment = config.get<Attachment>(attachmentTitle)
         if (attachment == null) {
-            WeaponMechanicsPlus.getDebug().warn("Attachment '$attachmentTitle' no longer exists in config. (tried adding)")
+            WeaponMechanicsPlus.getInstance().debugger.warning("Attachment '$attachmentTitle' no longer exists in config. (tried adding)")
             return
         }
 

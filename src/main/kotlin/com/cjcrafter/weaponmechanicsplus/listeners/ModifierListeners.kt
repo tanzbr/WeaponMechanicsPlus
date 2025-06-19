@@ -5,6 +5,7 @@ import me.deecaad.weaponmechanics.weapon.weaponevents.*
 import me.deecaad.weaponmechanics.weapon.weaponevents.WeaponScopeEvent.ScopeType
 import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusAPI
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.MechanicsModifier
+import me.deecaad.core.mechanics.MechanicManager
 import me.deecaad.weaponmechanics.weapon.damage.ExplosionDamageSource
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -216,7 +217,7 @@ class ModifierListeners : Listener {
     }
 
     companion object {
-        fun updateMechanics(currentMechanics: Mechanics?, modifier: MechanicsModifier?): Mechanics? {
+        fun updateMechanics(currentMechanics: MechanicManager?, modifier: MechanicsModifier?): MechanicManager? {
             if (currentMechanics == null) {
                 return modifier?.mechanics
             } else if (modifier != null) {

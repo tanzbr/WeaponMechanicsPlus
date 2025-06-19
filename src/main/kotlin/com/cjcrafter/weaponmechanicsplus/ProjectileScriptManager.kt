@@ -7,13 +7,14 @@ import me.deecaad.weaponmechanics.weapon.projectile.weaponprojectile.WeaponProje
 import com.cjcrafter.weaponmechanicsplus.weapon.guidedprojectile.GuidedProjectileScript
 import org.bukkit.plugin.Plugin
 
-class ProjectileScriptManager(plugin: Plugin?) : ProjectileScriptManager(plugin) {
+class ProjectileScriptManager(plugin: Plugin) : ProjectileScriptManager(plugin) {
 
     override fun attach(aProjectile: AProjectile) {
         if (aProjectile !is WeaponProjectile)
             return
 
-        if (WeaponMechanics.getConfigurations().contains("${aProjectile.weaponTitle}.Projectile.Guided_Projectile")) {
+        val config = WeaponMechanics.getInstance().weaponConfigurations
+        if (config.contains("${aProjectile.weaponTitle}.Projectile.Guided_Projectile")) {
             aProjectile.addProjectileScript(GuidedProjectileScript(plugin, aProjectile))
         }
     }

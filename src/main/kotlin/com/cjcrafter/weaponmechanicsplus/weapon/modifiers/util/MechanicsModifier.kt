@@ -1,11 +1,12 @@
 package com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util
 
 import me.deecaad.core.file.SerializeData
+import me.deecaad.core.mechanics.MechanicManager
 import me.deecaad.core.mechanics.Mechanics
 
-data class MechanicsModifier(val isReplace: Boolean, val mechanics: Mechanics) {
+data class MechanicsModifier(val isReplace: Boolean, val mechanics: MechanicManager) {
 
-    fun add(base: Mechanics) {
+    fun add(base: MechanicManager) {
         if (isReplace)
             throw IllegalArgumentException("Tried to add mechanics when they should have been replace")
 
@@ -15,8 +16,8 @@ data class MechanicsModifier(val isReplace: Boolean, val mechanics: Mechanics) {
     companion object {
 
         fun SerializeData.serializeMechanicsModifier(key: String = "Mechanics", section: String = ""): MechanicsModifier? {
-            val replaceMechanics: Mechanics? = of("${section}Replace_$key").serialize(Mechanics::class.java).orElse(null)
-            val addMechanics: Mechanics? = of("${section}Add_$key").serialize(Mechanics::class.java).orElse(null)
+            val replaceMechanics: MechanicManager? = of("${section}Replace_$key").serialize(MechanicManager::class.java).orElse(null)
+            val addMechanics: MechanicManager? = of("${section}Add_$key").serialize(MechanicManager::class.java).orElse(null)
 
             val isReplace = replaceMechanics != null
             val mechanics = if (isReplace) replaceMechanics else addMechanics

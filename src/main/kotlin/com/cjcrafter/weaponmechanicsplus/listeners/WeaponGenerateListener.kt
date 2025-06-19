@@ -1,7 +1,8 @@
 package com.cjcrafter.weaponmechanicsplus.listeners
 
+import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
 import com.cjcrafter.weaponmechanicsplus.weapon.firemode.FireMode
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
+import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
 import me.deecaad.core.compatibility.CompatibilityAPI
 import me.deecaad.weaponmechanics.WeaponMechanics
 import me.deecaad.weaponmechanics.weapon.weaponevents.WeaponGenerateEvent
@@ -16,7 +17,7 @@ class WeaponGenerateListener : Listener {
         val attachments: List<String> = event.getOrDefault("attachments", listOf())!!
 
         for (attachment in attachments) {
-            val attachmentInstance = AttachmentRegistry.INSTANCE[attachment]
+            val attachmentInstance = WeaponMechanicsPlus.getInstance().attachmentConfiguration.get<Attachment>(attachment)
             if (attachmentInstance == null) {
                 event.sender?.sendMessage("${ChatColor.RED}Unknown attachment: $attachment")
                 continue
@@ -32,7 +33,7 @@ class WeaponGenerateListener : Listener {
         }
 
         // For firemodes, we need to make sure that each firemode comes fully loaded
-        val config = WeaponMechanics.getConfigurations()
+        val config = WeaponMechanics.getInstance().weaponConfigurations
         val firemode: FireMode? = config.getObject("${event.weaponTitle}.Fire_Mode", FireMode::class.java)
         if (firemode != null) {
             for (mode in firemode.modes) {

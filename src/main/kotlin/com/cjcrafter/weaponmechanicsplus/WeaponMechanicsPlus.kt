@@ -1,195 +1,152 @@
 package com.cjcrafter.weaponmechanicsplus
 
-import com.cjcrafter.foliascheduler.FoliaCompatibility
-import com.cjcrafter.foliascheduler.ServerImplementation
 import com.cjcrafter.foliascheduler.util.ReflectionUtil
 import com.cjcrafter.weaponmechanicsplus.listeners.*
 import com.cjcrafter.weaponmechanicsplus.placeholders.ArmorMechanicsPlaceholderListener
 import com.cjcrafter.weaponmechanicsplus.placeholders.WeaponMechanicsPlaceholderListener
 import com.cjcrafter.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
 import com.cjcrafter.weaponmechanicsplus.weapon.listeners.AttractMobsListener
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
-import com.jeff_media.updatechecker.UpdateCheckSource
-import com.jeff_media.updatechecker.UpdateChecker
-import com.jeff_media.updatechecker.UserAgentBuilder
+import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
+import me.deecaad.core.MechanicsPlugin
 import me.deecaad.core.events.QueueSerializerEvent
+import me.deecaad.core.file.Configuration
+import me.deecaad.core.file.IValidator
+import me.deecaad.core.file.JarInstancer
 import me.deecaad.core.file.JarSearcher
+import me.deecaad.core.file.RootFileReader
+import me.deecaad.core.file.SearchMode
 import me.deecaad.core.file.SerializerInstancer
+import me.deecaad.core.mechanics.Conditions
+import me.deecaad.core.mechanics.Mechanics
+import me.deecaad.core.mechanics.Targeters
+import me.deecaad.core.mechanics.conditions.Condition
+import me.deecaad.core.mechanics.defaultmechanics.Mechanic
+import me.deecaad.core.mechanics.targeters.Targeter
 import me.deecaad.core.placeholder.PlaceholderHandler
-import me.deecaad.core.utils.Debugger
-import me.deecaad.core.utils.FileUtil
-import me.deecaad.core.utils.LogLevel
+import me.deecaad.core.placeholder.PlaceholderHandlers
 import me.deecaad.weaponmechanics.WeaponMechanics
-import org.bstats.bukkit.Metrics
-import org.bukkit.Bukkit
-import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.event.EventHandler
-import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
-import java.io.File
 import java.io.IOException
+import java.util.concurrent.CompletableFuture
 import java.util.jar.JarFile
-import java.util.logging.Logger
 
-class WeaponMechanicsPlus internal constructor(private val javaPlugin: WeaponMechanicsPlusLoader) {
+class WeaponMechanicsPlus : MechanicsPlugin(bStatsId = 16382) {
 
-    private lateinit var debug: Debugger
-    private var update: UpdateChecker? = null
-    private var metrics: Metrics? = null
-    lateinit var scheduler: ServerImplementation
-
-    val config: FileConfiguration
-        get() = javaPlugin.config
-    val logger: Logger
-        get() = javaPlugin.logger
-    val dataFolder: File
-        get() = javaPlugin.dataFolder
-    val classLoader: ClassLoader
-        get() = javaPlugin.classLoader0
-    val file: File
-        get() = javaPlugin.file0
+    lateinit var attachmentConfiguration: Configuration
+        private set
 
     init {
-        plugin = this
+        INSTANCE = this
     }
 
-    fun onLoad() {
-        val level = config.getInt("Debug_Level", 2)
-        val printTraces = config.getBoolean("Print_Traces", false)
-        debug = Debugger(logger, level, printTraces)
-        scheduler = FoliaCompatibility(javaPlugin).serverImplementation
 
-        val placeholderSearcher = JarSearcher(JarFile(file))
-        val subclasses = placeholderSearcher.findAllSubclasses(PlaceholderHandler::class.java, classLoader, true)
-        for (sub in subclasses) {
-            try {
-                val instance = ReflectionUtil.getConstructor(sub).newInstance()
-                PlaceholderHandler.REGISTRY.add(instance)
-            } catch (e: Exception) {
-                debug.log(LogLevel.WARN, "Failed to register placeholder: ${sub.simpleName}", e)
-            }
-        }
+    override fun onLoad() {
+        val searcher = JarSearcher(JarFile(file))
+
+        searcher.findAllSubclasses(PlaceholderHandler::class.java, classLoader, SearchMode.ON_DEMAND)
+            .map { ReflectionUtil.getConstructor(it).newInstance() }
+            .forEach { PlaceholderHandlers.REGISTRY.add(it) }
+        searcher.findAllSubclasses(Mechanic::class.java, classLoader, SearchMode.ON_DEMAND)
+            .map { ReflectionUtil.getConstructor(it).newInstance() }
+            .forEach { Mechanics.REGISTRY.add(it) }
+        searcher.findAllSubclasses(Targeter::class.java, classLoader, SearchMode.ON_DEMAND)
+            .map { ReflectionUtil.getConstructor(it).newInstance() }
+            .forEach { Targeters.REGISTRY.add(it) }
+        searcher.findAllSubclasses(Condition::class.java, classLoader, SearchMode.ON_DEMAND)
+            .map { ReflectionUtil.getConstructor(it).newInstance() }
+            .forEach { Conditions.REGISTRY.add(it) }
+
+        super.onLoad()
     }
 
-    fun onEnable() {
-        writeFiles()
-        registerDebugger()
-        registerUpdateChecker()
-        registerBStats()
-        registerSerializerQueue()
-
+    override fun handleCommands(): CompletableFuture<Void> {
         Command.register()
+        return super.handleCommands()
     }
 
-    fun onDisable() {
+    override fun handleConfigs(): CompletableFuture<Void> {
+        val jar = JarFile(file)
+        val validators = JarInstancer(jar).createAllInstances(IValidator::class.java, classLoader, SearchMode.ON_DEMAND)
+        val serializers = SerializerInstancer(jar).createAllInstances(classLoader, SearchMode.ON_DEMAND)
+
+        val event = QueueSerializerEvent(this, dataFolder)
+        event.addValidators(validators)
+        event.addSerializers(serializers)
+        server.pluginManager.callEvent(event)
+
+        val weaponMechanics = WeaponMechanics.getInstance()
+        attachmentConfiguration = RootFileReader(weaponMechanics.dataFolder, debugger, classLoader, Attachment::class.java, "attachments")
+            .withSerializers(serializers)
+            .withValidators(validators)
+            .assertFiles()
+            .read()
+        val attachments = attachmentConfiguration.values().count { it is Attachment }
+        debugger.info("Loaded $attachments attachments")
+
+        return super.handleConfigs()
     }
 
-    private fun writeFiles() {
-        // Create files
-        if (!dataFolder.exists() || dataFolder.listFiles() == null || dataFolder.listFiles()?.size == 0) {
-            debug.info("Copying files from jar (This process may take up to 30 seconds during the first load!)")
-            FileUtil.copyResourcesTo(classLoader.getResource("WeaponMechanicsPlus"), dataFolder.toPath())
+    override fun handleListeners(): CompletableFuture<Void> {
+        val plugin = this
+        server.pluginManager.run {
+            registerEvents(AddAttachment(), plugin)
+            registerEvents(ModifierListeners(), plugin)
+            registerEvents(PlaceholderListeners(), plugin)
+            registerEvents(WeaponGenerateListener(), plugin)
+            registerEvents(AttractMobsListener(), plugin)
+            registerEvents(createWeaponMechanicsReloadListener(), plugin)
+
+            if (getPlugin("ArmorMechanics") != null) {
+                registerEvents(ArmorModifierListeners(), plugin)
+                registerEvents(ArmorGenerateListener(), plugin)
+            }
+
+            // Do this on a delay, since we need fully serialized configs to list
+            // weapons/armors. 2 ticks should be enough for both, but we do 5 here.
+            foliaScheduler.global().runDelayed(Runnable {
+                registerEvents(WeaponMechanicsPlaceholderListener(), plugin)
+                if (getPlugin("ArmorMechanics") != null)
+                    registerEvents(ArmorMechanicsPlaceholderListener(), plugin)
+            }, 5L)
         }
+        return super.handleListeners()
     }
 
-    private fun registerDebugger() {
-        debug.permission = "weaponmechanicsplus.errorlog"
-        debug.msg = "WeaponMechanicsPlus had %s error(s) in console."
-        debug.start(scheduler)
-    }
-
-    private fun registerUpdateChecker() {
-        // TODO: Update to folia compatible
-        if (true)
-            return
-        WeaponMechanics.debug.debug("Registering update checker")
-
-        update = UpdateChecker(javaPlugin, UpdateCheckSource.SPIGOT, "113789")
-            .setNotifyOpsOnJoin(true)
-            .setUserAgent(UserAgentBuilder().addPluginNameAndVersion())
-            .checkEveryXHours(24.0)
-            .checkNow()
-    }
-
-    private fun registerBStats() {
-        if (metrics != null) return
-        debug.debug("Registering bStats")
-
-        // See https://bstats.org/plugin/bukkit/WeaponMechanicsPlus/16382. This is
-        // the bStats plugin id used to track information.
-        val id = 16382
-        metrics = Metrics(javaPlugin, id)
-    }
-
-    private fun registerSerializerQueue() {
-        val listener = object : Listener {
+    private fun createWeaponMechanicsReloadListener(): Listener {
+        return object : Listener {
             @EventHandler
             fun onConfigSerialize(event: QueueSerializerEvent) {
                 // Perfect place to register all things to WM ;D
                 if (event.sourceName != "WeaponMechanics") return
 
-                debug.info("Reloading plugin")
-                HandlerList.unregisterAll(javaPlugin)
-                AttachmentRegistry.INSTANCE.clear()
-
                 // Register serializers
                 try {
-                    event.addSerializers(SerializerInstancer(JarFile(file)).createAllInstances(classLoader))
+                    val jar = JarFile(file)
+                    event.addValidators(JarInstancer(jar).createAllInstances(IValidator::class.java, classLoader, SearchMode.ON_DEMAND))
+                    event.addSerializers(SerializerInstancer(jar).createAllInstances(classLoader, SearchMode.ON_DEMAND))
                 } catch (e: IOException) {
-                    debug.log(LogLevel.WARN, "Failed to add serializers...", e)
+                    debugger.severe("Failed to add validators/serializers...", e)
                 }
 
                 // Register trigger listeners
-                val weaponHandler = WeaponMechanics.getWeaponHandler()
+                val weaponHandler = WeaponMechanics.getInstance().getWeaponHandler()
                 weaponHandler.addTriggerListener(FireModeTriggerListener())
 
                 // Register projectile script manager
-                val projectilesRunnable = WeaponMechanics.getProjectileSpawner()
-                projectilesRunnable.addScriptManager(ProjectileScriptManager(javaPlugin))
-
-                // Other listeners
-                val manager = Bukkit.getPluginManager()
-                manager.registerEvents(AddAttachment(), javaPlugin)
-                manager.registerEvents(ModifierListeners(), javaPlugin)
-                manager.registerEvents(PlaceholderListeners(), javaPlugin)
-                manager.registerEvents(WeaponGenerateListener(), javaPlugin)
-
-                // Weapon listeners
-                manager.registerEvents(AttractMobsListener(), javaPlugin)
-
-                if (manager.getPlugin("ArmorMechanics") != null) {
-                    manager.registerEvents(ArmorModifierListeners(), javaPlugin)
-                    manager.registerEvents(ArmorGenerateListener(), javaPlugin)
-                }
-
-                // We need a serialized list of weapons, so we run this 5 ticks after server start/reload
-                scheduler.global().runDelayed(Runnable {
-                    manager.registerEvents(WeaponMechanicsPlaceholderListener(), javaPlugin)
-                    if (manager.getPlugin("ArmorMechanics") != null)
-                        manager.registerEvents(ArmorMechanicsPlaceholderListener(), javaPlugin)
-                }, 5L)
-
-                // Reregister WMP since we removed it earlier in HandlerList.unregisterAll
-                registerSerializerQueue()
+                val projectilesRunnable = WeaponMechanics.getInstance().getProjectileSpawner()
+                projectilesRunnable.addScriptManager(ProjectileScriptManager(this@WeaponMechanicsPlus))
             }
         }
-
-        Bukkit.getPluginManager().registerEvents(listener, javaPlugin)
     }
 
     companion object {
-        private lateinit var plugin: WeaponMechanicsPlus
-        fun getScheduler(): ServerImplementation {
-            return plugin.scheduler
-        }
+        private lateinit var INSTANCE: WeaponMechanicsPlus
 
-        fun getDebug(): Debugger {
-            return plugin.debug
-        }
-
-        fun getPlugin(): Plugin {
-            return plugin.javaPlugin
+        @JvmStatic
+        fun getInstance(): WeaponMechanicsPlus {
+            return INSTANCE
         }
     }
 }

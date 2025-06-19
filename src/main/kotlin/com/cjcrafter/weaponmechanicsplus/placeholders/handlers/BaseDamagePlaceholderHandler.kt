@@ -4,10 +4,13 @@ import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlusAPI
 import me.deecaad.core.placeholder.NumericPlaceholderHandler
 import me.deecaad.core.placeholder.PlaceholderData
 import me.deecaad.weaponmechanics.WeaponMechanics
+import org.bukkit.NamespacedKey
 
-class BaseDamagePlaceholderHandler : NumericPlaceholderHandler("base_damage") {
+class BaseDamagePlaceholderHandler : NumericPlaceholderHandler() {
+    override fun getKey() = NamespacedKey(WeaponMechanics.getInstance(), "base_damage")
+
     override fun requestValue(data: PlaceholderData): Number? {
-        val config = WeaponMechanics.getConfigurations()
+        val config = WeaponMechanics.getInstance().weaponConfigurations
         var baseDamage = config.getDouble("${data.itemTitle()}.Damage.Base_Damage")
         val player = data.player() ?: return baseDamage
         val weaponTitle = data.itemTitle() ?: return baseDamage

@@ -11,9 +11,11 @@ import me.deecaad.core.placeholder.EnumPlaceholderHandler
 import me.deecaad.core.placeholder.ListPlaceholderHandler
 import me.deecaad.core.placeholder.NumericPlaceholderHandler
 import me.deecaad.core.placeholder.PlaceholderHandler
+import me.deecaad.core.placeholder.PlaceholderHandlers
 import me.deecaad.core.placeholder.PlaceholderRequestEvent
 import me.deecaad.core.utils.FileUtil
 import me.deecaad.core.utils.LogLevel
+import me.deecaad.core.utils.StringUtil
 import me.deecaad.weaponmechanics.WeaponMechanics
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.EventHandler
@@ -39,7 +41,7 @@ class PlaceholderListeners : Listener {
 
         // Register placeholder formats
         val placeholdersResource = javaClass.classLoader.getResource("WeaponMechanics/placeholders")!!
-        val placeholdersFolder = File(WeaponMechanics.getPlugin().dataFolder, "placeholders")
+        val placeholdersFolder = File(WeaponMechanics.getInstance().dataFolder, "placeholders")
         if (!placeholdersFolder.exists() || (placeholdersFolder.listFiles()?.size ?: 0) == 0)
             FileUtil.copyResourcesTo(placeholdersResource, placeholdersFolder.toPath())
 
@@ -54,7 +56,7 @@ class PlaceholderListeners : Listener {
                     try {
                         Files.copy(file, targetFile.toPath())
                     } catch (e: Exception) {
-                        WeaponMechanicsPlus.getDebug().log(LogLevel.WARN, "Could not copy $file to $targetFile", e)
+                        WeaponMechanicsPlus.getInstance().debugger.warning("Could not copy $file to $targetFile", e)
                     }
                 }
 
@@ -75,34 +77,35 @@ class PlaceholderListeners : Listener {
 
             // "link" the name of the file to an existing placeholder. "Optional"
             // addons, like ArmorMechanics, use filenames that start with a '$'.
-            var placeholderName = file.nameWithoutExtension
+            var placeholderName = file.nameWithoutExtension.replace('-', ':')  // Windows doesn't allow colons in filenames
             var requiredPlaceholder = true
             if (placeholderName.startsWith("$")) {
                 placeholderName = placeholderName.substring(1)
                 requiredPlaceholder = false
             }
 
-            val placeholder = PlaceholderHandler.REGISTRY[placeholderName]
+            val placeholder = PlaceholderHandlers.REGISTRY.match(placeholderName)
             if (placeholder == null) {
-                if (requiredPlaceholder)
-                    WeaponMechanicsPlus.getDebug().error("Could not find placeholder associated with $file")
+                if (requiredPlaceholder) {
+                    val didYouMean = StringUtil.didYouMean(placeholderName, PlaceholderHandlers.REGISTRY.map { it.key.toString() })
+                    WeaponMechanicsPlus.getInstance().debugger.severe("Could not find placeholder associated with $file... Did you mean '$didYouMean'")
+                }
                 continue
             } else if (!serializer.clazz.isAssignableFrom(placeholder::class.java)) {
-                WeaponMechanicsPlus.getDebug().error("Placeholder $placeholderName is a ${placeholder::class.java} but expected a ${serializer::class.java}")
+                WeaponMechanicsPlus.getInstance().debugger.severe("Placeholder $placeholderName is a ${placeholder::class.java} but expected a ${serializer::class.java}")
                 continue
             }
 
             val config = YamlConfiguration.loadConfiguration(file)
-            val data = SerializeData(serializer, file, null, BukkitConfig(config))
-            val format = serializer.serialize(data)
-            map[placeholder as T] = format
+            val data = SerializeData(file, null, BukkitConfig(config))
+            map[placeholder as T] = serializer.serialize(data)
         }
     }
 
     @EventHandler
     fun requestPlaceholders(event: PlaceholderRequestEvent) {
         for (entry in event.placeholders()) {
-            val result = when (val placeholder = PlaceholderHandler.REGISTRY[entry.key]) {
+            val result = when (val placeholder = PlaceholderHandlers.REGISTRY.match(entry.key)) {
                 is NumericPlaceholderHandler -> numerics[placeholder]?.format(placeholder, event.placeholderData)
                 is EnumPlaceholderHandler -> enums[placeholder]?.format(placeholder, event.placeholderData)
                 is ListPlaceholderHandler -> lists[placeholder]?.format(placeholder, event.placeholderData)

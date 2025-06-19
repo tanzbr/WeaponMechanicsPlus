@@ -1,7 +1,8 @@
 package com.cjcrafter.weaponmechanicsplus.listeners
 
 import com.cjcrafter.armormechanics.events.ArmorGenerateEvent
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
+import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
+import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
 import org.bukkit.ChatColor
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -12,8 +13,9 @@ class ArmorGenerateListener : Listener {
     fun onWeaponGenerate(event: ArmorGenerateEvent) {
         val attachments: List<String> = event.data["attachments"] as List<String>? ?: listOf()
 
+        val config = WeaponMechanicsPlus.getInstance().attachmentConfiguration
         for (attachment in attachments) {
-            val attachmentInstance = AttachmentRegistry.INSTANCE[attachment]
+            val attachmentInstance = config.get<Attachment>(attachment)
             if (attachmentInstance == null) {
                 event.sender.sendMessage("${ChatColor.RED}Unknown attachment: $attachment")
                 continue

@@ -25,7 +25,7 @@ class FireModeTriggerListener : TriggerListener {
         dualWield: Boolean,
         victim: LivingEntity?
     ): Boolean {
-        val config = WeaponMechanics.getConfigurations()
+        val config = WeaponMechanics.getInstance().weaponConfigurations
         val fireMode = config.getObject("$weaponTitle.Fire_Mode", FireMode::class.java)
         if (fireMode == null || !fireMode.trigger.check(triggerType, slot, entityWrapper)) {
             return false
@@ -40,7 +40,7 @@ class FireModeTriggerListener : TriggerListener {
         val weaponInfoDisplay = config.getObject("$newWeaponTitle.Info.Weapon_Info_Display", WeaponInfoDisplay::class.java)
         weaponInfoDisplay?.send(entityWrapper as PlayerWrapper, slot)
 
-        WeaponMechanics.getWeaponHandler().skinHandler.tryUse(triggerType, entityWrapper, newWeaponTitle, weaponStack, slot)
+        WeaponMechanics.getInstance().weaponHandler.skinHandler.tryUse(triggerType, entityWrapper, newWeaponTitle, weaponStack, slot)
         return true
     }
 }

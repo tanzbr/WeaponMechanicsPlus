@@ -1,17 +1,17 @@
 package com.cjcrafter.weaponmechanicsplus.weapon.firemode
 
 import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
+import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
 import me.deecaad.core.compatibility.CompatibilityAPI
 import me.deecaad.core.file.SerializeData
 import me.deecaad.core.file.Serializer
 import me.deecaad.core.file.SerializerException
 import me.deecaad.core.file.simple.StringSerializer
+import me.deecaad.core.mechanics.MechanicManager
 import me.deecaad.core.mechanics.Mechanics
 import me.deecaad.weaponmechanics.WeaponMechanics
 import me.deecaad.weaponmechanics.utils.CustomTag
 import me.deecaad.weaponmechanics.weapon.trigger.Trigger
-import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import kotlin.jvm.optionals.getOrNull
 
@@ -50,13 +50,13 @@ class FireMode : Serializer<FireMode> {
 
     lateinit var trigger: Trigger
     lateinit var modes: List<FireModeSelector> // a makeshift circularly linked list
-    var switchMechanics: Mechanics? = null
+    var switchMechanics: MechanicManager? = null
 
     /**
      * Default constructor for serializer
      */
     constructor()
-    constructor(trigger: Trigger, modes: List<FireModeSelector>, switchMechanics: Mechanics?) {
+    constructor(trigger: Trigger, modes: List<FireModeSelector>, switchMechanics: MechanicManager?) {
         this.trigger = trigger
         this.modes = modes
         this.switchMechanics = switchMechanics
@@ -70,7 +70,7 @@ class FireMode : Serializer<FireMode> {
     fun switch(weaponTitle: String, weaponStack: ItemStack): String? {
         val currentIndex = modes.indexOfFirst { it.weaponTitle == weaponTitle }
         if (currentIndex == -1) {
-            WeaponMechanicsPlus.getDebug().error("Not sure how this happened...")
+            WeaponMechanicsPlus.getInstance().debugger.severe("Not sure how this happened...")
             return null
         }
 
@@ -117,7 +117,7 @@ class FireMode : Serializer<FireMode> {
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): FireMode {
-        val config = WeaponMechanics.getConfigurations()
+        val config = WeaponMechanics.getInstance().weaponConfigurations
 
         // This config option was removed in 1.2.1
         if (data.has("Next_Weapon")) {
@@ -126,7 +126,7 @@ class FireMode : Serializer<FireMode> {
         }
 
         val trigger = data.of("Trigger").assertExists().serialize(Trigger::class.java).get()
-        val switchMechanics = data.of("Mechanics").serialize(Mechanics::class.java).getOrNull()
+        val switchMechanics = data.of("Mechanics").serialize(MechanicManager::class.java).getOrNull()
         val orderInput = data.ofList("Order").assertExists()
             .addArgument(StringSerializer()) // weapon
             .requireAllPreviousArgs()
@@ -156,23 +156,25 @@ class FireMode : Serializer<FireMode> {
 
             // Run some checks to make sure the weapon and attachment actually
             // exist. We have to do this 1 tick later due to serialization
-            WeaponMechanicsPlus.getScheduler().global().run(Runnable {
-                if (!WeaponMechanics.getWeaponHandler().infoHandler.hasWeapon(weapon)) {
+            val infoHandler = WeaponMechanics.getInstance().weaponHandler.infoHandler
+            WeaponMechanicsPlus.getInstance().foliaScheduler.global().run(Runnable {
+                if (!infoHandler.hasWeapon(weapon)) {
                     SerializerException.builder()
                         .locationRaw(data.ofList("Order").getLocation(index))
                         .addMessage("Could not find any weapon named '$weapon'")
-                        .buildInvalidOption(weapon, WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList)
-                        .log(WeaponMechanicsPlus.getDebug())
+                        .buildInvalidOption(weapon, infoHandler.sortedWeaponList)
+                        .log(WeaponMechanicsPlus.getInstance().debugger)
                 }
                 for (attachment in attachments) {
-                    if (AttachmentRegistry.INSTANCE[attachment] != null)
+                    val attachmentConfig = WeaponMechanicsPlus.getInstance().attachmentConfiguration
+                    if (attachmentConfig.get<Attachment>(attachment) != null)
                         continue
 
                     SerializerException.builder()
                         .locationRaw(data.ofList("Order").getLocation(index))
                         .addMessage("Could not find any attachment named '$attachment'")
-                        .buildInvalidOption(attachment, AttachmentRegistry.INSTANCE.map { it.attachmentTitle })
-                        .log(WeaponMechanicsPlus.getDebug())
+                        .buildInvalidOption(attachment, config.keys(deep = false))
+                        .log(WeaponMechanicsPlus.getInstance().debugger)
                 }
             })
 

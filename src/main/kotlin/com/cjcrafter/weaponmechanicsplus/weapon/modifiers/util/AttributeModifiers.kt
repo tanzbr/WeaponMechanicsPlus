@@ -72,7 +72,7 @@ class AttributeModifiers: Serializer<AttributeModifiers> {
             val operation = (split[3].orElse(listOf(AttributeModifier.Operation.ADD_NUMBER)) as List<AttributeModifier.Operation>).first()
 
             for (attribute in parsedAttributes) {
-                val key = NamespacedKey(WeaponMechanicsPlus.getPlugin(), attribute.key.key + "-" + slot)
+                val key = NamespacedKey(WeaponMechanicsPlus.getInstance(), attribute.key.key + "-" + slot)
                 val modifier = AttributeModifier(key, amount, operation, slot)
                 builtAttributes[attribute] = modifier
             }
@@ -93,7 +93,7 @@ class AttributeModifiers: Serializer<AttributeModifiers> {
                 return
 
             for ((attribute, modifier) in meta.attributeModifiers!!.entries()) {
-                if (!modifier.key.namespace.equals(WeaponMechanicsPlus.getPlugin().name, ignoreCase = true))
+                if (!modifier.key.namespace.equals(WeaponMechanicsPlus.getInstance().name, ignoreCase = true))
                     continue
 
                 meta.removeAttributeModifier(attribute, modifier)

@@ -14,7 +14,7 @@ class AttractMobsListener : Listener {
 
     @EventHandler (ignoreCancelled = true)
     fun onShoot(event: PrepareWeaponShootEvent) {
-        val attractMobs = WeaponMechanics.getConfigurations().getObject("${event.weaponTitle}.Shoot.Attract_Mobs", AttractMobs::class.java) ?: return
+        val attractMobs = WeaponMechanics.getInstance().weaponConfigurations.get<AttractMobs>("${event.weaponTitle}.Shoot.Attract_Mobs") ?: return
         attractMobs.attract(event.shooter, event.weaponTitle, event.weaponStack)
     }
 }

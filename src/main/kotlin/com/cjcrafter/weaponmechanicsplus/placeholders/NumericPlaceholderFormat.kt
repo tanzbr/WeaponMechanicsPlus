@@ -74,13 +74,13 @@ class NumericPlaceholderFormat : PlaceholderFormat<NumericPlaceholderHandler> {
         var counter = 0 // Count the number of iterations
 
         while (counter < 50) {  // Limit to 50 iterations
-            val unit = emojis.floorKey(remainingValue)?.toDouble() ?: return
+            val unit = emojis.floorKey(remainingValue) ?: return
             builder.append(emojis[unit])
             remainingValue -= unit
             counter++
         }
 
-        WeaponMechanicsPlus.getDebug().debug("Could not add emojis correctly when formatting '$builder' for $data")
+        WeaponMechanicsPlus.getInstance().debugger.fine("Could not add emojis correctly when formatting '$builder' for $data")
     }
 
 

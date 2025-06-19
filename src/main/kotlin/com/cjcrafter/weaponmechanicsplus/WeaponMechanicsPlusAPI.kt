@@ -3,7 +3,6 @@ package com.cjcrafter.weaponmechanicsplus
 import me.deecaad.weaponmechanics.utils.CustomTag
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.*
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import java.util.*
@@ -23,13 +22,15 @@ object WeaponMechanicsPlusAPI {
         val attachmentIds = CustomTag.ATTACHMENTS.getStringArray(weapon)
         if (attachmentIds.isEmpty()) return null
 
+        val config = WeaponMechanicsPlus.getInstance().attachmentConfiguration;
+
         // Get the attachment config information from each attachment id
         val size = attachmentIds.size
         val attachments = ArrayList<Attachment>(size)
         for (i in 0 until size) {
-            val temp = AttachmentRegistry.INSTANCE[attachmentIds[i]]
+            val temp = config.get<Attachment>(attachmentIds[i])
             if (temp == null) {
-                WeaponMechanicsPlus.getDebug().warn("Found deleted attachment ${attachmentIds[i]} on $weapon")
+                WeaponMechanicsPlus.getInstance().debugger.warning("Found deleted attachment ${attachmentIds[i]} on $weapon")
                 continue
             }
             attachments.add(temp)
@@ -38,25 +39,27 @@ object WeaponMechanicsPlusAPI {
         return attachments
     }
 
-    fun forEachAttachment(item: ItemStack, action: (Attachment) -> Unit) {
+    inline fun forEachAttachment(item: ItemStack, action: (Attachment) -> Unit) {
         if (!item.hasItemMeta())
             return
 
         val attachmentIds = CustomTag.ATTACHMENTS.getStringArray(item)
         if (attachmentIds.isEmpty()) return
 
+        val config = WeaponMechanicsPlus.getInstance().attachmentConfiguration
+
         // Get the attachment config information from each attachment id
         for (i in attachmentIds.indices) {
-            val temp = AttachmentRegistry.INSTANCE[attachmentIds[i]]
+            val temp = config.get<Attachment>(attachmentIds[i])
             if (temp == null) {
-                WeaponMechanicsPlus.getDebug().warn("Found deleted attachment ${attachmentIds[i]} on $item")
+                WeaponMechanicsPlus.getInstance().debugger.warning("Found deleted attachment ${attachmentIds[i]} on $item")
                 continue
             }
-
             action(temp)
         }
     }
 
+    // TODO: move kway merge to public util
     fun forEachModifier(entity: LivingEntity, weapon: ItemStack? = null, action: (ModifierBase) -> Unit) {
         // Where can modifiers exist?
         // 1. the attachments on an item the player is holding (weapon)

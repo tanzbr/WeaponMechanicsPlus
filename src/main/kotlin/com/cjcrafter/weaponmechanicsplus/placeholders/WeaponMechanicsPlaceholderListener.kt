@@ -26,16 +26,13 @@ class WeaponMechanicsPlaceholderListener : Listener {
             "ammo_left", "custom_durability", "reload"
         )
 
-        if (WeaponMechanics.getConfigurations() == null) {
-            throw IllegalStateException("WeaponMechanicsPlus cannot load placeholders without WeaponMechanics loaded.")
-        }
-
         // WeaponMechanics weapon updating template
-        for (title in WeaponMechanics.getWeaponHandler().infoHandler.sortedWeaponList) {
-            val display = WeaponMechanics.getConfigurations().getString("$title.Info.Weapon_Item.Name")?.let {
+        val config = WeaponMechanics.getInstance().weaponConfigurations
+        for (title in WeaponMechanics.getInstance().weaponHandler.infoHandler.sortedWeaponList) {
+            val display = config.getString("$title.Info.Weapon_Item.Name")?.let {
                 PlaceholderMessage(it)
             }
-            val lores = WeaponMechanics.getConfigurations().getObject("$title.Info.Weapon_Item.Lore", List::class.java)?.map {
+            val lores = config.getObject("$title.Info.Weapon_Item.Lore", List::class.java)?.map {
                 PlaceholderMessage(it as String)
             }
 
@@ -49,7 +46,7 @@ class WeaponMechanicsPlaceholderListener : Listener {
             if (lores != null) weaponMechanicsLores[title] = PlaceholderMessageChain(lores)
         }
 
-        WeaponMechanicsPlus.getDebug().info("Loaded ${weaponMechanicsDisplays.size} weapon mechanics placeholders")
+        WeaponMechanicsPlus.getInstance().debugger.info("Loaded ${weaponMechanicsDisplays.size} weapon mechanics placeholders")
     }
 
     @EventHandler
@@ -62,7 +59,7 @@ class WeaponMechanicsPlaceholderListener : Listener {
 
         // We want to update the weapon, but unfortunately we cannot modify the
         // event since it contains a COPY of the weapon. So check 1 tick later.
-        WeaponMechanicsPlus.getScheduler().entity(player).runDelayed(Runnable {
+        WeaponMechanicsPlus.getInstance().foliaScheduler.entity(player).runDelayed(Runnable {
             val weaponStack = when (event.slot) {
                 EquipmentSlot.HAND -> player.inventory.itemInMainHand
                 EquipmentSlot.OFF_HAND -> player.inventory.itemInOffHand

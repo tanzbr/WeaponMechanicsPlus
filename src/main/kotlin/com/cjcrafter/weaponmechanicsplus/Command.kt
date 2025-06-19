@@ -2,10 +2,10 @@
 
 package com.cjcrafter.weaponmechanicsplus
 
+import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
 import me.deecaad.core.mechanics.CastData
 import me.deecaad.core.utils.StringUtil
 import me.deecaad.weaponmechanics.utils.CustomTag
-import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.AttachmentRegistry
 import dev.jorel.commandapi.SuggestionInfo
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.kotlindsl.anyExecutor
@@ -25,9 +25,15 @@ object Command {
 
     private var ATTACHMENT_SUGGESTIONS =
         ArgumentSuggestions.strings { _: SuggestionInfo<CommandSender> ->
-            AttachmentRegistry.INSTANCE.asSequence().map { it.attachmentTitle }.toList().toTypedArray()
+            getAttachmentList().toTypedArray()
         }
 
+    fun getAttachmentList(): List<String> {
+        return WeaponMechanicsPlus.getInstance().attachmentConfiguration.entries()
+            .filter { it.value is Attachment }
+            .map { it.key }
+            .toList()
+    }
 
     fun register() {
         commandAPICommand("wmp") {
@@ -104,9 +110,10 @@ object Command {
     fun give(sender: CommandSender, receivers: List<Entity>, attachmentStr: String, amount: Int) {
 
         // Get the attachment and make sure it exists
-        val attachment = AttachmentRegistry.INSTANCE[attachmentStr]
+        val config = WeaponMechanicsPlus.getInstance().attachmentConfiguration
+        val attachment = config.get<Attachment>(attachmentStr)
         if (attachment == null) {
-            val didYouMean = StringUtil.didYouMean(attachmentStr, AttachmentRegistry.INSTANCE.asSequence().map { it.attachmentTitle }.asIterable())
+            val didYouMean = StringUtil.didYouMean(attachmentStr, getAttachmentList())
             sender.sendMessage("${ChatColor.RED}Unknown attachment '$attachmentStr'. Did you mean '$didYouMean'")
             return
         }
@@ -129,6 +136,7 @@ object Command {
     fun detach(sender: CommandSender, targets: List<LivingEntity>, removeAttachment: String?) {
         var removedFrom = 0
 
+        val config = WeaponMechanicsPlus.getInstance().attachmentConfiguration
         for (target in targets) {
             if (target !is Player)
                 continue
@@ -141,7 +149,7 @@ object Command {
                 if (removeAttachment == null || removeAttachment == attachment) {
 
                     // This may be null if the attachment no longer exists in config
-                    val removedAttachment = AttachmentRegistry.INSTANCE[attachment]
+                    val removedAttachment = config.get<Attachment>(attachment)
                     if (removedAttachment != null) {
                         removedAttachment.dequipMechanics?.use(CastData(target, CustomTag.WEAPON_TITLE.getString(weapon), weapon))
                         val overflow = target.inventory.addItem(removedAttachment.generateItem())

@@ -9,6 +9,7 @@ import me.deecaad.core.file.simple.DoubleSerializer
 import me.deecaad.core.file.simple.EnumValueSerializer
 import me.deecaad.core.file.simple.RegistryValueSerializer
 import me.deecaad.core.mechanics.CastData
+import me.deecaad.core.mechanics.MechanicManager
 import me.deecaad.core.mechanics.Mechanics
 import me.deecaad.core.utils.EnumUtil
 import me.deecaad.core.utils.NumberUtil
@@ -51,7 +52,7 @@ class AttractMobs : Serializer<AttractMobs> {
     var defaultChance: Double = 1.0
     var defaultOverrideCurrentTarget: Boolean = false
     lateinit var mobs: Map<EntityType, MobData>
-    var mechanics: Mechanics? = null
+    var mechanics: MechanicManager? = null
     var isOnlyPlayerShooter: Boolean = true
 
     // Not configurable... Calculated for performance
@@ -69,7 +70,7 @@ class AttractMobs : Serializer<AttractMobs> {
         defaultChance: Double,
         defaultOverrideCurrentTarget: Boolean,
         mobs: Map<EntityType, MobData>,
-        mechanics: Mechanics?,
+        mechanics: MechanicManager?,
         isOnlyPlayerShooter: Boolean,
     ) {
         this.skipChance = skipChance
@@ -184,7 +185,7 @@ class AttractMobs : Serializer<AttractMobs> {
                 mobs[entity] = MobData(mode, distance?.times(distance), chance, overrideCurrentTarget)
         }
 
-        val mechanics = data.of("Mechanics").serialize(Mechanics::class.java).get()
+        val mechanics = data.of("Mechanics").serialize(MechanicManager::class.java).get()
         val isOnlyPlayerShooter = data.of("Only_Player_Shooter").getBool().orElse(true)
 
         return AttractMobs(

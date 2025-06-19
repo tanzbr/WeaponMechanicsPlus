@@ -1,5 +1,6 @@
 package com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments
 
+import com.cjcrafter.weaponmechanicsplus.WeaponMechanicsPlus
 import me.deecaad.core.file.*
 import me.deecaad.core.file.serializers.ItemSerializer
 import me.deecaad.core.mechanics.Mechanics
@@ -9,6 +10,7 @@ import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.ModifierBase
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.util.Whitelist
 import me.deecaad.core.file.simple.EnumValueSerializer
 import me.deecaad.core.file.simple.StringSerializer
+import me.deecaad.core.mechanics.MechanicManager
 import org.bukkit.inventory.ItemStack
 import kotlin.jvm.optionals.getOrNull
 
@@ -21,9 +23,9 @@ class Attachment : ModifierBase {
     var attachmentDenyList: Set<String> = setOf()
     var weaponWhitelist: Whitelist<String>? = null
     var armorWhitelist: Whitelist<String>? = null
-    var denyMechanics: Mechanics? = null
-    var equipMechanics: Mechanics? = null
-    var dequipMechanics: Mechanics? = null
+    var denyMechanics: MechanicManager? = null
+    var equipMechanics: MechanicManager? = null
+    var dequipMechanics: MechanicManager? = null
     var unlockable: Unlockable? = null
 
     /**
@@ -40,9 +42,9 @@ class Attachment : ModifierBase {
         weaponWhitelist: Whitelist<String>?,
         armorWhitelist: Whitelist<String>?,
         unlockable: Unlockable?,
-        denyMechanics: Mechanics?,
-        equipMechanics: Mechanics?,
-        dequipMechanics: Mechanics?,
+        denyMechanics: MechanicManager?,
+        equipMechanics: MechanicManager?,
+        dequipMechanics: MechanicManager?,
     ) {
         this.attachmentTitle = attachmentTitle
         this.maximumStackAmount = maximumStackAmount
@@ -87,9 +89,10 @@ class Attachment : ModifierBase {
     fun attach(weapon: ItemStack?) {
         val array = CustomTag.ATTACHMENTS.getStringArray(weapon) ?: emptyArray()
 
+        val attachmentConfig = WeaponMechanicsPlus.getInstance().attachmentConfiguration
         val attachments: MutableList<Attachment> = ArrayList(array.size + 1)
         for (id in array) {
-            val attachment = AttachmentRegistry.INSTANCE[id]
+            val attachment = attachmentConfig.get<Attachment>(id)
 
             // attachment is null when the admin deletes an attachment from
             // config after it is attached to a weapon.
@@ -157,9 +160,9 @@ class Attachment : ModifierBase {
         }
 
         val unlockable = data.of("Unlockable").serialize(Unlockable::class.java).getOrNull()
-        val denyMechanics = data.of("Denying.Mechanics").serialize(Mechanics::class.java).getOrNull()
-        val equipMechanics = data.of("Attach_Mechanics").serialize(Mechanics::class.java).getOrNull()
-        val dequipMechanics = data.of("Detach_Mechanics").serialize(Mechanics::class.java).getOrNull()
+        val denyMechanics = data.of("Denying.Mechanics").serialize(MechanicManager::class.java).getOrNull()
+        val equipMechanics = data.of("Attach_Mechanics").serialize(MechanicManager::class.java).getOrNull()
+        val dequipMechanics = data.of("Detach_Mechanics").serialize(MechanicManager::class.java).getOrNull()
 
         val returnValue = Attachment(attachmentTitle, maximumStackAmount, item, attachmentRequireList, attachmentDenyList, weaponWhitelist, armorWhitelist, unlockable, denyMechanics, equipMechanics, dequipMechanics)
 

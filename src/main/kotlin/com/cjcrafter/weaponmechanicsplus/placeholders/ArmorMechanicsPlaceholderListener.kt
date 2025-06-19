@@ -21,14 +21,14 @@ class ArmorMechanicsPlaceholderListener : Listener {
     private val armorMechanicsLores: MutableMap<String, PlaceholderMessageChain> = HashMap()
 
     init {
-        val armorFile = File(ArmorMechanics.INSTANCE.dataFolder, "Armor.yml")
-        val config = YamlConfiguration.loadConfiguration(armorFile)
-
-        for (armorTitle in config.getKeys(false)) {
-            val data = SerializeData("Armor", armorFile, armorTitle, BukkitConfig(config))
-
-            val display: PlaceholderMessage? = data.of("Name").getAdventure().orElse(null)?.let { PlaceholderMessage(it) }
-            val lores: List<PlaceholderMessage>? = (data.of("Lore").get(List::class.java).orElse(null) as List<String>?)?.map { StringUtil.colorAdventure("<!i>$it") }?.map { PlaceholderMessage(it!!) }
+        val config = ArmorMechanics.getInstance().armorConfigurations
+        for (armorTitle in config.keys(deep = false)) {
+            val display: PlaceholderMessage? = config.getString("Name")?.let {
+                PlaceholderMessage(it)
+            }
+            val lores: List<PlaceholderMessage>? = config.getObject("Lore", List::class.java)?.map {
+                PlaceholderMessage(it as String)
+            }
 
             if (display != null) armorMechanicsDisplays[armorTitle] = display
             if (lores != null) armorMechanicsLores[armorTitle] = PlaceholderMessageChain(lores)
