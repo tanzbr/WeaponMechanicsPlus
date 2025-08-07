@@ -39,8 +39,8 @@ class ScopeModifier : Serializer<ScopeModifier> {
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): ScopeModifier {
         val zoomAmount = data.of("Zoom_Amount").serialize(DoubleModifier::class.java).getOrNull()
-        val isNightVision = data.of("Night_Vision").assertExists().getBool().getOrNull()
-        val isPumpkinOverlay = data.of("Pumpkin_Overlay").assertExists().getBool().getOrNull()
+        val isNightVision = data.of("Night_Vision").getBool().getOrNull()
+        val isPumpkinOverlay = data.of("Pumpkin_Overlay").getBool().getOrNull()
 
         val splits = data.ofList("Zoom_Stacking")
             .addArgument(EnumValueSerializer(Operation::class.java, false))
