@@ -1,2 +1,2 @@
 # WeaponMechanicsPlus
-Additional Mechanics for WeaponMechanics
+Copyright (c) 2026. All rights reserved.
