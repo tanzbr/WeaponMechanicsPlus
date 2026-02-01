@@ -152,16 +152,25 @@ class Attachment : ModifierBase {
         val attachmentRequireList: MutableSet<String> = HashSet()
         val attachmentDenyList: MutableSet<String> = HashSet()
 
-        val tempSplitData = data.ofList("Denying.Attachments")
-            .addArgument(EnumValueSerializer(State::class.java, false))
-            .addArgument(StringSerializer())
-            .requireAllPreviousArgs()
-            .assertList()
-        for (split in tempSplitData) {
-            if ((split[0].get() as String).equals("deny", ignoreCase = true))
-                attachmentDenyList.add(split[1].get() as String)
-            else
-                attachmentRequireList.add(split[1].get() as String)
+        if (data.has("Denying.Attachments")) {
+            val tempSplitData = data.ofList("Denying.Attachments")
+                .addArgument(EnumValueSerializer(State::class.java, false))
+                .addArgument(StringSerializer())
+                .requireAllPreviousArgs()
+                .assertList()
+
+            for (split in tempSplitData) {
+                val states = split[0].get() as List<*>
+                val state = states.firstOrNull() as? State
+                    ?: throw data.exception("Denying.Attachments", "Expected DENY or REQUIRE")
+
+                val otherAttachment = split[1].get().toString()
+
+                when (state) {
+                    State.DENY -> attachmentDenyList.add(otherAttachment)
+                    State.REQUIRE -> attachmentRequireList.add(otherAttachment)
+                }
+            }
         }
 
         val unlockable = data.of("Unlockable").serialize(Unlockable::class.java).getOrNull()

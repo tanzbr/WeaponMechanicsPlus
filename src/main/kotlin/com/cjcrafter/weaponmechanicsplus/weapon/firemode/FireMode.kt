@@ -208,9 +208,10 @@ class FireMode : Serializer<FireMode> {
         // After creating the firemode, we have to go through each weapon
         // (other than the first) and set their firemode config
         val firemode = FireMode(trigger, order, switchMechanics)
-        for (i in 1 until order.size) {
-            val weapon = order[i].weaponTitle
-            config.set("$weapon.Fire_Mode", firemode)
+
+        // Register all weapon titles in this chain
+        for (selector in order) {
+            FireModeRegistry.register(selector.weaponTitle, firemode)
         }
 
         return firemode
