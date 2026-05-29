@@ -3,16 +3,16 @@
  * files, related files, or related projects is strictly controlled.
  */
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 
 group = "com.cjcrafter"
-version = "2.2.0"
+version = "2.3.0"
 
 plugins {
     `java-library`
-    kotlin("jvm") version "1.9.22"
-    id("com.gradleup.shadow") version "8.3.5"
+    kotlin("jvm") version "2.3.20"
+    id("com.gradleup.shadow") version "9.4.2"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }
 
@@ -94,12 +94,8 @@ tasks.test {
     useJUnitPlatform()
 }
 
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "21"
-}
-
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "21"
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+    }
 }
