@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 
 group = "com.cjcrafter"
-version = "2.3.0"
+version = "2.3.1"
 
 plugins {
     `java-library`

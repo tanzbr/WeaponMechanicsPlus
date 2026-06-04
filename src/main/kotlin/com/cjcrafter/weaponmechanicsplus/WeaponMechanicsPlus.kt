@@ -86,7 +86,7 @@ class WeaponMechanicsPlus : MechanicsPlugin(bStatsId = 16382) {
 
         return super.handleConfigs()
     }
-    
+
     private fun readAttachments(serializers: Collection<Serializer<*>>, validators: Collection<IValidator>) {
         val weaponMechanics = WeaponMechanics.getInstance()
         attachmentConfiguration = RootFileReader(weaponMechanics.dataFolder, debugger, classLoader, Attachment::class.java, "attachments")
