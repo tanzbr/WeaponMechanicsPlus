@@ -158,10 +158,15 @@ class Attachment : ModifierBase {
             .requireAllPreviousArgs()
             .assertList()
         for (split in tempSplitData) {
-            if ((split[0].get() as String).equals("deny", ignoreCase = true))
-                attachmentDenyList.add(split[1].get() as String)
-            else
-                attachmentRequireList.add(split[1].get() as String)
+            // EnumValueSerializer always returns a List (to support wildcards),
+            // so we grab the single state out of it.
+            val state = (split[0].get() as List<*>).firstOrNull() as? State
+                ?: throw data.exception("Denying.Attachments", "Expected DENY or REQUIRE")
+            val otherAttachment = split[1].get().toString()
+            when (state) {
+                State.DENY -> attachmentDenyList.add(otherAttachment)
+                State.REQUIRE -> attachmentRequireList.add(otherAttachment)
+            }
         }
 
         val unlockable = data.of("Unlockable").serialize(Unlockable::class.java).getOrNull()

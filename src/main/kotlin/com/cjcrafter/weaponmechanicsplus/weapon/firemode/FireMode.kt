@@ -205,13 +205,20 @@ class FireMode : Serializer<FireMode> {
                 "You should leave the 'attachment' option blank for the first firemode")
         }
 
-        // After creating the firemode, we have to go through each weapon
-        // (other than the first) and set their firemode config
+        // After creating the firemode, we have to go through each weapon (other
+        // than the first) and set their firemode config.
+        //
+        // This is deferred 1 tick on purpose: WeaponMechanics replaces its
+        // weapon config object during (re)load, so writing now would land in the
+        // stale config that is about to be discarded. By the time this runs,
+        // 'weaponConfigurations' is the live config the trigger listener reads.
         val firemode = FireMode(trigger, order, switchMechanics)
-        for (i in 1 until order.size) {
-            val weapon = order[i].weaponTitle
-            config.set("$weapon.Fire_Mode", firemode)
-        }
+        WeaponMechanicsPlus.getInstance().foliaScheduler.global().run(Runnable {
+            val weaponConfig = WeaponMechanics.getInstance().weaponConfigurations
+            for (i in 1 until order.size) {
+                weaponConfig.set("${order[i].weaponTitle}.Fire_Mode", firemode)
+            }
+        })
 
         return firemode
     }
