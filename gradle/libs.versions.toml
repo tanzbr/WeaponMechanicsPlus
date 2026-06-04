@@ -4,14 +4,14 @@ paper = "1.21.11-R0.1-SNAPSHOT"
 
 # External "hooks" or plugins that we might interact with
 armorMechanics = "4.2.0"
-mechanicsCore = "4.2.0-SNAPSHOT"
+mechanicsCore = "4.3.0"
 mythicMobs = "5.8.2"
 weaponMechanics = "4.2.0-SNAPSHOT"
 
 # Shaded dependencies
 bstats = "3.1.0"
 commandApi = "11.1.0"
-foliaScheduler = "0.7.5"
+foliaScheduler = "0.8.0"
 
 
 [libraries]
