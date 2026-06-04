@@ -9,7 +9,6 @@ import com.cjcrafter.foliascheduler.util.ReflectionUtil
 import com.cjcrafter.weaponmechanicsplus.listeners.*
 import com.cjcrafter.weaponmechanicsplus.placeholders.ArmorMechanicsPlaceholderListener
 import com.cjcrafter.weaponmechanicsplus.placeholders.WeaponMechanicsPlaceholderListener
-import com.cjcrafter.weaponmechanicsplus.weapon.firemode.FireModeRegistry
 import com.cjcrafter.weaponmechanicsplus.weapon.firemode.FireModeTriggerListener
 import com.cjcrafter.weaponmechanicsplus.weapon.listeners.AttractMobsListener
 import com.cjcrafter.weaponmechanicsplus.weapon.modifiers.attachments.Attachment
@@ -21,6 +20,7 @@ import me.deecaad.core.file.JarInstancer
 import me.deecaad.core.file.JarSearcher
 import me.deecaad.core.file.RootFileReader
 import me.deecaad.core.file.SearchMode
+import me.deecaad.core.file.Serializer
 import me.deecaad.core.file.SerializerInstancer
 import me.deecaad.core.mechanics.Conditions
 import me.deecaad.core.mechanics.Mechanics
@@ -82,6 +82,12 @@ class WeaponMechanicsPlus : MechanicsPlugin(bStatsId = 16382) {
         event.addSerializers(serializers)
         server.pluginManager.callEvent(event)
 
+        readAttachments(serializers, validators)
+
+        return super.handleConfigs()
+    }
+    
+    private fun readAttachments(serializers: Collection<Serializer<*>>, validators: Collection<IValidator>) {
         val weaponMechanics = WeaponMechanics.getInstance()
         attachmentConfiguration = RootFileReader(weaponMechanics.dataFolder, debugger, classLoader, Attachment::class.java, "attachments")
             .withSerializers(serializers)
@@ -90,8 +96,6 @@ class WeaponMechanicsPlus : MechanicsPlugin(bStatsId = 16382) {
             .read()
         val attachments = attachmentConfiguration.values().count { it is Attachment }
         debugger.info("Loaded $attachments attachments")
-
-        return super.handleConfigs()
     }
 
     override fun handleListeners(): CompletableFuture<Void> {
@@ -136,11 +140,8 @@ class WeaponMechanicsPlus : MechanicsPlugin(bStatsId = 16382) {
                     debugger.severe("Failed to add validators/serializers...", e)
                 }
 
-                // Clear any stale mappings
-                FireModeRegistry.clear()
-
-                // Reload attachments
-                reloadAttachments(event)
+                // Re-read attachments so /wm reload picks up attachment changes
+                readAttachments(event.serializers, event.validators)
 
                 // Register trigger listeners
                 val weaponHandler = WeaponMechanics.getInstance().getWeaponHandler()
@@ -151,22 +152,6 @@ class WeaponMechanicsPlus : MechanicsPlugin(bStatsId = 16382) {
                 projectilesRunnable.addScriptManager(ProjectileScriptManager(this@WeaponMechanicsPlus))
             }
         }
-    }
-
-    private fun reloadAttachments(event: QueueSerializerEvent) {
-        val weaponMechanics = WeaponMechanics.getInstance()
-
-        attachmentConfiguration = RootFileReader(
-            weaponMechanics.dataFolder,
-            debugger,
-            classLoader,
-            Attachment::class.java,
-            "attachments"
-        )
-            .withSerializers(event.serializers)
-            .withValidators(event.validators)
-            .assertFiles()
-            .read()
     }
 
     companion object {
