@@ -11,6 +11,7 @@ import me.deecaad.core.compatibility.CompatibilityAPI
 import me.deecaad.core.file.SerializeData
 import me.deecaad.core.file.Serializer
 import me.deecaad.core.file.SerializerException
+import me.deecaad.core.file.simple.CsvSerializer
 import me.deecaad.core.file.simple.StringSerializer
 import me.deecaad.core.mechanics.MechanicManager
 import me.deecaad.core.mechanics.Mechanics
@@ -90,8 +91,8 @@ class FireMode : Serializer<FireMode> {
 
             val nextAmmoLeft = nbt.getInt(weaponStack, "weaponmechanicsplus", next.separateAmmo + AMMO_LEFT_SUFFIX)
             val nextAmmoTypeIndex = nbt.getInt(weaponStack, "weaponmechanicsplus", next.separateAmmo + AMMO_TYPE_INDEX_SUFFIX)
-            nbt.remove(weaponStack, "weaponmechanicsplus", current.separateAmmo + AMMO_LEFT_SUFFIX)
-            nbt.remove(weaponStack, "weaponmechanicsplus", current.separateAmmo + AMMO_TYPE_INDEX_SUFFIX)
+            nbt.remove(weaponStack, "weaponmechanicsplus", next.separateAmmo + AMMO_LEFT_SUFFIX)
+            nbt.remove(weaponStack, "weaponmechanicsplus", next.separateAmmo + AMMO_TYPE_INDEX_SUFFIX)
             CustomTag.AMMO_LEFT.setInteger(weaponStack, nextAmmoLeft)
             CustomTag.AMMO_TYPE_INDEX.setInteger(weaponStack, nextAmmoTypeIndex)
 
@@ -122,8 +123,6 @@ class FireMode : Serializer<FireMode> {
 
     @Throws(SerializerException::class)
     override fun serialize(data: SerializeData): FireMode {
-        val config = WeaponMechanics.getInstance().weaponConfigurations
-
         // This config option was removed in 1.2.1
         if (data.has("Next_Weapon")) {
             throw data.exception("The 'Next_Weapon' option was removed in 1.2.1",
@@ -136,7 +135,7 @@ class FireMode : Serializer<FireMode> {
             .addArgument(StringSerializer()) // weapon
             .requireAllPreviousArgs()
             .addArgument(StringSerializer()) // ammo
-            .addArgument(StringSerializer()) // attachment
+            .addArgument(CsvSerializer(StringSerializer())) // attachments, comma-separated without spaces
             .assertList()
 
         // Make sure the user has put in at least 1 firemode. We allow 1 firemode for WIP weapons
@@ -148,16 +147,8 @@ class FireMode : Serializer<FireMode> {
         for ((index, split) in orderInput.withIndex()) {
             val weapon = split[0].get() as String
             val ammo = split[1].getOrNull() as String? ?: UNIVERSAL_AMMO
+            @Suppress("UNCHECKED_CAST")
             val attachments = split[2].getOrNull() as List<String>? ?: emptyList()
-
-            // Only 1 weapon can have a firemode
-            if (config.contains("$weapon.Fire_Mode")) {
-                throw data.listException("Order", index,
-                    "The weapon '$weapon' already had a 'Fire_Mode' option defined.",
-                    "When using firemodes, only 1 of the weapons can have a 'Fire_Mode' defined",
-                    "Please delete all other 'Fire_Mode' config sections except 1"
-                )
-            }
 
             // Run some checks to make sure the weapon and attachment actually
             // exist. We have to do this 1 tick later due to serialization
@@ -178,7 +169,7 @@ class FireMode : Serializer<FireMode> {
                     SerializerException.builder()
                         .locationRaw(data.ofList("Order").getLocation(index))
                         .addMessage("Could not find any attachment named '$attachment'")
-                        .buildInvalidOption(attachment, config.keys(deep = false))
+                        .buildInvalidOption(attachment, attachmentConfig.keys(deep = false))
                         .log(WeaponMechanicsPlus.getInstance().debugger)
                 }
             })
@@ -194,7 +185,7 @@ class FireMode : Serializer<FireMode> {
                 "Instead, '${order.first().weaponTitle}' was the first element",
                 "Make sure the first weapon in the list is '- $currentWeaponTitle universal' or just '- $currentWeaponTitle'")
         }
-        if (order.first().separateAmmo != "universal") {
+        if (order.first().separateAmmo != UNIVERSAL_AMMO) {
             throw data.exception("The first firemode should always use 'universal' ammo",
                 "Instead, '${order.first().separateAmmo}' was used for the first firemode",
                 "You should leave the 'ammo' option blank, or use 'universal' as the ammo for the first firemode")
@@ -213,10 +204,28 @@ class FireMode : Serializer<FireMode> {
         // stale config that is about to be discarded. By the time this runs,
         // 'weaponConfigurations' is the live config the trigger listener reads.
         val firemode = FireMode(trigger, order, switchMechanics)
+        val orderLocations = order.indices.map { data.ofList("Order").getLocation(it) }
         WeaponMechanicsPlus.getInstance().foliaScheduler.global().run(Runnable {
             val weaponConfig = WeaponMechanics.getInstance().weaponConfigurations
             for (i in 1 until order.size) {
-                weaponConfig.set("${order[i].weaponTitle}.Fire_Mode", firemode)
+                val path = "${order[i].weaponTitle}.Fire_Mode"
+
+                // Only 1 weapon in the order can have a 'Fire_Mode' section.
+                // The new config already contains user-defined Fire_Mode
+                // sections by now, plus any sections injected by other
+                // firemode groups that ran before us.
+                if (weaponConfig.contains(path)) {
+                    SerializerException.builder()
+                        .locationRaw(orderLocations[i])
+                        .addMessage("The weapon '${order[i].weaponTitle}' already has a 'Fire_Mode' option defined")
+                        .addMessage("When using firemodes, only 1 of the weapons can have a 'Fire_Mode' defined")
+                        .addMessage("Please delete all other 'Fire_Mode' config sections except 1")
+                        .build()
+                        .log(WeaponMechanicsPlus.getInstance().debugger)
+                    continue
+                }
+
+                weaponConfig.set(path, firemode)
             }
         })
 
